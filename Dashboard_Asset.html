@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Analysis Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Stable Lucide CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Plugin for Chart Labels -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 1.25rem;
+            margin-top: 0.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            max-height: 350px;
+            overflow-y: auto;
+            animation: slideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .dropdown-content.show { display: block; }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropdown-item:hover { background-color: #f8fafc; color: #6366f1; }
+        .dropdown-item.active { background-color: #eef2ff; color: #6366f1; font-weight: 700; }
+        
+        .growth-label { font-size: 9px; font-weight: 800; display: flex; align-items: center; gap: 2px; margin-top: 4px; }
+        .growth-up { color: #10b981; }
+        .growth-down { color: #f43f5e; }
+
+        /* SIDEBAR STYLES */
+        #sidebar { transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); width: 280px; }
+        #sidebar.collapsed { width: 88px; }
+        .nav-label { transition: opacity 0.3s ease, visibility 0.3s ease; }
+        .collapsed .nav-label { opacity: 0; visibility: hidden; width: 0; }
+        .collapsed .nav-section-title { opacity: 0; visibility: hidden; }
+        .nav-item { transition: all 0.2s ease; border-radius: 1rem; margin: 0.25rem 0.75rem; }
+        .collapsed .nav-item { margin: 0.25rem 0.75rem; padding: 0.75rem; justify-content: center; }
+        .nav-item.active { background-color: #eef2ff; color: #6366f1; font-weight: 700; }
+    </style>
+</head>
+<body class="bg-[#F8FAFC] text-slate-800 antialiased h-screen flex overflow-hidden transition-colors duration-500">
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside id="sidebar" class="bg-white border-r border-slate-100 flex flex-col shrink-0 z-50">
+        <div class="h-24 flex items-center px-6 shrink-0 relative">
+            <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black shadow-lg shadow-indigo-200 shrink-0 uppercase">A</div>
+            <span class="nav-label ml-3 text-lg font-black tracking-tight text-slate-900 uppercase">Dashboard</span>
+            <button onclick="toggleSidebar()" class="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-white border border-slate-100 rounded-full flex items-center justify-center shadow-md hover:bg-slate-50 transition-all">
+                <i id="toggle-icon" data-lucide="chevron-left" class="w-3 h-3 text-slate-400"></i>
+            </button>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto pt-4 space-y-8">
+            <div>
+                <p class="nav-section-title px-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Executive Dashboard</p>
+                <div class="space-y-1">
+                    <a href="Dashboard_KPI_Fix.html" class="nav-item flex items-center px-5 py-3 text-slate-500 hover:bg-slate-50 hover:text-indigo-600 group">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform"></i>
+                        <span class="nav-label ml-4 text-sm whitespace-nowrap">KPI Performance</span>
+                    </a>
+                </div>
+            </div>
+
+            <div>
+                <p class="nav-section-title px-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Strategic Dashboard</p>
+                <div class="space-y-1">
+                    <a href="#" class="nav-item flex items-center px-5 py-3 active group">
+                        <i data-lucide="box" class="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform"></i>
+                        <span class="nav-label ml-4 text-sm whitespace-nowrap">Asset Dashboard</span>
+                    </a>
+                    <a href="Dashboard_MMKSI_KTB.html" class="nav-item flex items-center px-5 py-3 text-slate-500 hover:bg-slate-50 hover:text-indigo-600 group">
+                        <i data-lucide="at-sign" class="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform"></i>
+                        <span class="nav-label ml-4 text-sm whitespace-nowrap">ATPM Dashboard</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="p-4 border-t border-slate-50">
+            <div class="nav-item flex items-center px-4 py-3 text-slate-400 cursor-pointer hover:bg-slate-50 rounded-xl transition-all text-left">
+                <i data-lucide="log-out" class="w-5 h-5 shrink-0"></i>
+                <span class="nav-label ml-4 text-xs font-bold uppercase tracking-widest">Logout</span>
+            </div>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+        <div class="p-8 md:p-10 h-full flex flex-col overflow-y-auto">
+            <header class="flex flex-col md:flex-row items-center justify-between mb-8 gap-4 shrink-0">
+                <div>
+                    <p class="text-[10px] font-extrabold uppercase tracking-[0.3em] text-indigo-500 mb-1 transition-colors">Branch Performance Monitoring</p>
+                    <h1 class="text-3xl font-black tracking-tight text-slate-900 leading-tight uppercase">Asset Monitoring Dashboard</h1>
+                </div>
+
+                <div class="flex items-center bg-white p-1 rounded-2xl border border-slate-200 shadow-sm w-full md:w-auto relative border-slate-100">
+                    <div class="relative group min-w-[170px] border-r border-slate-100">
+                        <button onclick="toggleDropdown('regionDropdown')" class="flex items-center w-full px-5 py-2.5 gap-3 hover:bg-slate-50 rounded-l-xl transition-all text-left">
+                            <i data-lucide="map-pin" class="w-4 h-4 text-indigo-500"></i>
+                            <div class="flex flex-col flex-1">
+                                <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Region</span>
+                                <span id="regionValue" class="text-sm font-bold text-slate-800 truncate">All Regions</span>
+                            </div>
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-300"></i>
+                        </button>
+                        <div id="regionDropdown" class="dropdown-content">
+                            <div id="regionList" class="p-2 space-y-1 text-left"></div>
+                        </div>
+                    </div>
+
+                    <div class="relative group min-w-[220px]">
+                        <button onclick="toggleDropdown('branchDropdown')" class="flex items-center w-full px-5 py-2.5 gap-3 hover:bg-slate-50 rounded-r-xl transition-all text-left">
+                            <i data-lucide="landmark" class="w-4 h-4 text-indigo-500"></i>
+                            <div class="flex flex-col flex-1">
+                                <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Branch Office</span>
+                                <span id="branchValue" class="text-sm font-bold text-slate-800 truncate">All Branches</span>
+                            </div>
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-300"></i>
+                        </button>
+                        <div id="branchDropdown" class="dropdown-content">
+                            <div class="sticky top-0 bg-white p-3 border-b border-slate-100 z-10">
+                                <div class="relative">
+                                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400"></i>
+                                    <input type="text" id="branchSearch" placeholder="Search branch..." 
+                                        class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium focus:ring-2 focus:ring-indigo-100 focus:outline-none focus:border-indigo-400"
+                                        onkeyup="filterBranchList(this.value)">
+                                </div>
+                            </div>
+                            <div id="branchList" class="p-2 space-y-1 text-left"></div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 flex flex-col gap-6 min-h-0">
+                <div class="grid grid-cols-2 lg:grid-cols-5 gap-5 shrink-0">
+                    <div class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm relative overflow-hidden group">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-opacity-70">Total Portfolio</p>
+                        <h2 id="kpi-total" class="text-2xl font-black tracking-tighter text-slate-900">-</h2>
+                        <div id="growth-total" class="growth-label">--</div>
+                    </div>
+                    
+                    <div id="card-pc" class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm border-b-4">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-opacity-70">PC Model</p>
+                        <h2 id="kpi-pc" class="text-xl font-black text-slate-900">-</h2>
+                        <div id="growth-pc" class="growth-label">--</div>
+                    </div>
+                    <div id="card-lcv" class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm border-b-4">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-opacity-70">LCV Model</p>
+                        <h2 id="kpi-lcv" class="text-xl font-black text-slate-900">-</h2>
+                        <div id="growth-lcv" class="growth-label">--</div>
+                    </div>
+                    <div id="card-cv" class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm border-b-4">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-opacity-70">CV Model</p>
+                        <h2 id="kpi-cv" class="text-xl font-black text-slate-900">-</h2>
+                        <div id="growth-cv" class="growth-label">--</div>
+                    </div>
+                    <div id="card-ccb" class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm border-b-4">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-opacity-70">CCB Model</p>
+                        <h2 id="kpi-ccb" class="text-xl font-black text-slate-900">-</h2>
+                        <div id="growth-ccb" class="growth-label">--</div>
+                    </div>
+                </div>
+
+                <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-0 overflow-hidden">
+                    <div class="lg:col-span-8 bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm flex flex-col min-h-0 overflow-hidden">
+                        <div class="flex items-center justify-between mb-8 shrink-0">
+                            <div>
+                                <h3 class="text-lg font-black text-slate-900 uppercase tracking-tight">Trend Breakdown Analysis</h3>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-indigo-500 text-opacity-70">Comparative Scale: Annual vs Monthly Performance</p>
+                            </div>
+                            <div id="dynamicLegend" class="flex items-center gap-4"></div>
+                        </div>
+                        
+                        <div class="flex-1 flex gap-8 min-h-0">
+                            <div class="flex-[2] flex flex-col min-w-0">
+                                <div class="flex items-center gap-2 mb-4">
+                                    <span class="px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded text-[9px] font-black uppercase tracking-wider">Historical Annual (T)</span>
+                                </div>
+                                <div class="flex-1 min-h-0">
+                                    <canvas id="annualBarChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="w-px bg-slate-100 self-stretch"></div>
+                            <div class="flex-[3] flex flex-col min-w-0">
+                                <div class="flex items-center gap-2 mb-4">
+                                    <span class="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded text-[9px] font-black uppercase tracking-wider">Current Year Monthly (B)</span>
+                                </div>
+                                <div class="flex-1 min-h-0">
+                                    <canvas id="monthlyBarChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-4 flex flex-col gap-6 min-h-0">
+                        <!-- Model Mix -->
+                        <div class="bg-white rounded-[2.5rem] p-7 border border-slate-100 shadow-sm flex flex-col flex-1 min-h-0 overflow-hidden text-center">
+                            <div class="flex items-center justify-between mb-4 shrink-0 text-left">
+                                <h3 class="text-base font-black text-slate-900 uppercase tracking-tight">DETAIL MODELS</h3>
+                                <div class="relative">
+                                    <button onclick="toggleDropdown('monthDropdown')" class="flex items-center gap-2 bg-slate-50 hover:bg-slate-100 px-2 py-1.5 rounded-xl transition-all border border-slate-100 shadow-sm">
+                                        <i data-lucide="calendar" class="w-3 h-3 text-indigo-600"></i>
+                                        <span id="monthValue" class="text-[9px] font-black text-indigo-600 uppercase">Dec '25</span>
+                                        <i data-lucide="chevron-down" class="w-3 h-3 text-indigo-300"></i>
+                                    </button>
+                                    <div id="monthDropdown" class="dropdown-content min-w-[120px] right-0 left-auto shadow-xl">
+                                        <div id="monthList" class="p-2 space-y-1 text-left"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- PIE CHART CONTAINER: Spacing for centered label -->
+                            <div class="flex-1 min-h-0 flex items-center justify-center relative">
+                                <canvas id="modelContributionPie"></canvas>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                    <span id="pieCenterLabel" class="text-2xl font-black text-slate-900 tracking-tighter leading-none mb-1">-</span>
+                                    <span class="text-[8px] font-bold text-slate-400 uppercase tracking-[0.2em]">Total Value</span>
+                                </div>
+                            </div>
+                            <!-- LEGEND: Larger Font and balanced gaps -->
+                            <div id="contributionLegend" class="mt-6 space-y-3.5 shrink-0 px-1 overflow-y-auto text-left"></div>
+                        </div>
+
+                        <!-- Ranking Card -->
+                        <div id="rank-card-container" class="bg-white rounded-[2.5rem] p-6 border border-slate-100 shadow-sm flex flex-col justify-center group hover:shadow-lg transition-all border-l-4 relative" style="border-left-color: #F7374F">
+                            <div class="flex items-center justify-between mb-2 shrink-0 text-left">
+                                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Ranking Status</h3>
+                                <div id="rank-icon-svg" style="color: #F7374F" class="opacity-20"><i data-lucide="award" size="24"></i></div>
+                            </div>
+                            <div id="rankingDisplay" class="flex flex-col justify-center text-left"></div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const rawData = [
+            {	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'PC'	,	fy22:	182046541066	,	fy23:	150674257034	,	fy24:	149576160775	,	fy25:	159649876363	,	feb25:	146017399079	,	mar25:	149576160775	,	apr25:	144081817784	,	may25:	141795074187	,	jun25:	138481332388	,	jul25:	134772206591	,	aug25:	144546881697	,	sep25:	153113719667	,	oct25: 	155795616189	,	nov25:	153977546496	,	des25:	161943114905	,	jan26:	159649876363	},
+{	region:	'JKT'	,	branch:	'CENTRAL JAKARTA'	,	model:	'PC'	,	fy22:	499114964180	,	fy23:	385868350855	,	fy24:	350659505701	,	fy25:	325782943175	,	feb25:	344619473601	,	mar25:	350659505701	,	apr25:	326302579189	,	may25:	324340339687	,	jun25:	319089403004	,	jul25:	310714084511	,	aug25:	318734340780	,	sep25:	336684964805	,	oct25: 	341167828120	,	nov25:	337283591197	,	des25:	335244739177	,	jan26:	325782943175	},
+{	region:	'JKT'	,	branch:	'CILEGON'	,	model:	'PC'	,	fy22:	137395729088	,	fy23:	112271675472	,	fy24:	88974906873	,	fy25:	89680528709	,	feb25:	88877369906	,	mar25:	88974906873	,	apr25:	86101161679	,	may25:	83557143134	,	jun25:	81825788714	,	jul25:	81601157949	,	aug25:	82310856589	,	sep25:	87613924667	,	oct25: 	87251092952	,	nov25:	88045917338	,	des25:	90965152123	,	jan26:	89680528709	},
+{	region:	'JKT'	,	branch:	'NORTH JAKARTA'	,	model:	'PC'	,	fy22:	341870621087	,	fy23:	238062308784	,	fy24:	182547647018	,	fy25:	201105473550	,	feb25:	179532936073	,	mar25:	182547647018	,	apr25:	176012124741	,	may25:	173097589229	,	jun25:	167427595417	,	jul25:	164484686128	,	aug25:	173529519639	,	sep25:	184142075460	,	oct25: 	193350279130	,	nov25:	195278812517	,	des25:	204527702157	,	jan26:	201105473550	},
+{	region:	'JKT'	,	branch:	'SOUTH JAKARTA'	,	model:	'PC'	,	fy22:	357997341233	,	fy23:	292582076656	,	fy24:	273826526731	,	fy25:	274360345128	,	feb25:	251383255285	,	mar25:	273826526731	,	apr25:	263864763937	,	may25:	258473855096	,	jun25:	251577620021	,	jul25:	247092917627	,	aug25:	256862978468	,	sep25:	261951707872	,	oct25: 	263697477001	,	nov25:	266413328731	,	des25:	273829697904	,	jan26:	274360345128	},
+{	region:	'JKT'	,	branch:	'TANGERANG'	,	model:	'PC'	,	fy22:	130037364749	,	fy23:	122816613811	,	fy24:	131210234382	,	fy25:	155088083437	,	feb25:	122842375439	,	mar25:	131210234382	,	apr25:	127304740471	,	may25:	126013458363	,	jun25:	123969613499	,	jul25:	124446879792	,	aug25:	135074426963	,	sep25:	145160334052	,	oct25: 	150617546928	,	nov25:	151875363464	,	des25:	157092763638	,	jan26:	155088083437	},
+{	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'LCV'	,	fy22:	16945060401	,	fy23:	17434855534	,	fy24:	15825189038	,	fy25:	11744958676	,	feb25:	16653132432	,	mar25:	15825189038	,	apr25:	15526491646	,	may25:	14919498770	,	jun25:	14430677214	,	jul25:	14281223332	,	aug25:	14057252522	,	sep25:	13312538583	,	oct25: 	12845919637	,	nov25:	12309936442	,	des25:	12242632238	,	jan26:	11744958676	},
+{	region:	'JKT'	,	branch:	'CENTRAL JAKARTA'	,	model:	'LCV'	,	fy22:	125399664775	,	fy23:	121306004325	,	fy24:	147308326671	,	fy25:	164659854454	,	feb25:	132909761204	,	mar25:	147308326671	,	apr25:	144461239857	,	may25:	148691879553	,	jun25:	158480728402	,	jul25:	154562335984	,	aug25:	155645336670	,	sep25:	155998859594	,	oct25: 	159284253072	,	nov25:	160665974559	,	des25:	159444058064	,	jan26:	164659854454	},
+{	region:	'JKT'	,	branch:	'CILEGON'	,	model:	'LCV'	,	fy22:	51495380387	,	fy23:	39046342359	,	fy24:	25723300836	,	fy25:	17208163914	,	feb25:	27625300565	,	mar25:	25723300836	,	apr25:	24504668069	,	may25:	25828382408	,	jun25:	24616104025	,	jul25:	23269266496	,	aug25:	23083677783	,	sep25:	21455541009	,	oct25: 	20561457079	,	nov25:	19490598017	,	des25:	18700598229	,	jan26:	17208163914	},
+{	region:	'JKT'	,	branch:	'NORTH JAKARTA'	,	model:	'LCV'	,	fy22:	65116385351	,	fy23:	47328145827	,	fy24:	26251021372	,	fy25:	19215686191	,	feb25:	26606404001	,	mar25:	26251021372	,	apr25:	24736742343	,	may25:	23252258755	,	jun25:	23031961833	,	jul25:	21828138043	,	aug25:	21564648490	,	sep25:	22128539844	,	oct25: 	21171667132	,	nov25:	20126886707	,	des25:	18699408769	,	jan26:	19215686191	},
+{	region:	'JKT'	,	branch:	'SOUTH JAKARTA'	,	model:	'LCV'	,	fy22:	69336504567	,	fy23:	65643032874	,	fy24:	57917632187	,	fy25:	57924576064	,	feb25:	58142282291	,	mar25:	57917632187	,	apr25:	57102811561	,	may25:	58284330775	,	jun25:	57024776285	,	jul25:	56835715984	,	aug25:	57061002774	,	sep25:	57041190129	,	oct25: 	57326000482	,	nov25:	58027048675	,	des25:	59324911512	,	jan26:	57924576064	},
+{	region:	'JKT'	,	branch:	'TANGERANG'	,	model:	'LCV'	,	fy22:	13205817835	,	fy23:	13587746063	,	fy24:	13925070975	,	fy25:	12264014741	,	feb25:	12712018277	,	mar25:	13925070975	,	apr25:	13203838007	,	may25:	13853484657	,	jun25:	13776305710	,	jul25:	13955460171	,	aug25:	14068710110	,	sep25:	13710709650	,	oct25: 	13277035653	,	nov25:	12534865867	,	des25:	12378148212	,	jan26:	12264014741	},
+{	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'CV'	,	fy22:	69586126615	,	fy23:	76344550546	,	fy24:	68154356565	,	fy25:	62466160187	,	feb25:	70753804160	,	mar25:	68154356565	,	apr25:	66005813391	,	may25:	65351326840	,	jun25:	68272477465	,	jul25:	66121494504	,	aug25:	63900756363	,	sep25:	67744858073	,	oct25: 	66997260507	,	nov25:	65362341118	,	des25:	64871904347	,	jan26:	62466160187	},
+{	region:	'JKT'	,	branch:	'CENTRAL JAKARTA'	,	model:	'CV'	,	fy22:	534978702795	,	fy23:	808504922262	,	fy24:	909301587432	,	fy25:	757391644822	,	feb25:	901568492632	,	mar25:	909301587432	,	apr25:	895949288918	,	may25:	889553781531	,	jun25:	871253234180	,	jul25:	802892097364	,	aug25:	802820859581	,	sep25:	799233942726	,	oct25: 	788313464442	,	nov25:	745735524454	,	des25:	749181084763	,	jan26:	757391644822	},
+{	region:	'JKT'	,	branch:	'CILEGON'	,	model:	'CV'	,	fy22:	178764342599	,	fy23:	161775736069	,	fy24:	152209514473	,	fy25:	133529327472	,	feb25:	155913220942	,	mar25:	152209514473	,	apr25:	148129996274	,	may25:	145645069347	,	jun25:	147830739866	,	jul25:	144806463158	,	aug25:	141066676855	,	sep25:	139319369360	,	oct25: 	137025492335	,	nov25:	138169709680	,	des25:	136375976323	,	jan26:	133529327472	},
+{	region:	'JKT'	,	branch:	'NORTH JAKARTA'	,	model:	'CV'	,	fy22:	256988724812	,	fy23:	202649261277	,	fy24:	124853616681	,	fy25:	118562158561	,	feb25:	128402151530	,	mar25:	124853616681	,	apr25:	120721151611	,	may25:	118160442542	,	jun25:	115105050087	,	jul25:	121948788460	,	aug25:	120847179388	,	sep25:	113950843179	,	oct25: 	112913022356	,	nov25:	109415372954	,	des25:	121632281060	,	jan26:	118562158561	},
+{	region:	'JKT'	,	branch:	'SOUTH JAKARTA'	,	model:	'CV'	,	fy22:	576569275627	,	fy23:	531520263413	,	fy24:	477081776856	,	fy25:	309244891122	,	feb25:	486942545614	,	mar25:	477081776856	,	apr25:	469802673346	,	may25:	451301978242	,	jun25:	440066783587	,	jul25:	418347945039	,	aug25:	408165973792	,	sep25:	392818257199	,	oct25: 	371606009712	,	nov25:	376283157134	,	des25:	365293471100	,	jan26:	309244891122	},
+{	region:	'JKT'	,	branch:	'TANGERANG'	,	model:	'CV'	,	fy22:	60629583067	,	fy23:	129115980663	,	fy24:	137521702042	,	fy25:	117306765280	,	feb25:	136748310177	,	mar25:	137521702042	,	apr25:	132994334001	,	may25:	129819123207	,	jun25:	127581050425	,	jul25:	127623517284	,	aug25:	129102194945	,	sep25:	126500894301	,	oct25: 	123623780159	,	nov25:	121066036717	,	des25:	117431054440	,	jan26:	117306765280	},
+{	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'CCB'	,	fy22:	672532460	,	fy23:	234884217	,	fy24:	1665496545	,	fy25:	4131743873	,	feb25:	1728772821	,	mar25:	1665496545	,	apr25:	1602601900	,	may25:	1542650579	,	jun25:	1522749801	,	jul25:	1459357473	,	aug25:	2674663305	,	sep25:	3062625571	,	oct25: 	3369010371	,	nov25:	3665705707	,	des25:	4008808292	,	jan26:	4131743873	},
+{	region:	'JKT'	,	branch:	'CENTRAL JAKARTA'	,	model:	'CCB'	,	fy22:	232094187850	,	fy23:	146648568760	,	fy24:	114794631087	,	fy25:	126013266475	,	feb25:	118805009225	,	mar25:	114794631087	,	apr25:	120744578301	,	may25:	118320895734	,	jun25:	115586308759	,	jul25:	107909790049	,	aug25:	103216195836	,	sep25:	100375385339	,	oct25: 	94697023735	,	nov25:	134797439519	,	des25:	128926539763	,	jan26:	126013266475	},
+{	region:	'JKT'	,	branch:	'CILEGON'	,	model:	'CCB'	,	fy22:	60057290020	,	fy23:	60283759140	,	fy24:	44123090737	,	fy25:	38970804486	,	feb25:	44559421521	,	mar25:	44123090737	,	apr25:	41773207546	,	may25:	40556410151	,	jun25:	39883563227	,	jul25:	40273852514	,	aug25:	42060156759	,	sep25:	41027654007	,	oct25: 	39098887429	,	nov25:	40081494386	,	des25:	39552546303	,	jan26:	38970804486	},
+{	region:	'JKT'	,	branch:	'NORTH JAKARTA'	,	model:	'CCB'	,	fy22:	118262086520	,	fy23:	140984730353	,	fy24:	125163805917	,	fy25:	76570406656	,	feb25:	124954701674	,	mar25:	125163805917	,	apr25:	120172408222	,	may25:	115523325144	,	jun25:	109600171377	,	jul25:	103784386913	,	aug25:	97938314824	,	sep25:	88140511517	,	oct25: 	82334267567	,	nov25:	80236186821	,	des25:	85528830251	,	jan26:	76570406656	},
+{	region:	'JKT'	,	branch:	'SOUTH JAKARTA'	,	model:	'CCB'	,	fy22:	44234294766	,	fy23:	57135324269	,	fy24:	46825357868	,	fy25:	33071714632	,	feb25:	47568419484	,	mar25:	46825357868	,	apr25:	45214558311	,	may25:	43054481497	,	jun25:	40660655511	,	jul25:	39100107754	,	aug25:	36440631098	,	sep25:	34305660482	,	oct25: 	37116386201	,	nov25:	37756871436	,	des25:	41886504773	,	jan26:	33071714632	},
+{	region:	'JKT'	,	branch:	'TANGERANG'	,	model:	'CCB'	,	fy22:	944676035	,	fy23:	1430961704	,	fy24:	1059479459	,	fy25:	1756934683	,	feb25:	1120842369	,	mar25:	1059479459	,	apr25:	965306731	,	may25:	962475909	,	jun25:	959028862	,	jul25:	969724801	,	aug25:	904897198	,	sep25:	1025479738	,	oct25: 	1426336425	,	nov25:	1458477579	,	des25:	1590754652	,	jan26:	1756934683	},
+{	region:	'KLM'	,	branch:	'BALIKPAPAN'	,	model:	'PC'	,	fy22:	163389533377	,	fy23:	151930813671	,	fy24:	116091367582	,	fy25:	112631085861	,	feb25:	119170300204	,	mar25:	116091367582	,	apr25:	118428252895	,	may25:	115742228476	,	jun25:	113014871823	,	jul25:	110301592178	,	aug25:	106516419234	,	sep25:	113938526796	,	oct25: 	112137198860	,	nov25:	112788345159	,	des25:	114364258958	,	jan26:	112631085861	},
+{	region:	'KLM'	,	branch:	'BANJARMASIN'	,	model:	'PC'	,	fy22:	170096837588	,	fy23:	138587798333	,	fy24:	103851280835	,	fy25:	118234606342	,	feb25:	104780792633	,	mar25:	103851280835	,	apr25:	101691887747	,	may25:	98959656275	,	jun25:	97811104253	,	jul25:	98023901433	,	aug25:	98451737693	,	sep25:	100011519950	,	oct25: 	103436657031	,	nov25:	107822643639	,	des25:	114243042034	,	jan26:	118234606342	},
+{	region:	'KLM'	,	branch:	'MAKASSAR'	,	model:	'PC'	,	fy22:	236931917237	,	fy23:	163938378618	,	fy24:	120836629621	,	fy25:	190790146730	,	feb25:	121944956510	,	mar25:	120836629621	,	apr25:	119013295679	,	may25:	119011971501	,	jun25:	119658351531	,	jul25:	123538924470	,	aug25:	126687528270	,	sep25:	135966609883	,	oct25: 	147002407414	,	nov25:	158728656065	,	des25:	181166248889	,	jan26:	190790146730	},
+{	region:	'KLM'	,	branch:	'PONTIANAK'	,	model:	'PC'	,	fy22:	73468717439	,	fy23:	77439920929	,	fy24:	67581079030	,	fy25:	62161566331	,	feb25:	67242153944	,	mar25:	67581079030	,	apr25:	67315519308	,	may25:	64185525923	,	jun25:	63887778452	,	jul25:	62305523950	,	aug25:	60844866134	,	sep25:	61111862765	,	oct25: 	61828322714	,	nov25:	62561658365	,	des25:	63310444330	,	jan26:	62161566331	},
+{	region:	'KLM'	,	branch:	'BALIKPAPAN'	,	model:	'LCV'	,	fy22:	482112169005	,	fy23:	515775698674	,	fy24:	438273540128	,	fy25:	386926110057	,	feb25:	446749268120	,	mar25:	438273540128	,	apr25:	447392799739	,	may25:	452138669654	,	jun25:	436897452905	,	jul25:	447967417684	,	aug25:	447413974195	,	sep25:	441087382433	,	oct25: 	425254484854	,	nov25:	413565904789	,	des25:	397693620141	,	jan26:	386926110057	},
+{	region:	'KLM'	,	branch:	'BANJARMASIN'	,	model:	'LCV'	,	fy22:	150056458071	,	fy23:	153091862340	,	fy24:	131200900901	,	fy25:	193243781477	,	feb25:	127486310625	,	mar25:	131200900901	,	apr25:	138703082085	,	may25:	144628435560	,	jun25:	172012894724	,	jul25:	184334096949	,	aug25:	192692754534	,	sep25:	193230872054	,	oct25: 	193853755333	,	nov25:	191962039998	,	des25:	193526325221	,	jan26:	193243781477	},
+{	region:	'KLM'	,	branch:	'MAKASSAR'	,	model:	'LCV'	,	fy22:	46359795578	,	fy23:	27320377773	,	fy24:	15723221890	,	fy25:	22839068711	,	feb25:	15692431435	,	mar25:	15723221890	,	apr25:	17132407893	,	may25:	18499641380	,	jun25:	19241707267	,	jul25:	19816454139	,	aug25:	20067732414	,	sep25:	20611605553	,	oct25: 	20515054132	,	nov25:	20687422208	,	des25:	21791858012	,	jan26:	22839068711	},
+{	region:	'KLM'	,	branch:	'PONTIANAK'	,	model:	'LCV'	,	fy22:	58622511462	,	fy23:	51446018618	,	fy24:	44363663476	,	fy25:	37552920600	,	feb25:	45568649780	,	mar25:	44363663476	,	apr25:	42158106141	,	may25:	41417368795	,	jun25:	40373052860	,	jul25:	39994395643	,	aug25:	38140810246	,	sep25:	37327462698	,	oct25: 	37101647521	,	nov25:	36211494412	,	des25:	37245246706	,	jan26:	37552920600	},
+{	region:	'KLM'	,	branch:	'BALIKPAPAN'	,	model:	'CV'	,	fy22:	414286172443	,	fy23:	329118256986	,	fy24:	199923332182	,	fy25:	162563299426	,	feb25:	212040592807	,	mar25:	199923332182	,	apr25:	195829001382	,	may25:	189005949403	,	jun25:	185710469139	,	jul25:	178268909867	,	aug25:	175503154410	,	sep25:	176427266190	,	oct25: 	171543999310	,	nov25:	168694031057	,	des25:	163593251854	,	jan26:	162563299426	},
+{	region:	'KLM'	,	branch:	'BANJARMASIN'	,	model:	'CV'	,	fy22:	525151450485	,	fy23:	447798001556	,	fy24:	310657158870	,	fy25:	257506559339	,	feb25:	316840909309	,	mar25:	310657158870	,	apr25:	300371570175	,	may25:	292971820637	,	jun25:	286514915078	,	jul25:	283716975400	,	aug25:	279904026271	,	sep25:	272294677352	,	oct25: 	268936449190	,	nov25:	264889203396	,	des25:	259383538199	,	jan26:	257506559339	},
+{	region:	'KLM'	,	branch:	'MAKASSAR'	,	model:	'CV'	,	fy22:	749252700556	,	fy23:	530410656277	,	fy24:	357659085637	,	fy25:	320751378783	,	feb25:	368780562868	,	mar25:	357659085637	,	apr25:	349523303208	,	may25:	350168623313	,	jun25:	347729576102	,	jul25:	335854231364	,	aug25:	325226084264	,	sep25:	312987382191	,	oct25: 	305471115395	,	nov25:	311153470855	,	des25:	320901546963	,	jan26:	320751378783	},
+{	region:	'KLM'	,	branch:	'PONTIANAK'	,	model:	'CV'	,	fy22:	396274159775	,	fy23:	463434204806	,	fy24:	400405903673	,	fy25:	332648114127	,	feb25:	410219507585	,	mar25:	400405903673	,	apr25:	396905081236	,	may25:	390633596325	,	jun25:	381504586421	,	jul25:	375047377218	,	aug25:	365324146869	,	sep25:	357456614496	,	oct25: 	350671643627	,	nov25:	340575687009	,	des25:	333611568639	,	jan26:	332648114127	},
+{	region:	'KLM'	,	branch:	'BALIKPAPAN'	,	model:	'CCB'	,	fy22:	210117626061	,	fy23:	201207645222	,	fy24:	172992391184	,	fy25:	139858203115	,	feb25:	159578065427	,	mar25:	172992391184	,	apr25:	165557973854	,	may25:	163337509904	,	jun25:	165155420488	,	jul25:	165187601901	,	aug25:	166081919765	,	sep25:	163691076675	,	oct25: 	158793688681	,	nov25:	151971826833	,	des25:	144727723402	,	jan26:	139858203115	},
+{	region:	'KLM'	,	branch:	'BANJARMASIN'	,	model:	'CCB'	,	fy22:	49161604894	,	fy23:	52281602337	,	fy24:	36894349730	,	fy25:	39157745428	,	feb25:	37322950119	,	mar25:	36894349730	,	apr25:	35879590886	,	may25:	34289485292	,	jun25:	34755786450	,	jul25:	35743783108	,	aug25:	38676822129	,	sep25:	39283564375	,	oct25: 	39285350863	,	nov25:	39098976092	,	des25:	37985088470	,	jan26:	39157745428	},
+{	region:	'KLM'	,	branch:	'MAKASSAR'	,	model:	'CCB'	,	fy22:	96173399141	,	fy23:	64217405670	,	fy24:	66938525437	,	fy25:	94685636046	,	feb25:	67794432725	,	mar25:	66938525437	,	apr25:	65468906042	,	may25:	65637697873	,	jun25:	64060648792	,	jul25:	69986829386	,	aug25:	73146182789	,	sep25:	73710177926	,	oct25: 	77771084865	,	nov25:	81006078406	,	des25:	95478684274	,	jan26:	94685636046	},
+{	region:	'KLM'	,	branch:	'PONTIANAK'	,	model:	'CCB'	,	fy22:	76746256122	,	fy23:	74890526918	,	fy24:	68897508416	,	fy25:	60492717539	,	feb25:	67810756423	,	mar25:	68897508416	,	apr25:	71162189815	,	may25:	68908416188	,	jun25:	66082271432	,	jul25:	64370265170	,	aug25:	62993669133	,	sep25:	67151483552	,	oct25: 	65316973185	,	nov25:	65184105627	,	des25:	63266125021	,	jan26:	60492717539	},
+{	region:	'NS'	,	branch:	'BUKIT TINGGI'	,	model:	'PC'	,	fy22:	40901504010	,	fy23:	28910741600	,	fy24:	24474986583	,	fy25:	23596213163	,	feb25:	24168192954	,	mar25:	24474986583	,	apr25:	23331010479	,	may25:	22206639367	,	jun25:	21831405155	,	jul25:	21246277767	,	aug25:	21080217519	,	sep25:	21001294002	,	oct25: 	21716740963	,	nov25:	22713048947	,	des25:	23182820851	,	jan26:	23596213163	},
+{	region:	'NS'	,	branch:	'DURI'	,	model:	'PC'	,	fy22:	65681124170	,	fy23:	49620888760	,	fy24:	40658079448	,	fy25:	44927348179	,	feb25:	39439031384	,	mar25:	40658079448	,	apr25:	38475168418	,	may25:	38814514758	,	jun25:	37267274613	,	jul25:	36653625112	,	aug25:	36314693195	,	sep25:	36425394632	,	oct25: 	37801554453	,	nov25:	38116174191	,	des25:	44313136252	,	jan26:	44927348179	},
+{	region:	'NS'	,	branch:	'MEDAN'	,	model:	'PC'	,	fy22:	171960279372	,	fy23:	112167499714	,	fy24:	71005352799	,	fy25:	70043056403	,	feb25:	71794340417	,	mar25:	71005352799	,	apr25:	68749230599	,	may25:	66195264552	,	jun25:	65928145742	,	jul25:	65424056528	,	aug25:	65896001500	,	sep25:	68463539079	,	oct25: 	70435577769	,	nov25:	69889967333	,	des25:	71312585955	,	jan26:	70043056403	},
+{	region:	'NS'	,	branch:	'MEDAN II'	,	model:	'PC'	,	fy22:	437396916740	,	fy23:	334351372881	,	fy24:	247947491343	,	fy25:	217707520286	,	feb25:	251498562195	,	mar25:	247947491343	,	apr25:	239292922778	,	may25:	232104467713	,	jun25:	224218567805	,	jul25:	218921305960	,	aug25:	215009585233	,	sep25:	216849781388	,	oct25: 	216300805565	,	nov25:	211819497527	,	des25:	217438027692	,	jan26:	217707520286	},
+{	region:	'NS'	,	branch:	'PADANG'	,	model:	'PC'	,	fy22:	90395457504	,	fy23:	61900226087	,	fy24:	47919516105	,	fy25:	42565818566	,	feb25:	44250782040	,	mar25:	47919516105	,	apr25:	45879345452	,	may25:	44961932551	,	jun25:	43362645104	,	jul25:	41113111738	,	aug25:	40131826187	,	sep25:	40422903625	,	oct25: 	41041156275	,	nov25:	41472649376	,	des25:	42240579250	,	jan26:	42565818566	},
+{	region:	'NS'	,	branch:	'PADANG SIDEMPUAN'	,	model:	'PC'	,	fy22:	43552411615	,	fy23:	34528847778	,	fy24:	29393185898	,	fy25:	28122595114	,	feb25:	29265953963	,	mar25:	29393185898	,	apr25:	28837950564	,	may25:	27985416682	,	jun25:	26485146913	,	jul25:	26262699522	,	aug25:	26659573139	,	sep25:	27055824378	,	oct25: 	27304110852	,	nov25:	26704136288	,	des25:	27829725335	,	jan26:	28122595114	},
+{	region:	'NS'	,	branch:	'PEKANBARU'	,	model:	'PC'	,	fy22:	222579466692	,	fy23:	214318096677	,	fy24:	192064789280	,	fy25:	194059665255	,	feb25:	193787847479	,	mar25:	192064789280	,	apr25:	189393742710	,	may25:	184959439537	,	jun25:	182693037314	,	jul25:	180415801807	,	aug25:	177652075978	,	sep25:	180996971636	,	oct25: 	183584700124	,	nov25:	184885904147	,	des25:	193901777059	,	jan26:	194059665255	},
+{	region:	'NS'	,	branch:	'RANTAU PRAPAT'	,	model:	'PC'	,	fy22:	71845550571	,	fy23:	59166767331	,	fy24:	43267764538	,	fy25:	37203348721	,	feb25:	44179908001	,	mar25:	43267764538	,	apr25:	41510845507	,	may25:	40004700025	,	jun25:	39214324263	,	jul25:	37737033234	,	aug25:	37469631428	,	sep25:	37021643927	,	oct25: 	36004942658	,	nov25:	36091736783	,	des25:	37305047289	,	jan26:	37203348721	},
+{	region:	'NS'	,	branch:	'BUKIT TINGGI'	,	model:	'LCV'	,	fy22:	55613110405	,	fy23:	36857861372	,	fy24:	24034277607	,	fy25:	14966511657	,	feb25:	24474514636	,	mar25:	24034277607	,	apr25:	22630445626	,	may25:	21368178985	,	jun25:	20987557215	,	jul25:	20347273257	,	aug25:	19544649656	,	sep25:	17454777703	,	oct25: 	16860057281	,	nov25:	15932697874	,	des25:	15299480936	,	jan26:	14966511657	},
+{	region:	'NS'	,	branch:	'DURI'	,	model:	'LCV'	,	fy22:	55178597787	,	fy23:	41589598598	,	fy24:	60506200879	,	fy25:	47988149446	,	feb25:	53174074935	,	mar25:	60506200879	,	apr25:	58864153456	,	may25:	56845372422	,	jun25:	55781490298	,	jul25:	54735423518	,	aug25:	55713027727	,	sep25:	53059597938	,	oct25: 	51230588073	,	nov25:	50446562168	,	des25:	49697183147	,	jan26:	47988149446	},
+{	region:	'NS'	,	branch:	'MEDAN'	,	model:	'LCV'	,	fy22:	351360380996	,	fy23:	258623300000	,	fy24:	157306653900	,	fy25:	119119176595	,	feb25:	165791910687	,	mar25:	157306653900	,	apr25:	152824151466	,	may25:	155467178282	,	jun25:	150294249712	,	jul25:	145980422792	,	aug25:	140784939644	,	sep25:	131503181924	,	oct25: 	129755378716	,	nov25:	125884183652	,	des25:	121959983020	,	jan26:	119119176595	},
+{	region:	'NS'	,	branch:	'MEDAN II'	,	model:	'LCV'	,	fy22:	31464333031	,	fy23:	25667644581	,	fy24:	19229307638	,	fy25:	15044574471	,	feb25:	19517764281	,	mar25:	19229307638	,	apr25:	19969431510	,	may25:	21031469231	,	jun25:	20358194838	,	jul25:	21403197355	,	aug25:	21177366455	,	sep25:	19923621749	,	oct25: 	18629278483	,	nov25:	17470270992	,	des25:	16096389916	,	jan26:	15044574471	},
+{	region:	'NS'	,	branch:	'PADANG'	,	model:	'LCV'	,	fy22:	92845426117	,	fy23:	55895415892	,	fy24:	29570811595	,	fy25:	24756556625	,	feb25:	30494166267	,	mar25:	29570811595	,	apr25:	28960196502	,	may25:	28661037614	,	jun25:	27517418629	,	jul25:	26220100312	,	aug25:	25566769964	,	sep25:	25348516218	,	oct25: 	25530666647	,	nov25:	25012288457	,	des25:	23755252666	,	jan26:	24756556625	},
+{	region:	'NS'	,	branch:	'PADANG SIDEMPUAN'	,	model:	'LCV'	,	fy22:	70944564607	,	fy23:	50892704703	,	fy24:	31167993623	,	fy25:	34171893824	,	feb25:	31754947470	,	mar25:	31167993623	,	apr25:	30332819555	,	may25:	31405947671	,	jun25:	30262232633	,	jul25:	30929624702	,	aug25:	31583853159	,	sep25:	32110829721	,	oct25: 	32567490489	,	nov25:	32859290325	,	des25:	33539132119	,	jan26:	34171893824	},
+{	region:	'NS'	,	branch:	'PEKANBARU'	,	model:	'LCV'	,	fy22:	403201114926	,	fy23:	414684857346	,	fy24:	330256963213	,	fy25:	332695336112	,	feb25:	339065891639	,	mar25:	330256963213	,	apr25:	323507996077	,	may25:	325536605032	,	jun25:	322587170348	,	jul25:	317137625041	,	aug25:	317093792471	,	sep25:	305993428997	,	oct25: 	305108842673	,	nov25:	320131338229	,	des25:	332123913685	,	jan26:	332695336112	},
+{	region:	'NS'	,	branch:	'RANTAU PRAPAT'	,	model:	'LCV'	,	fy22:	44153633305	,	fy23:	39426435513	,	fy24:	23806575862	,	fy25:	15598503049	,	feb25:	24782218967	,	mar25:	23806575862	,	apr25:	22885561129	,	may25:	22086130126	,	jun25:	21127534535	,	jul25:	19582032429	,	aug25:	18915401785	,	sep25:	17866845080	,	oct25: 	17361468827	,	nov25:	16518456134	,	des25:	15908140182	,	jan26:	15598503049	},
+{	region:	'NS'	,	branch:	'BUKIT TINGGI'	,	model:	'CV'	,	fy22:	79537902055	,	fy23:	83773385859	,	fy24:	69976589244	,	fy25:	57113004435	,	feb25:	70265062922	,	mar25:	69976589244	,	apr25:	67683664159	,	may25:	65797376477	,	jun25:	65184102122	,	jul25:	63141413974	,	aug25:	62238365398	,	sep25:	59586457685	,	oct25: 	57629727154	,	nov25:	56244642586	,	des25:	57996794669	,	jan26:	57113004435	},
+{	region:	'NS'	,	branch:	'DURI'	,	model:	'CV'	,	fy22:	417052088577	,	fy23:	420652306070	,	fy24:	340556042735	,	fy25:	311910520287	,	feb25:	350310109746	,	mar25:	340556042735	,	apr25:	335231964918	,	may25:	326730385820	,	jun25:	328519279297	,	jul25:	331086113754	,	aug25:	322963494289	,	sep25:	318799649995	,	oct25: 	319275327028	,	nov25:	315654248861	,	des25:	315942831418	,	jan26:	311910520287	},
+{	region:	'NS'	,	branch:	'MEDAN'	,	model:	'CV'	,	fy22:	1192714244976	,	fy23:	1214143284014	,	fy24:	685215482411	,	fy25:	470940929705	,	feb25:	708747216781	,	mar25:	685215482411	,	apr25:	650607407468	,	may25:	627272177948	,	jun25:	608176664848	,	jul25:	583704648981	,	aug25:	570798871415	,	sep25:	556394860156	,	oct25: 	539281970802	,	nov25:	515799913105	,	des25:	482722251184	,	jan26:	470940929705	},
+{	region:	'NS'	,	branch:	'PADANG'	,	model:	'CV'	,	fy22:	268125538438	,	fy23:	224551604369	,	fy24:	145457857004	,	fy25:	120668668817	,	feb25:	149874116703	,	mar25:	145457857004	,	apr25:	140348901970	,	may25:	138658651968	,	jun25:	130947706637	,	jul25:	125839185491	,	aug25:	121773208797	,	sep25:	118731255860	,	oct25: 	119725611110	,	nov25:	119023654458	,	des25:	121383311832	,	jan26:	120668668817	},
+{	region:	'NS'	,	branch:	'PADANG SIDEMPUAN'	,	model:	'CV'	,	fy22:	217852702549	,	fy23:	221660216758	,	fy24:	158127464335	,	fy25:	122281480722	,	feb25:	161469603063	,	mar25:	158127464335	,	apr25:	153812758110	,	may25:	149039799432	,	jun25:	144558333914	,	jul25:	143056064096	,	aug25:	139120803170	,	sep25:	133022723390	,	oct25: 	129553633892	,	nov25:	128503534365	,	des25:	124959887973	,	jan26:	122281480722	},
+{	region:	'NS'	,	branch:	'PEKANBARU'	,	model:	'CV'	,	fy22:	1234954439060	,	fy23:	1222068160132	,	fy24:	947763253739	,	fy25:	815468338054	,	feb25:	949795869440	,	mar25:	947763253739	,	apr25:	929121334333	,	may25:	908296709224	,	jun25:	897142138208	,	jul25:	885098234923	,	aug25:	867947714361	,	sep25:	849452714455	,	oct25: 	841717990504	,	nov25:	846791681462	,	des25:	818065534630	,	jan26:	815468338054	},
+{	region:	'NS'	,	branch:	'RANTAU PRAPAT'	,	model:	'CV'	,	fy22:	279848469502	,	fy23:	227094463082	,	fy24:	152477898009	,	fy25:	111657766521	,	feb25:	159013275062	,	mar25:	152477898009	,	apr25:	145604067840	,	may25:	142894922001	,	jun25:	136634969571	,	jul25:	133602266707	,	aug25:	129214455221	,	sep25:	123109373243	,	oct25: 	119882729768	,	nov25:	115525854827	,	des25:	113845944968	,	jan26:	111657766521	},
+{	region:	'NS'	,	branch:	'BUKIT TINGGI'	,	model:	'CCB'	,	fy22:	1420271175	,	fy23:	5344714887	,	fy24:	5416625567	,	fy25:	9526627594	,	feb25:	5552174036	,	mar25:	5416625567	,	apr25:	5373761128	,	may25:	7519647186	,	jun25:	7984604620	,	jul25:	8027474088	,	aug25:	7872091530	,	sep25:	7847037732	,	oct25: 	7900872897	,	nov25:	7787241963	,	des25:	8960928604	,	jan26:	9526627594	},
+{	region:	'NS'	,	branch:	'DURI'	,	model:	'CCB'	,	fy22:	9957387257	,	fy23:	33691889077	,	fy24:	51766591275	,	fy25:	55488275076	,	feb25:	50659414885	,	mar25:	51766591275	,	apr25:	51008796208	,	may25:	51975784242	,	jun25:	52572815275	,	jul25:	53379525499	,	aug25:	53410131399	,	sep25:	52960408687	,	oct25: 	54693054198	,	nov25:	54711591674	,	des25:	55452254585	,	jan26:	55488275076	},
+{	region:	'NS'	,	branch:	'MEDAN'	,	model:	'CCB'	,	fy22:	248605839607	,	fy23:	187511448569	,	fy24:	318305335729	,	fy25:	259409420001	,	feb25:	327180982855	,	mar25:	318305335729	,	apr25:	314567643291	,	may25:	306293956227	,	jun25:	297346409518	,	jul25:	289456637173	,	aug25:	271888508934	,	sep25:	260813787120	,	oct25: 	261302684481	,	nov25:	255648330179	,	des25:	266061443609	,	jan26:	259409420001	},
+{	region:	'NS'	,	branch:	'MEDAN II'	,	model:	'CCB'	,	fy22:	5385903890	,	fy23:	9975485906	,	fy24:	8015454756	,	fy25:	6052597548	,	feb25:	8483425346	,	mar25:	8015454756	,	apr25:	7583415418	,	may25:	7180211932	,	jun25:	6822567804	,	jul25:	6755570064	,	aug25:	6433103924	,	sep25:	6179745548	,	oct25: 	5827945702	,	nov25:	5740220078	,	des25:	5749853318	,	jan26:	6052597548	},
+{	region:	'NS'	,	branch:	'PADANG'	,	model:	'CCB'	,	fy22:	165775858779	,	fy23:	171216504144	,	fy24:	190079011084	,	fy25:	156338424798	,	feb25:	193183672879	,	mar25:	190079011084	,	apr25:	185684572187	,	may25:	189948044050	,	jun25:	186589654368	,	jul25:	187226216425	,	aug25:	165023755527	,	sep25:	160437765591	,	oct25: 	158361018764	,	nov25:	156152600584	,	des25:	159519695230	,	jan26:	156338424798	},
+{	region:	'NS'	,	branch:	'PADANG SIDEMPUAN'	,	model:	'CCB'	,	fy22:	37520740176	,	fy23:	32979798293	,	fy24:	42264560006	,	fy25:	46708404650	,	feb25:	38135159858	,	mar25:	42264560006	,	apr25:	41622814741	,	may25:	45643859490	,	jun25:	46295709520	,	jul25:	45906617857	,	aug25:	46669063071	,	sep25:	45737648898	,	oct25: 	46127276106	,	nov25:	46208287183	,	des25:	46778988902	,	jan26:	46708404650	},
+{	region:	'NS'	,	branch:	'PEKANBARU'	,	model:	'CCB'	,	fy22:	307010007607	,	fy23:	341477771584	,	fy24:	265255465953	,	fy25:	184730246497	,	feb25:	277144520648	,	mar25:	265255465953	,	apr25:	256210254582	,	may25:	252381824916	,	jun25:	245472150569	,	jul25:	237748791300	,	aug25:	228897366156	,	sep25:	219624905300	,	oct25: 	209577332632	,	nov25:	201565269262	,	des25:	191356678636	,	jan26:	184730246497	},
+{	region:	'NS'	,	branch:	'RANTAU PRAPAT'	,	model:	'CCB'	,	fy22:	11201631735	,	fy23:	23576009663	,	fy24:	30279295957	,	fy25:	26671498873	,	feb25:	28885431459	,	mar25:	30279295957	,	apr25:	30325031431	,	may25:	29931012768	,	jun25:	29735100292	,	jul25:	29247165357	,	aug25:	28986650406	,	sep25:	27725482950	,	oct25: 	27276364120	,	nov25:	26692860172	,	des25:	26795501257	,	jan26:	26671498873	},
+{	region:	'SBY'	,	branch:	'DENPASAR'	,	model:	'PC'	,	fy22:	156593518356	,	fy23:	139924331198	,	fy24:	125803749463	,	fy25:	124835764550	,	feb25:	126257550213	,	mar25:	125803749463	,	apr25:	122040836538	,	may25:	120236559284	,	jun25:	117991489467	,	jul25:	117255790903	,	aug25:	117717829558	,	sep25:	118472349709	,	oct25: 	119406680269	,	nov25:	120033941966	,	des25:	125401940165	,	jan26:	124835764550	},
+{	region:	'SBY'	,	branch:	'JEMBER'	,	model:	'PC'	,	fy22:	101302712462	,	fy23:	89738143568	,	fy24:	90330988899	,	fy25:	105424134636	,	feb25:	84937703918	,	mar25:	90330988899	,	apr25:	91290934429	,	may25:	92085090560	,	jun25:	90986825717	,	jul25:	91049967263	,	aug25:	91239367398	,	sep25:	93161521573	,	oct25: 	94560601906	,	nov25:	97753270847	,	des25:	104678964212	,	jan26:	105424134636	},
+{	region:	'SBY'	,	branch:	'MALANG'	,	model:	'PC'	,	fy22:	134711132040	,	fy23:	86176012241	,	fy24:	87861732085	,	fy25:	105635730201	,	feb25:	82847259512	,	mar25:	87861732085	,	apr25:	86154051913	,	may25:	87093210638	,	jun25:	87641037413	,	jul25:	87225968912	,	aug25:	86791772088	,	sep25:	94564238934	,	oct25: 	94160830446	,	nov25:	100424093111	,	des25:	103362047523	,	jan26:	105635730201	},
+{	region:	'SBY'	,	branch:	'PURWOKERTO'	,	model:	'PC'	,	fy22:	55541794540	,	fy23:	47630514288	,	fy24:	46554812900	,	fy25:	51342929350	,	feb25:	44841586093	,	mar25:	46554812900	,	apr25:	45137381710	,	may25:	43310976433	,	jun25:	41817981253	,	jul25:	42157045160	,	aug25:	43792497721	,	sep25:	43574775188	,	oct25: 	45661215853	,	nov25:	47044541394	,	des25:	49481731810	,	jan26:	51342929350	},
+{	region:	'SBY'	,	branch:	'SEMARANG'	,	model:	'PC'	,	fy22:	103816955598	,	fy23:	93958492621	,	fy24:	102398506027	,	fy25:	160305818011	,	feb25:	92261205950	,	mar25:	102398506027	,	apr25:	101648177453	,	may25:	100045394705	,	jun25:	101533643350	,	jul25:	103679340255	,	aug25:	107215850600	,	sep25:	113138933649	,	oct25: 	121263647252	,	nov25:	129419847574	,	des25:	147177218031	,	jan26:	160305818011	},
+{	region:	'SBY'	,	branch:	'SOLO'	,	model:	'PC'	,	fy22:	121977488019	,	fy23:	120270135828	,	fy24:	113290606302	,	fy25:	124512888014	,	feb25:	110367251523	,	mar25:	113290606302	,	apr25:	110954706305	,	may25:	107949801056	,	jun25:	104636759325	,	jul25:	102649673526	,	aug25:	105703874132	,	sep25:	110042797575	,	oct25: 	111658428397	,	nov25:	115910519333	,	des25:	123249850367	,	jan26:	124512888014	},
+{	region:	'SBY'	,	branch:	'SURABAYA'	,	model:	'PC'	,	fy22:	393891635784	,	fy23:	325701183601	,	fy24:	320884403816	,	fy25:	358561966867	,	feb25:	306910758783	,	mar25:	320884403816	,	apr25:	313506341403	,	may25:	308560034335	,	jun25:	305104346488	,	jul25:	302538867779	,	aug25:	306027486584	,	sep25:	325246689003	,	oct25: 	335771195515	,	nov25:	339713269725	,	des25:	359128096886	,	jan26:	358561966867	},
+{	region:	'SBY'	,	branch:	'DENPASAR'	,	model:	'LCV'	,	fy22:	36780628038	,	fy23:	29715408124	,	fy24:	29209248490	,	fy25:	26455405694	,	feb25:	29581621088	,	mar25:	29209248490	,	apr25:	28309281350	,	may25:	27518225225	,	jun25:	27864245069	,	jul25:	27190372210	,	aug25:	28094418438	,	sep25:	27560848811	,	oct25: 	26739164817	,	nov25:	27273719609	,	des25:	26462666919	,	jan26:	26455405694	},
+{	region:	'SBY'	,	branch:	'JEMBER'	,	model:	'LCV'	,	fy22:	65541044299	,	fy23:	44727441737	,	fy24:	41364344139	,	fy25:	37733890167	,	feb25:	42418911733	,	mar25:	41364344139	,	apr25:	40220653302	,	may25:	39639511131	,	jun25:	38857261320	,	jul25:	38525229770	,	aug25:	37945984902	,	sep25:	38214652901	,	oct25: 	38287255837	,	nov25:	38333647619	,	des25:	38315302527	,	jan26:	37733890167	},
+{	region:	'SBY'	,	branch:	'MALANG'	,	model:	'LCV'	,	fy22:	77205357654	,	fy23:	45772911884	,	fy24:	48308816074	,	fy25:	43905507757	,	feb25:	42828645894	,	mar25:	48308816074	,	apr25:	46283563643	,	may25:	45976981818	,	jun25:	44607467209	,	jul25:	42555057518	,	aug25:	41456229893	,	sep25:	41425118397	,	oct25: 	42539741889	,	nov25:	42450185385	,	des25:	43288228652	,	jan26:	43905507757	},
+{	region:	'SBY'	,	branch:	'PURWOKERTO'	,	model:	'LCV'	,	fy22:	57756058953	,	fy23:	40181346598	,	fy24:	28009023036	,	fy25:	45691943799	,	feb25:	29430299621	,	mar25:	28009023036	,	apr25:	27106836650	,	may25:	27880969643	,	jun25:	28273974772	,	jul25:	28060845674	,	aug25:	29886429775	,	sep25:	32892452325	,	oct25: 	34352623589	,	nov25:	38677200955	,	des25:	40910288379	,	jan26:	45691943799	},
+{	region:	'SBY'	,	branch:	'SEMARANG'	,	model:	'LCV'	,	fy22:	74823563830	,	fy23:	55694817111	,	fy24:	45336240188	,	fy25:	60507755741	,	feb25:	45530291000	,	mar25:	45336240188	,	apr25:	44982480249	,	may25:	45432536106	,	jun25:	45502667657	,	jul25:	46045773479	,	aug25:	45659371266	,	sep25:	48017117300	,	oct25: 	49076168826	,	nov25:	51575736902	,	des25:	53966530512	,	jan26:	60507755741	},
+{	region:	'SBY'	,	branch:	'SOLO'	,	model:	'LCV'	,	fy22:	70946662107	,	fy23:	51243211113	,	fy24:	35794378566	,	fy25:	32868543682	,	feb25:	37521324610	,	mar25:	35794378566	,	apr25:	34838090462	,	may25:	33258132602	,	jun25:	32444922855	,	jul25:	31763199742	,	aug25:	31823913695	,	sep25:	32788039819	,	oct25: 	32747443564	,	nov25:	33593594145	,	des25:	33769731890	,	jan26:	32868543682	},
+{	region:	'SBY'	,	branch:	'SURABAYA'	,	model:	'LCV'	,	fy22:	125772116437	,	fy23:	91783417370	,	fy24:	95744125162	,	fy25:	115158832913	,	feb25:	93756153748	,	mar25:	95744125162	,	apr25:	96314017778	,	may25:	96803184139	,	jun25:	99001592641	,	jul25:	100665065408	,	aug25:	102921865813	,	sep25:	107445693267	,	oct25: 	108518674424	,	nov25:	109500412349	,	des25:	111910768428	,	jan26:	115158832913	},
+{	region:	'SBY'	,	branch:	'DENPASAR'	,	model:	'CV'	,	fy22:	166709254484	,	fy23:	130987191582	,	fy24:	113044003928	,	fy25:	102266767008	,	feb25:	115309336479	,	mar25:	113044003928	,	apr25:	110867811273	,	may25:	109873379121	,	jun25:	109895693886	,	jul25:	109954910513	,	aug25:	113077265812	,	sep25:	112925490819	,	oct25: 	110471269892	,	nov25:	109089077472	,	des25:	105717842458	,	jan26:	102266767008	},
+{	region:	'SBY'	,	branch:	'JEMBER'	,	model:	'CV'	,	fy22:	117124497968	,	fy23:	119005507788	,	fy24:	107483752745	,	fy25:	95543777134	,	feb25:	106663462090	,	mar25:	107483752745	,	apr25:	106402463375	,	may25:	105013734522	,	jun25:	104236624882	,	jul25:	102183825973	,	aug25:	104510139605	,	sep25:	104987293931	,	oct25: 	101394171341	,	nov25:	99011784443	,	des25:	96876680052	,	jan26:	95543777134	},
+{	region:	'SBY'	,	branch:	'MALANG'	,	model:	'CV'	,	fy22:	209052498525	,	fy23:	146770874843	,	fy24:	190132140176	,	fy25:	155772633538	,	feb25:	158208942786	,	mar25:	190132140176	,	apr25:	192029803563	,	may25:	186321814805	,	jun25:	183581029633	,	jul25:	172972240502	,	aug25:	162485206727	,	sep25:	167903110784	,	oct25: 	173312638966	,	nov25:	173277556363	,	des25:	163514292773	,	jan26:	155772633538	},
+{	region:	'SBY'	,	branch:	'PURWOKERTO'	,	model:	'CV'	,	fy22:	105482744945	,	fy23:	100179746031	,	fy24:	104920266561	,	fy25:	98037142583	,	feb25:	107010113078	,	mar25:	104920266561	,	apr25:	103964064350	,	may25:	100434619032	,	jun25:	103226741974	,	jul25:	101567104931	,	aug25:	99011693221	,	sep25:	97064208649	,	oct25: 	99017905364	,	nov25:	98481258954	,	des25:	99430557649	,	jan26:	98037142583	},
+{	region:	'SBY'	,	branch:	'SEMARANG'	,	model:	'CV'	,	fy22:	274555085552	,	fy23:	195706927025	,	fy24:	146095405125	,	fy25:	123939793141	,	feb25:	144158674812	,	mar25:	146095405125	,	apr25:	141912574915	,	may25:	140573892575	,	jun25:	139907893714	,	jul25:	140466224419	,	aug25:	135451639226	,	sep25:	132535542323	,	oct25: 	130079096535	,	nov25:	130599457982	,	des25:	127192740097	,	jan26:	123939793141	},
+{	region:	'SBY'	,	branch:	'SOLO'	,	model:	'CV'	,	fy22:	123304917085	,	fy23:	113541408567	,	fy24:	86748033627	,	fy25:	80995246522	,	feb25:	91367307572	,	mar25:	86748033627	,	apr25:	84395095735	,	may25:	83110805244	,	jun25:	86353960541	,	jul25:	84620515238	,	aug25:	82296765451	,	sep25:	81414967926	,	oct25: 	81966264498	,	nov25:	80060268199	,	des25:	83617835300	,	jan26:	80995246522	},
+{	region:	'SBY'	,	branch:	'SURABAYA'	,	model:	'CV'	,	fy22:	492385751927	,	fy23:	461078732129	,	fy24:	331770859916	,	fy25:	353311601577	,	feb25:	336572874639	,	mar25:	331770859916	,	apr25:	323665508002	,	may25:	319605669879	,	jun25:	314286326527	,	jul25:	318649134647	,	aug25:	316090119616	,	sep25:	311464018586	,	oct25: 	306577250022	,	nov25:	305940582759	,	des25:	345393959881	,	jan26:	353311601577	},
+{	region:	'SBY'	,	branch:	'DENPASAR'	,	model:	'CCB'	,	fy22:	44343300147	,	fy23:	49899661202	,	fy24:	62995647576	,	fy25:	58280177112	,	feb25:	63736127842	,	mar25:	62995647576	,	apr25:	64953118688	,	may25:	65716643703	,	jun25:	64483441990	,	jul25:	64988382534	,	aug25:	68068037371	,	sep25:	66041879507	,	oct25: 	63229102884	,	nov25:	63329812931	,	des25:	60217647005	,	jan26:	58280177112	},
+{	region:	'SBY'	,	branch:	'JEMBER'	,	model:	'CCB'	,	fy22:	7593343725	,	fy23:	15382020921	,	fy24:	21677022596	,	fy25:	27484311535	,	feb25:	21463934667	,	mar25:	21677022596	,	apr25:	22267263502	,	may25:	23032260628	,	jun25:	23586244706	,	jul25:	24541182950	,	aug25:	23936418147	,	sep25:	24149387366	,	oct25: 	26930119135	,	nov25:	28406309114	,	des25:	27893949483	,	jan26:	27484311535	},
+{	region:	'SBY'	,	branch:	'MALANG'	,	model:	'CCB'	,	fy22:	17905810654	,	fy23:	12508107794	,	fy24:	7622679106	,	fy25:	3101525928	,	feb25:	7910233188	,	mar25:	7622679106	,	apr25:	7384635718	,	may25:	6688578528	,	jun25:	6115720537	,	jul25:	5529843663	,	aug25:	5262590672	,	sep25:	4757871653	,	oct25: 	4252223044	,	nov25:	3401761721	,	des25:	2854638307	,	jan26:	3101525928	},
+{	region:	'SBY'	,	branch:	'PURWOKERTO'	,	model:	'CCB'	,	fy22:	4046029206	,	fy23:	3615615378	,	fy24:	3925854995	,	fy25:	6012161723	,	feb25:	4220791610	,	mar25:	3925854995	,	apr25:	3982485991	,	may25:	4229855001	,	jun25:	4015431160	,	jul25:	4546414481	,	aug25:	5992920347	,	sep25:	5741058115	,	oct25: 	5733713898	,	nov25:	5725128819	,	des25:	5949062340	,	jan26:	6012161723	},
+{	region:	'SBY'	,	branch:	'SEMARANG'	,	model:	'CCB'	,	fy22:	191887278065	,	fy23:	211649409139	,	fy24:	149597574224	,	fy25:	148716790157	,	feb25:	152015185401	,	mar25:	149597574224	,	apr25:	142634974469	,	may25:	138768349577	,	jun25:	134135343096	,	jul25:	130580791853	,	aug25:	125584574163	,	sep25:	121086222830	,	oct25: 	119724919015	,	nov25:	155023749872	,	des25:	154771038407	,	jan26:	148716790157	},
+{	region:	'SBY'	,	branch:	'SOLO'	,	model:	'CCB'	,	fy22:	18734334375	,	fy23:	36373687948	,	fy24:	53415483280	,	fy25:	44949384263	,	feb25:	53681863072	,	mar25:	53415483280	,	apr25:	53294095465	,	may25:	51700696089	,	jun25:	51988673540	,	jul25:	51724108130	,	aug25:	51756982753	,	sep25:	48807832268	,	oct25: 	48742691591	,	nov25:	47658108023	,	des25:	46569487532	,	jan26:	44949384263	},
+{	region:	'SBY'	,	branch:	'SURABAYA'	,	model:	'CCB'	,	fy22:	247440700187	,	fy23:	212664348862	,	fy24:	233855968463	,	fy25:	176069070403	,	feb25:	233359315039	,	mar25:	233855968463	,	apr25:	225237493831	,	may25:	219619777966	,	jun25:	212622238491	,	jul25:	203573534259	,	aug25:	196647640122	,	sep25:	190497791009	,	oct25: 	185189839815	,	nov25:	190019297036	,	des25:	182378792357	,	jan26:	176069070403	},
+{	region:	'SBY'	,	branch:	'MALANG'	,	model:	'BAGONG'	,	fy22:	130037442017	,	fy23:	102263980093	,	fy24:	178648024160	,	fy25:	0	,	feb25:	138693760049	,	mar25:	178648024160	,	apr25:	180774679218	,	may25:	175386341727	,	jun25:	172078283795	,	jul25:	160920518266	,	aug25:	149470000000	,	sep25:	151309000000	,	oct25: 	154754000000	,	nov25:	151514000000	,	des25:	0	,	jan26:	0	},
+{	region:	'SS'	,	branch:	'JAMBI'	,	model:	'PC'	,	fy22:	101176313366	,	fy23:	84450978562	,	fy24:	71396845663	,	fy25:	74745113421	,	feb25:	72974481936	,	mar25:	71396845663	,	apr25:	69582822722	,	may25:	69445677603	,	jun25:	68162620381	,	jul25:	65319306780	,	aug25:	64668447311	,	sep25:	63859993367	,	oct25: 	66527743479	,	nov25:	67833635786	,	des25:	73678497401	,	jan26:	74745113421	},
+{	region:	'SS'	,	branch:	'LAMPUNG'	,	model:	'PC'	,	fy22:	161070938352	,	fy23:	109613582865	,	fy24:	78891203765	,	fy25:	79315443242	,	feb25:	78788208178	,	mar25:	78891203765	,	apr25:	75990585140	,	may25:	74336687160	,	jun25:	72892648937	,	jul25:	70719732620	,	aug25:	71554283788	,	sep25:	73127730390	,	oct25: 	73702716334	,	nov25:	76561829819	,	des25:	77146036496	,	jan26:	79315443242	},
+{	region:	'SS'	,	branch:	'MUARA BUNGO'	,	model:	'PC'	,	fy22:	29368567992	,	fy23:	24264042957	,	fy24:	24344324977	,	fy25:	38931680404	,	feb25:	22016614235	,	mar25:	24344324977	,	apr25:	23950784105	,	may25:	23695787451	,	jun25:	23190945834	,	jul25:	22570764072	,	aug25:	23846493883	,	sep25:	26036554742	,	oct25: 	27060254057	,	nov25:	30050081374	,	des25:	35662350315	,	jan26:	38931680404	},
+{	region:	'SS'	,	branch:	'PALEMBANG'	,	model:	'PC'	,	fy22:	216719321211	,	fy23:	181366454798	,	fy24:	125290422673	,	fy25:	148650012489	,	feb25:	126128909785	,	mar25:	125290422673	,	apr25:	120233582852	,	may25:	1.18042E+11	,	jun25:	1.16596E+11	,	jul25:	119223199057	,	aug25:	119596611814	,	sep25:	121896592049	,	oct25: 	123604017271	,	nov25:	126762820704	,	des25:	141810930660	,	jan26:	148650012489	},
+{	region:	'SS'	,	branch:	'JAMBI'	,	model:	'LCV'	,	fy22:	85523891861	,	fy23:	79101692971	,	fy24:	49192622080	,	fy25:	34402775657	,	feb25:	52103491565	,	mar25:	49192622080	,	apr25:	46462943914	,	may25:	44804097609	,	jun25:	43737503377	,	jul25:	41377100653	,	aug25:	41228385120	,	sep25:	39151767088	,	oct25: 	37896501481	,	nov25:	36943331443	,	des25:	35989617153	,	jan26:	34402775657	},
+{	region:	'SS'	,	branch:	'LAMPUNG'	,	model:	'LCV'	,	fy22:	111764370926	,	fy23:	70372322988	,	fy24:	39470203786	,	fy25:	26352069430	,	feb25:	40847569773	,	mar25:	39470203786	,	apr25:	37572466993	,	may25:	35193726465	,	jun25:	33107927736	,	jul25:	33185273414	,	aug25:	32248544417	,	sep25:	30044039876	,	oct25: 	28852160618	,	nov25:	28452978159	,	des25:	27450109929	,	jan26:	26352069430	},
+{	region:	'SS'	,	branch:	'MUARA BUNGO'	,	model:	'LCV'	,	fy22:	18779177925	,	fy23:	11971156955	,	fy24:	8123948555	,	fy25:	16290709573	,	feb25:	8322906359	,	mar25:	8123948555	,	apr25:	8248031294	,	may25:	9329758686	,	jun25:	9968369618	,	jul25:	10577592976	,	aug25:	11553823171	,	sep25:	12515060365	,	oct25: 	14166168222	,	nov25:	14641578513	,	des25:	15773705398	,	jan26:	16290709573	},
+{	region:	'SS'	,	branch:	'PALEMBANG'	,	model:	'LCV'	,	fy22:	152129196197	,	fy23:	111329685704	,	fy24:	80240808215	,	fy25:	118706382738	,	feb25:	79186427678	,	mar25:	80240808215	,	apr25:	78999732444	,	may25:	76670576451	,	jun25:	76178312051	,	jul25:	76957718439	,	aug25:	79502189298	,	sep25:	80856862555	,	oct25: 	80440016031	,	nov25:	79976988419	,	des25:	91330337533	,	jan26:	118706382738	},
+{	region:	'SS'	,	branch:	'JAMBI'	,	model:	'CV'	,	fy22:	493640026645	,	fy23:	353660263103	,	fy24:	232795061335	,	fy25:	185882741690	,	feb25:	245040193451	,	mar25:	232795061335	,	apr25:	226619584179	,	may25:	2.21824E+11	,	jun25:	2.15086E+11	,	jul25:	215521395184	,	aug25:	211160018139	,	sep25:	201413334824	,	oct25: 	199470185142	,	nov25:	200023496659	,	des25:	197101334928	,	jan26:	185882741690	},
+{	region:	'SS'	,	branch:	'LAMPUNG'	,	model:	'CV'	,	fy22:	339939455540	,	fy23:	268469587511	,	fy24:	203979995874	,	fy25:	196652067928	,	feb25:	207999747159	,	mar25:	203979995874	,	apr25:	199273425019	,	may25:	1.93628E+11	,	jun25:	1.89323E+11	,	jul25:	190808722223	,	aug25:	197050848540	,	sep25:	201944978995	,	oct25: 	201635945481	,	nov25:	204760594918	,	des25:	203324254051	,	jan26:	196652067928	},
+{	region:	'SS'	,	branch:	'MUARA BUNGO'	,	model:	'CV'	,	fy22:	127193544602	,	fy23:	79780114395	,	fy24:	58607994505	,	fy25:	44313593221	,	feb25:	59784131131	,	mar25:	58607994505	,	apr25:	56301870468	,	may25:	55161163061	,	jun25:	53254125889	,	jul25:	50855713246	,	aug25:	49038154466	,	sep25:	48257017392	,	oct25: 	47639669109	,	nov25:	46830295643	,	des25:	44895404747	,	jan26:	44313593221	},
+{	region:	'SS'	,	branch:	'PALEMBANG'	,	model:	'CV'	,	fy22:	679638327574	,	fy23:	456392762445	,	fy24:	317463815358	,	fy25:	310575467749	,	feb25:	332777091728	,	mar25:	317463815358	,	apr25:	302194699433	,	may25:	2.94574E+11	,	jun25:	2.96009E+11	,	jul25:	293421677281	,	aug25:	300505275360	,	sep25:	293902522021	,	oct25: 	304520585518	,	nov25:	316012986816	,	des25:	323806211147	,	jan26:	310575467749	},
+{	region:	'SS'	,	branch:	'JAMBI'	,	model:	'CCB'	,	fy22:	61389084588	,	fy23:	63927540323	,	fy24:	45941869319	,	fy25:	46634706796	,	feb25:	43615105130	,	mar25:	45941869319	,	apr25:	43886952021	,	may25:	48818758710	,	jun25:	47661698212	,	jul25:	47542058848	,	aug25:	47930535581	,	sep25:	47638862631	,	oct25: 	47841831474	,	nov25:	47692994784	,	des25:	46640060535	,	jan26:	46634706796	},
+{	region:	'SS'	,	branch:	'LAMPUNG'	,	model:	'CCB'	,	fy22:	122412230008	,	fy23:	53514522326	,	fy24:	62505732280	,	fy25:	77597182164	,	feb25:	52762139053	,	mar25:	62505732280	,	apr25:	60781238268	,	may25:	61846394759	,	jun25:	71760599153	,	jul25:	70646279947	,	aug25:	78489152134	,	sep25:	77518731999	,	oct25: 	79418394061	,	nov25:	80516431316	,	des25:	79184930179	,	jan26:	77597182164	},
+{	region:	'SS'	,	branch:	'MUARA BUNGO'	,	model:	'CCB'	,	fy22:	2653297366	,	fy23:	5043899726	,	fy24:	8110579008	,	fy25:	8849098163	,	feb25:	8063280758	,	mar25:	8110579008	,	apr25:	7795926134	,	may25:	7475702180	,	jun25:	7321993270	,	jul25:	7613733453	,	aug25:	8130558040	,	sep25:	8023750438	,	oct25: 	8152752314	,	nov25:	8520653419	,	des25:	9317464185	,	jan26:	8849098163	},
+{	region:	'SS'	,	branch:	'PALEMBANG'	,	model:	'CCB'	,	fy22:	205216660359	,	fy23:	100455564065	,	fy24:	41869919252	,	fy25:	29434309026	,	feb25:	45094640716	,	mar25:	41869919252	,	apr25:	39537755954	,	may25:	31961582093	,	jun25:	31328340115	,	jul25:	29865254361	,	aug25:	27090156567	,	sep25:	28913690616	,	oct25: 	30941643734	,	nov25:	30861346809	,	des25:	31538905822	,	jan26:	29434309026	},
+{	region:	'WJ'	,	branch:	'BANDUNG'	,	model:	'PC'	,	fy22:	270703378662	,	fy23:	249989465869	,	fy24:	219041251992	,	fy25:	276938501135	,	feb25:	214785848191	,	mar25:	219041251992	,	apr25:	215594442701	,	may25:	214100071982	,	jun25:	211451870226	,	jul25:	213670347463	,	aug25:	218491134009	,	sep25:	223748805077	,	oct25: 	233743612685	,	nov25:	245610944368	,	des25:	268749595313	,	jan26:	276938501135	},
+{	region:	'WJ'	,	branch:	'CIREBON'	,	model:	'PC'	,	fy22:	96994166224	,	fy23:	73363335878	,	fy24:	62931187703	,	fy25:	70877295484	,	feb25:	64109774172	,	mar25:	62931187703	,	apr25:	60965135853	,	may25:	59802450466	,	jun25:	59737720177	,	jul25:	57974870783	,	aug25:	57849093156	,	sep25:	58980150450	,	oct25: 	60762898204	,	nov25:	65402082260	,	des25:	68474712834	,	jan26:	70877295484	},
+{	region:	'WJ'	,	branch:	'KARAWANG'	,	model:	'PC'	,	fy22:	209172519345	,	fy23:	150722928709	,	fy24:	132450429902	,	fy25:	146107723163	,	feb25:	129224375042	,	mar25:	132450429902	,	apr25:	128871453155	,	may25:	124555734961	,	jun25:	122525698275	,	jul25:	122118385141	,	aug25:	126553328393	,	sep25:	133725138673	,	oct25: 	138854555702	,	nov25:	142172036193	,	des25:	149384151086	,	jan26:	146107723163	},
+{	region:	'WJ'	,	branch:	'SUKABUMI'	,	model:	'PC'	,	fy22:	100241153941	,	fy23:	73207701929	,	fy24:	57244334540	,	fy25:	62212693736	,	feb25:	57750170357	,	mar25:	57244334540	,	apr25:	55946803654	,	may25:	52931955592	,	jun25:	51654005544	,	jul25:	49444704677	,	aug25:	54596732979	,	sep25:	57379803133	,	oct25: 	61256144191	,	nov25:	61293830524	,	des25:	63931793769	,	jan26:	62212693736	},
+{	region:	'WJ'	,	branch:	'BANDUNG'	,	model:	'LCV'	,	fy22:	68017728057	,	fy23:	61482890558	,	fy24:	60381114398	,	fy25:	61484466612	,	feb25:	61157922021	,	mar25:	60381114398	,	apr25:	57885661510	,	may25:	56690829690	,	jun25:	56403965433	,	jul25:	58080888711	,	aug25:	56907920299	,	sep25:	56407478272	,	oct25: 	58033186643	,	nov25:	59166775247	,	des25:	60956123169	,	jan26:	61484466612	},
+{	region:	'WJ'	,	branch:	'CIREBON'	,	model:	'LCV'	,	fy22:	56034723725	,	fy23:	34319454295	,	fy24:	21643586154	,	fy25:	53511195846	,	feb25:	22576251030	,	mar25:	21643586154	,	apr25:	20635666567	,	may25:	22851293423	,	jun25:	22430788719	,	jul25:	23542907026	,	aug25:	25989137437	,	sep25:	37515347540	,	oct25: 	49592688920	,	nov25:	50849379475	,	des25:	51375309673	,	jan26:	53511195846	},
+{	region:	'WJ'	,	branch:	'KARAWANG'	,	model:	'LCV'	,	fy22:	25302517922	,	fy23:	27203992641	,	fy24:	26261155580	,	fy25:	32532091388	,	feb25:	26150151564	,	mar25:	26261155580	,	apr25:	26341774516	,	may25:	26000761843	,	jun25:	27687793439	,	jul25:	29972782441	,	aug25:	30062748872	,	sep25:	30094614995	,	oct25: 	30652810431	,	nov25:	30735744957	,	des25:	31522161924	,	jan26:	32532091388	},
+{	region:	'WJ'	,	branch:	'SUKABUMI'	,	model:	'LCV'	,	fy22:	54447479195	,	fy23:	31797453113	,	fy24:	18053763253	,	fy25:	19151315917	,	feb25:	19586958995	,	mar25:	18053763253	,	apr25:	17492268851	,	may25:	17048063451	,	jun25:	16725170066	,	jul25:	16209965964	,	aug25:	16140802703	,	sep25:	16393430838	,	oct25: 	17988758601	,	nov25:	17706326295	,	des25:	18364589277	,	jan26:	19151315917	},
+{	region:	'WJ'	,	branch:	'BANDUNG'	,	model:	'CV'	,	fy22:	347515416896	,	fy23:	328949320743	,	fy24:	288243006259	,	fy25:	270957386883	,	feb25:	292312747133	,	mar25:	288243006259	,	apr25:	279869131206	,	may25:	274042171291	,	jun25:	269418737688	,	jul25:	265513888333	,	aug25:	271019037229	,	sep25:	267304392733	,	oct25: 	272166848420	,	nov25:	271376604653	,	des25:	275274929802	,	jan26:	270957386883	},
+{	region:	'WJ'	,	branch:	'CIREBON'	,	model:	'CV'	,	fy22:	223972009451	,	fy23:	269810446678	,	fy24:	208200352757	,	fy25:	151409651549	,	feb25:	226724248939	,	mar25:	208200352757	,	apr25:	198469943589	,	may25:	193133285034	,	jun25:	185085470092	,	jul25:	178982975139	,	aug25:	171703266932	,	sep25:	166284496850	,	oct25: 	159641775944	,	nov25:	159777571916	,	des25:	158297663507	,	jan26:	151409651549	},
+{	region:	'WJ'	,	branch:	'KARAWANG'	,	model:	'CV'	,	fy22:	249666935408	,	fy23:	308067764398	,	fy24:	324484583045	,	fy25:	262169433517	,	feb25:	332546102552	,	mar25:	324484583045	,	apr25:	315844679043	,	may25:	307552174380	,	jun25:	301523209445	,	jul25:	297357686503	,	aug25:	288507683769	,	sep25:	282574383295	,	oct25: 	274263938862	,	nov25:	271477217042	,	des25:	268522567391	,	jan26:	262169433517	},
+{	region:	'WJ'	,	branch:	'SUKABUMI'	,	model:	'CV'	,	fy22:	158521628100	,	fy23:	114432287000	,	fy24:	68464192387	,	fy25:	68117829640	,	feb25:	71891025320	,	mar25:	68464192387	,	apr25:	65471416796	,	may25:	65759628440	,	jun25:	65481338254	,	jul25:	65233608778	,	aug25:	66391731803	,	sep25:	63973854289	,	oct25: 	62256300581	,	nov25:	66367074817	,	des25:	67412869886	,	jan26:	68117829640	},
+{	region:	'WJ'	,	branch:	'BANDUNG'	,	model:	'CCB'	,	fy22:	146552730202	,	fy23:	117418080146	,	fy24:	66061357601	,	fy25:	37454458832	,	feb25:	66428973548	,	mar25:	66061357601	,	apr25:	61996021918	,	may25:	58190829365	,	jun25:	55717157394	,	jul25:	53387928103	,	aug25:	49026815239	,	sep25:	44559916901	,	oct25: 	44583329706	,	nov25:	42243151415	,	des25:	39973863604	,	jan26:	37454458832	},
+{	region:	'WJ'	,	branch:	'CIREBON'	,	model:	'CCB'	,	fy22:	15553662244	,	fy23:	21178581812	,	fy24:	25196052619	,	fy25:	23266181388	,	feb25:	26260212893	,	mar25:	25196052619	,	apr25:	24388539651	,	may25:	22966100779	,	jun25:	23061959530	,	jul25:	25101901795	,	aug25:	24243074359	,	sep25:	24217756790	,	oct25: 	24608480157	,	nov25:	24492581503	,	des25:	24306421629	,	jan26:	23266181388	},
+{	region:	'WJ'	,	branch:	'KARAWANG'	,	model:	'CCB'	,	fy22:	5702574574	,	fy23:	13108437796	,	fy24:	17028648854	,	fy25:	21237529856	,	feb25:	17552373896	,	mar25:	17028648854	,	apr25:	16265200868	,	may25:	19609034262	,	jun25:	18819125754	,	jul25:	20408383526	,	aug25:	22234650363	,	sep25:	22154234129	,	oct25: 	22391925798	,	nov25:	22684011844	,	des25:	21923504284	,	jan26:	21237529856	},
+{	region:	'WJ'	,	branch:	'SUKABUMI'	,	model:	'CCB'	,	fy22:	10322689100	,	fy23:	24746004589	,	fy24:	29124704883	,	fy25:	28333889841	,	feb25:	28472600390	,	mar25:	29124704883	,	apr25:	28426862626	,	may25:	28620899533	,	jun25:	29154792239	,	jul25:	29790623987	,	aug25:	29322212492	,	sep25:	29311045639	,	oct25: 	30243176463	,	nov25:	29771394264	,	des25:	29076230483	,	jan26:	28333889841	}
+
+        ];
+
+        let state = { region: 'All', branch: 'All', selectedMonth: 'des25', sidebarExpanded: true };
+        let annualChart, monthlyChart, pieChart;
+        
+        // PALETTE: Terkecil Gelap -> Terbesar Terang
+        const PALETTE = ['#2C2C2C', '#740938', '#88304E', '#F7374F']; 
+        const BAGONG_COLOR = '#C084FC'; 
+        const RANK_COLOR = '#F7374F';
+
+        const formatCompact = (val) => {
+            if (val >= 1e12) return (val / 1e12).toFixed(2) + 'T';
+            if (val >= 1e9) return (val / 1e9).toFixed(1) + 'B';
+            if (val >= 1e6) return (val / 1e6).toFixed(1) + 'M';
+            return val.toLocaleString('en-US');
+        };
+
+        const calcGrowth = (curr, prev) => {
+            if (!prev || prev === 0) return { text: "0.0%", class: "" };
+            const growth = ((curr - prev) / prev) * 100;
+            return { text: `${growth >= 0 ? '↑' : '↓'} ${Math.abs(growth).toFixed(1)}% vs FY24`, class: growth >= 0 ? "growth-up" : "growth-down" };
+        };
+
+        function toggleSidebar() {
+            state.sidebarExpanded = !state.sidebarExpanded;
+            const sidebar = document.getElementById('sidebar');
+            const icon = document.getElementById('toggle-icon');
+            if (state.sidebarExpanded) { sidebar.classList.remove('collapsed'); icon.setAttribute('data-lucide', 'chevron-left'); } 
+            else { sidebar.classList.add('collapsed'); icon.setAttribute('data-lucide', 'chevron-right'); }
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function toggleDropdown(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const isShown = el.classList.contains('show');
+            document.querySelectorAll('.dropdown-content').forEach(d => d.classList.remove('show'));
+            if (!isShown) el.classList.add('show');
+        }
+
+        window.onclick = (e) => { 
+            if (!e.target.closest('.group') && !e.target.closest('.relative')) {
+                document.querySelectorAll('.dropdown-content').forEach(el => el.classList.remove('show'));
+            }
+        };
+
+        function setupFilters() {
+            const regions = ['All', ...new Set(rawData.map(d => d.region))];
+            document.getElementById('regionList').innerHTML = regions.map(r => `
+                <button onclick="setRegion('${r}')" class="dropdown-item w-full text-left px-4 py-2 rounded-lg text-sm font-semibold transition-all ${state.region === r ? 'active' : ''}">${r}</button>
+            `).join('');
+            
+            document.getElementById('monthList').innerHTML = monthsData.map(m => `
+                <button onclick="setMonth('${m.id}')" class="dropdown-item w-full text-left px-4 py-2 rounded-lg text-[10px] font-bold uppercase transition-all ${state.selectedMonth === m.id ? 'active' : ''}">${m.label}</button>
+            `).join('');
+            updateBranchDropdown();
+        }
+
+        const monthsData = [
+            { id: 'feb25', label: "Feb'25" }, { id: 'mar25', label: "Mar'25" }, { id: 'apr25', label: "Apr'25" }, { id: 'may25', label: "May'25" }, { id: 'jun25', label: "Jun'25" }, { id: 'jul25', label: "Jul'25" }, { id: 'aug25', label: "Aug'25" }, { id: 'sep25', label: "Sep'25" }, { id: 'oct25', label: "Oct'25" }, { id: 'nov25', label: "Nov'25" }, { id: 'des25', label: "Dec'25" }, { id: 'jan26', label: "Jan'26" }
+        ];
+
+        function updateBranchDropdown() {
+            const branches = ['All', ...new Set(rawData.filter(d => state.region === 'All' || d.region === state.region).map(d => d.branch))];
+            document.getElementById('branchList').innerHTML = branches.map(b => `
+                <button onclick="setBranch('${b}')" class="dropdown-item w-full text-left px-4 py-2 rounded-lg text-sm font-semibold transition-all ${state.branch === b ? 'active' : ''}">${b}</button>
+            `).join('');
+        }
+
+        function setRegion(val) {
+            state.region = val; state.branch = 'All';
+            document.getElementById('regionValue').innerText = val;
+            document.getElementById('branchValue').innerText = 'All Branches';
+            setupFilters(); updateDashboard(); toggleDropdown('regionDropdown');
+        }
+
+        function setBranch(val) {
+            state.branch = val;
+            document.getElementById('branchValue').innerText = val;
+            updateBranchDropdown(); updateDashboard(); toggleDropdown('branchDropdown');
+        }
+
+        function setMonth(id) {
+            state.selectedMonth = id;
+            const m = monthsData.find(m => m.id === id);
+            if (m) document.getElementById('monthValue').innerText = m.label;
+            setupFilters(); updateDashboard(); toggleDropdown('monthDropdown');
+        }
+
+        function filterBranchList(q) {
+            document.querySelectorAll('#branchList .dropdown-item').forEach(i => {
+                i.style.display = i.innerText.toLowerCase().includes(q.toLowerCase()) ? 'block' : 'none';
+            });
+        }
+
+        const updateDashboard = () => {
+            const filtered = rawData.filter(d => (state.region === 'All' || d.region === state.region) && (state.branch === 'All' || d.branch === state.branch));
+
+            const modelMetrics = {};
+            let totalFY24 = 0, totalFY25 = 0;
+
+            filtered.forEach(d => {
+                const mk = d.model.toUpperCase().trim();
+                if (!modelMetrics[mk]) modelMetrics[mk] = { fy24: 0, fy25: 0 };
+                modelMetrics[mk].fy24 += d.fy24 || 0;
+                modelMetrics[mk].fy25 += d.fy25 || 0;
+                totalFY24 += d.fy24 || 0;
+                totalFY25 += d.fy25 || 0;
+            });
+
+            document.getElementById('kpi-total').innerText = formatCompact(totalFY25);
+            const totalGrowth = calcGrowth(totalFY25, totalFY24);
+            document.getElementById('growth-total').innerText = totalGrowth.text;
+            document.getElementById('growth-total').className = `growth-label ${totalGrowth.class}`;
+
+            ['PC', 'LCV', 'CV', 'CCB'].forEach(mk => {
+                const val = modelMetrics[mk] ? modelMetrics[mk].fy25 : 0;
+                const prev = modelMetrics[mk] ? modelMetrics[mk].fy24 : 0;
+                document.getElementById(`kpi-${mk.toLowerCase()}`).innerText = formatCompact(val);
+                const growth = calcGrowth(val, prev);
+                const el = document.getElementById(`growth-${mk.toLowerCase()}`);
+                el.innerText = growth.text;
+                el.className = `growth-label ${growth.class}`;
+            });
+
+            // --- DYNAMIC COLOR & ORDER LOGIC ---
+            const modelsInView = Object.keys(modelMetrics).filter(m => m !== 'BAGONG');
+            const sortedModels = modelsInView.sort((a, b) => modelMetrics[a].fy25 - modelMetrics[b].fy25);
+            
+            const colorMapping = {};
+            sortedModels.forEach((m, idx) => {
+                const colorIdx = Math.min(idx, PALETTE.length - 1);
+                colorMapping[m] = PALETTE[colorIdx];
+            });
+            colorMapping['BAGONG'] = BAGONG_COLOR;
+
+            // Sync Top KPI Card Borders with Chart Colors
+            ['PC', 'LCV', 'CV', 'CCB'].forEach(mk => {
+                const card = document.getElementById(`card-${mk.toLowerCase()}`);
+                if (card) {
+                    card.style.borderBottomColor = colorMapping[mk] || '#cbd5e1';
+                }
+            });
+
+            // Display Order: BAGONG always at the BOTTOM (index 0 for stacked bar)
+            const finalOrder = [];
+            if (modelMetrics['BAGONG']) finalOrder.push('BAGONG');
+            finalOrder.push(...sortedModels);
+
+            // ANNUAL CHART UPDATE
+            annualChart.data.datasets = finalOrder.map(cat => ({
+                label: cat, backgroundColor: colorMapping[cat], borderRadius: 4,
+                data: ['fy22', 'fy23', 'fy24', 'fy25'].map(p => filtered.filter(d => d.model.toUpperCase().trim() === cat).reduce((a, c) => a + (c[p] || 0), 0))
+            }));
+            annualChart.update();
+
+            // MONTHLY CHART UPDATE
+            const monthlyKeys = monthsData.map(m => m.id);
+            monthlyChart.data.labels = monthsData.map(m => m.label);
+            monthlyChart.data.datasets = finalOrder.map(cat => ({
+                label: cat, backgroundColor: colorMapping[cat], borderRadius: 4,
+                data: monthlyKeys.map(p => filtered.filter(d => d.model.toUpperCase().trim() === cat).reduce((a, c) => a + (c[p] || 0), 0))
+            }));
+            monthlyChart.update();
+
+            // Dynamic Legend (Reverse to match top-to-bottom visual stack)
+            document.getElementById('dynamicLegend').innerHTML = [...finalOrder].reverse().map(cat => `
+                <div class="flex items-center gap-1.5 text-[9px] font-black text-slate-500">
+                    <div class="w-2.5 h-2.5 rounded shadow-sm" style="background: ${colorMapping[cat]}"></div> ${cat}
+                </div>
+            `).join('');
+
+            // PIE CHART UPDATE
+            const pieData = finalOrder.map(cat => {
+                return filtered.filter(d => d.model.toUpperCase().trim() === cat).reduce((a, c) => a + (c[state.selectedMonth] || 0), 0);
+            });
+            const pieTotal = pieData.reduce((a,b) => a + b, 0);
+
+            pieChart.data.labels = finalOrder;
+            pieChart.data.datasets[0].data = pieData;
+            pieChart.data.datasets[0].backgroundColor = finalOrder.map(cat => colorMapping[cat]);
+            pieChart.update();
+
+            document.getElementById('pieCenterLabel').innerText = formatCompact(pieTotal);
+            // ENLARGED LEGEND FONTS
+            document.getElementById('contributionLegend').innerHTML = [...finalOrder].reverse().map((cat) => {
+                const idx = finalOrder.indexOf(cat);
+                const val = pieData[idx]; const perc = pieTotal > 0 ? ((val / pieTotal) * 100).toFixed(1) : '0';
+                return `
+                    <div class="flex items-center justify-between text-[11px] lg:text-[12px] font-black">
+                        <div class="flex items-center gap-3">
+                            <div class="w-3 h-3 rounded shadow-sm" style="background: ${colorMapping[cat]}"></div>
+                            <span class="text-slate-600 uppercase tracking-tighter">${cat}</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="text-indigo-600 font-bold">${perc}%</span>
+                            <span class="text-slate-900 w-16 text-right tabular-nums">${formatCompact(val)}</span>
+                        </div>
+                    </div>`;
+            }).join('');
+
+            // RANKING
+            const regionScope = rawData.filter(d => (state.region === 'All' || d.region === state.region));
+            const allBranchTotals = {};
+            regionScope.forEach(d => allBranchTotals[d.branch] = (allBranchTotals[d.branch] || 0) + d.fy25);
+            const sortedRank = Object.entries(allBranchTotals).sort((a,b) => b[1] - a[1]);
+            const totalBranches = sortedRank.length;
+            const rankDisplay = document.getElementById('rankingDisplay');
+
+            if (state.branch === 'All') {
+                const topBranch = sortedRank[0] || ["-", 0];
+                rankDisplay.innerHTML = `
+                    <div class="flex items-center justify-between w-full">
+                        <div class="flex flex-col min-w-0">
+                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Top Performer</span>
+                            <span class="text-xl font-black text-slate-900 uppercase tracking-tighter leading-tight truncate">${topBranch[0]}</span>
+                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Rank 1 of ${totalBranches} Branches</span>
+                        </div>
+                        <div class="text-white w-12 h-12 rounded-2xl shadow-lg flex flex-col items-center justify-center shrink-0 border-4 border-slate-50 ml-4 transition-all" style="background-color: ${RANK_COLOR}">
+                            <span class="text-2xl font-black leading-none">1</span>
+                        </div>
+                    </div>`;
+            } else {
+                const myIdx = sortedRank.findIndex(([name]) => name === state.branch);
+                const myRank = (myIdx !== -1) ? myIdx + 1 : "-";
+                rankDisplay.innerHTML = `
+                    <div class="flex items-center justify-between w-full">
+                        <div class="flex flex-col min-w-0">
+                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Performance Rank</span>
+                            <span class="text-xl font-black text-slate-900 uppercase tracking-tighter leading-tight truncate">${state.branch}</span>
+                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Rank ${myRank} of ${totalBranches} Branches</span>
+                        </div>
+                        <div class="text-white w-12 h-12 rounded-2xl shadow-lg flex flex-col items-center justify-center shrink-0 border-4 border-slate-100 ml-4 transition-all" style="background-color: ${RANK_COLOR}">
+                            <span class="text-2xl font-black leading-none">${myRank}</span>
+                        </div>
+                    </div>`;
+            }
+            if (window.lucide) lucide.createIcons();
+        };
+
+        window.onload = () => {
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            setupFilters();
+            const commonOptions = {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false, cornerRadius: 12, padding: 12, backgroundColor: '#1e293b' } },
+                scales: {
+                    x: { stacked: true, grid: { display: false }, ticks: { font: { weight: 'bold', size: 9 }, color: '#94a3b8' } },
+                    y: { stacked: true, border: { display: false }, grid: { color: '#f1f5f9' }, ticks: { font: { weight: 'bold', size: 9 }, color: '#94a3b8', callback: (v) => formatCompact(v) } }
+                }
+            };
+            annualChart = new Chart(document.getElementById('annualBarChart').getContext('2d'), { type: 'bar', data: { labels: ['FY22', 'FY23', 'FY24', 'FY25'], datasets: [] }, options: commonOptions });
+            monthlyChart = new Chart(document.getElementById('monthlyBarChart').getContext('2d'), { type: 'bar', data: { labels: [], datasets: [] }, options: commonOptions });
+            
+            pieChart = new Chart(document.getElementById('modelContributionPie').getContext('2d'), {
+                type: 'doughnut',
+                data: { labels: [], datasets: [{ backgroundColor: [], borderWidth: 6, borderColor: '#ffffff', cutout: '78%', data: [] }] },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    // SHRUNK SCALE: Reduced padding for a slightly larger appearance as requested
+                    layout: {
+                        padding: 10
+                    },
+                    plugins: { 
+                        legend: { display: false }, 
+                        datalabels: { display: false } 
+                    } 
+                }
+            });
+            updateDashboard();
+        };
+    </script>
+</body>
+</html>
