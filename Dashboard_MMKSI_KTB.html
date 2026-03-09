@@ -13,6 +13,22 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         
+        /* LOGIKA ADAPTIF GLOBAL */
+        body { 
+            min-height: 100vh;
+            overflow-y: auto; /* Izinkan scroll secara default */
+            background-color: #f8fafc;
+            letter-spacing: -0.02em;
+        }
+
+        /* Hanya kunci layar (One Screen) jika monitor benar-benar besar & tinggi */
+        @media (min-width: 1024px) and (min-height: 900px) {
+            body { 
+                height: 100vh;
+                overflow: hidden; 
+            }
+        }
+
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
@@ -62,56 +78,50 @@
         .growth-item { font-size: 9px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
         .growth-up { color: #10b981; }
         .growth-down { color: #ef4444; }
-        .growth-neutral { color: #94a3b8; }
         .growth-label { font-weight: 400; color: #94a3b8; font-size: 8px; text-transform: uppercase; }
 
-        /* SIDEBAR STYLES */
-        #sidebar { transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); width: 280px; }
+        /* SIDEBAR STYLES - Disesuaikan ke 260px */
+        #sidebar { transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); width: 260px; }
         #sidebar.collapsed { width: 88px; }
         .nav-label { transition: opacity 0.3s ease, visibility 0.3s ease; }
         .collapsed .nav-label { opacity: 0; visibility: hidden; width: 0; }
         .collapsed .nav-section-title { opacity: 0; visibility: hidden; }
-        .nav-item { transition: all 0.2s ease; border-radius: 1rem; margin: 0.25rem 0.75rem; }
-        .collapsed .nav-item { margin: 0.25rem 0.75rem; padding: 0.75rem; justify-content: center; }
+        .nav-item { transition: all 0.2s ease; border-radius: 1rem; margin: 0.15rem 0.6rem; }
+        .collapsed .nav-item { margin: 0.15rem 0.6rem; padding: 0.75rem; justify-content: center; }
         .nav-item.active { background-color: #fef2f2; color: #ef4444; font-weight: 700; }
     </style>
 </head>
-<body class="bg-[#F8FAFC] text-slate-800 antialiased h-screen flex overflow-hidden transition-colors duration-500">
+<body class="bg-[#F8FAFC] text-slate-800 antialiased flex transition-colors duration-500">
 
     <!-- SIDEBAR NAVIGATION -->
     <aside id="sidebar" class="bg-white border-r border-slate-100 flex flex-col shrink-0 z-50">
-        <!-- Logo Area -->
-        <div class="h-24 flex items-center px-6 shrink-0 relative">
-            <div class="w-10 h-10 bg-red-600 rounded-xl flex items-center justify-center text-white font-black shadow-lg shadow-red-200 shrink-0">M</div>
-            <span class="nav-label ml-3 text-lg font-black tracking-tight text-slate-900 uppercase">Dashboard</span>
-            <!-- Toggle Button -->
+        <div class="h-20 flex items-center px-6 shrink-0 relative border-b border-slate-50">
+            <div class="w-10 h-10 bg-red-600 rounded-xl flex items-center justify-center text-white font-black shadow-lg shadow-red-200 shrink-0 uppercase">M</div>
+            <span class="nav-label ml-3 text-lg font-black tracking-tight text-slate-900 uppercase leading-none">Dashboard</span>
             <button onclick="toggleSidebar()" class="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-white border border-slate-100 rounded-full flex items-center justify-center shadow-md hover:bg-slate-50 transition-all">
                 <i id="toggle-icon" data-lucide="chevron-left" class="w-3 h-3 text-slate-400"></i>
             </button>
         </div>
 
-        <!-- Menu Section -->
         <nav class="flex-1 overflow-y-auto pt-4 space-y-8">
-            <!-- Executive Section -->
             <div>
                 <p class="nav-section-title px-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Executive Dashboard</p>
                 <div class="space-y-1">
-                    <a href="index.html" class="nav-item flex items-center px-5 py-3 text-slate-500 hover:bg-slate-50 hover:text-red-600 group">
+                    <a href="Dashboard_KPI_Fix.html" class="nav-item flex items-center px-5 py-3 text-slate-500 hover:bg-slate-50 hover:text-red-600 group transition-all">
                         <i data-lucide="layout-dashboard" class="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform"></i>
                         <span class="nav-label ml-4 text-sm whitespace-nowrap">KPI Performance</span>
                     </a>
                 </div>
             </div>
 
-            <!-- Strategic Section -->
             <div>
                 <p class="nav-section-title px-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Strategic Dashboard</p>
                 <div class="space-y-1">
-                    <a href="Dashboard_Asset.html" class="nav-item flex items-center px-5 py-3 text-slate-500 hover:bg-slate-50 hover:text-red-600 group">
+                    <a href="Dashboard_Asset.html" class="nav-item flex items-center px-5 py-3 text-slate-500 hover:bg-slate-50 hover:text-red-600 group transition-all">
                         <i data-lucide="box" class="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform"></i>
                         <span class="nav-label ml-4 text-sm whitespace-nowrap">Asset Dashboard</span>
                     </a>
-                    <a href="Dashboard_MMKSI_KTB.html" class="nav-item flex items-center px-5 py-3 active group">
+                    <a href="#" class="nav-item flex items-center px-5 py-3 active group transition-all">
                         <i data-lucide="at-sign" class="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform"></i>
                         <span class="nav-label ml-4 text-sm whitespace-nowrap">ATPM Dashboard</span>
                     </a>
@@ -119,9 +129,8 @@
             </div>
         </nav>
 
-        <!-- Sidebar Footer -->
         <div class="p-4 border-t border-slate-50">
-            <div class="nav-item flex items-center px-4 py-3 text-slate-400">
+            <div class="nav-item flex items-center px-4 py-3 text-slate-400 cursor-pointer hover:bg-slate-50 rounded-xl transition-all text-left">
                 <i data-lucide="log-out" class="w-5 h-5 shrink-0"></i>
                 <span class="nav-label ml-4 text-xs font-bold uppercase tracking-widest">Logout</span>
             </div>
@@ -129,47 +138,45 @@
     </aside>
 
     <!-- MAIN CONTENT WRAPPER -->
-    <div class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-        
-        <div class="p-8 md:p-10 h-full flex flex-col overflow-y-auto">
+    <div class="flex-1 flex flex-col min-w-0 lg:min-h-screen relative">
+        <div class="p-4 lg:p-6 h-full flex flex-col gap-6">
             <!-- Header Section -->
-            <header class="flex flex-col md:flex-row items-center justify-between mb-8 gap-4 shrink-0">
+            <header class="flex flex-col md:flex-row items-center justify-between mb-2 shrink-0 gap-4">
                 <div>
-                    <p id="header-accent" class="text-[10px] font-extrabold uppercase tracking-[0.3em] text-red-600 mb-1 transition-colors">Performance Monitoring System</p>
-                    <h1 class="text-3xl font-black tracking-tight text-slate-900 leading-tight uppercase">Strategic Monitoring FY25</h1>
+                    <p id="header-accent" class="text-[10px] font-extrabold uppercase tracking-[0.3em] text-red-600 mb-0.5 transition-colors">Performance Monitoring System</p>
+                    <h1 class="text-2xl lg:text-3xl font-black tracking-tight text-slate-900 leading-tight uppercase">Strategic Monitoring FY25</h1>
                 </div>
 
-                <!-- Global Filters -->
-                <div class="flex items-center bg-white p-1 rounded-2xl border border-slate-200 shadow-sm w-full md:w-auto relative border-slate-100 shadow-sm">
-                    <div class="relative group min-w-[170px] border-r border-slate-100">
-                        <button onclick="toggleDropdown('regionDropdown')" class="flex items-center w-full px-5 py-2.5 gap-3 hover:bg-slate-50 rounded-l-xl transition-all text-left">
-                            <i id="region-icon" data-lucide="globe" class="w-4 h-4 text-red-500"></i>
+                <div class="flex items-center bg-white p-1 rounded-2xl border border-slate-200 shadow-sm w-full md:w-auto relative border-slate-100 transition-all duration-300">
+                    <div class="relative group min-w-[150px] lg:min-w-[170px] border-r border-slate-100">
+                        <button onclick="toggleDropdown('regionDropdown')" class="flex items-center w-full px-4 lg:px-5 py-2 hover:bg-slate-50 rounded-l-xl transition-all text-left gap-2">
+                            <i id="region-icon" data-lucide="globe" class="w-3.5 h-3.5 text-red-500 transition-colors"></i>
                             <div class="flex flex-col flex-1">
-                                <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Region</span>
-                                <span id="regionValue" class="text-sm font-bold text-slate-800 truncate">All Regions</span>
+                                <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">Region</span>
+                                <span id="regionValue" class="text-xs lg:text-sm font-bold text-slate-800 truncate">All Regions</span>
                             </div>
-                            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-300"></i>
+                            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-300"></i>
                         </button>
                         <div id="regionDropdown" class="dropdown-content">
                             <div id="regionList" class="p-2 space-y-1"></div>
                         </div>
                     </div>
 
-                    <div class="relative group min-w-[220px]">
-                        <button onclick="toggleDropdown('branchDropdown')" class="flex items-center w-full px-5 py-2.5 gap-3 hover:bg-slate-50 rounded-r-xl transition-all text-left">
-                            <i id="branch-icon" data-lucide="map-pin" class="w-4 h-4 text-red-500"></i>
+                    <div class="relative group min-w-[180px] lg:min-w-[220px]">
+                        <button onclick="toggleDropdown('branchDropdown')" class="flex items-center w-full px-4 lg:px-5 py-2 hover:bg-slate-50 rounded-r-xl transition-all text-left gap-2">
+                            <i id="branch-icon" data-lucide="map-pin" class="w-3.5 h-3.5 text-red-500 transition-colors"></i>
                             <div class="flex flex-col flex-1">
-                                <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Branch Office</span>
-                                <span id="branchValue" class="text-sm font-bold text-slate-800 truncate">All Branches</span>
+                                <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">Branch Office</span>
+                                <span id="branchValue" class="text-xs lg:text-sm font-bold text-slate-800 truncate">All Branches</span>
                             </div>
-                            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-300"></i>
+                            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-300"></i>
                         </button>
                         <div id="branchDropdown" class="dropdown-content">
                             <div class="sticky top-0 bg-white p-3 border-b border-slate-100 z-10">
                                 <div class="relative">
                                     <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400"></i>
-                                    <input type="text" id="branchSearch" placeholder="Cari cabang..." 
-                                        class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium focus:outline-none focus:border-red-400"
+                                    <input type="text" id="branchSearch" placeholder="Search..." 
+                                        class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] focus:outline-none transition-all"
                                         onkeyup="filterBranchList(this.value)">
                                 </div>
                             </div>
@@ -179,60 +186,60 @@
                 </div>
             </header>
 
-            <main class="flex-1 flex flex-col gap-6 min-h-0">
+            <main class="flex-1 flex flex-col gap-4 lg:gap-6 min-h-0">
                 
                 <!-- KPI Cards -->
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 shrink-0">
-                    <div class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm relative overflow-hidden group">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-opacity-70">Disburse (Actual)</p>
-                        <h2 id="kpi-actual" class="text-2xl font-black tracking-tighter text-slate-900">-</h2>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5 shrink-0">
+                    <div class="bg-white rounded-2xl p-4 lg:p-5 border border-slate-100 shadow-sm relative overflow-hidden group">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-opacity-70 leading-none">Disburse (Actual)</p>
+                        <h2 id="kpi-actual" class="text-xl lg:text-2xl font-black tracking-tighter text-slate-900 mt-1">-</h2>
                         <div id="growth-container-actual" class="growth-container">--</div>
                     </div>
                     
-                    <div id="card-net" class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm border-b-4 border-b-blue-500">
-                        <p id="label-net" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-blue-600">Nat Penetration</p>
-                        <h2 id="kpi-net" class="text-xl font-black text-slate-900">-</h2>
+                    <div id="card-net" class="bg-white rounded-2xl p-4 lg:p-5 border border-slate-100 shadow-sm border-b-4 border-b-blue-500">
+                        <p id="label-net" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-blue-600 leading-none">Nat Penetration</p>
+                        <h2 id="kpi-net" class="text-lg lg:text-xl font-black text-slate-900 mt-1">-</h2>
                         <div id="growth-container-net" class="growth-container">--</div>
                     </div>
 
-                    <div id="card-wo" class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm border-b-4 border-b-emerald-500">
-                        <p id="label-wo" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-emerald-600">Pen % (wo Cash)</p>
-                        <h2 id="kpi-wo" class="text-xl font-black text-slate-900">-</h2>
+                    <div id="card-wo" class="bg-white rounded-2xl p-4 lg:p-5 border border-slate-100 shadow-sm border-b-4 border-b-emerald-500">
+                        <p id="label-wo" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-emerald-600 leading-none">Pen % (wo Cash)</p>
+                        <h2 id="kpi-wo" class="text-lg lg:text-xl font-black text-slate-900 mt-1">-</h2>
                         <div id="growth-container-wo" class="growth-container">--</div>
                     </div>
 
-                    <div id="card-w" class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm border-b-4 border-b-amber-500">
-                        <p id="label-w" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-amber-600">Pen % (w Cash)</p>
-                        <h2 id="kpi-w" class="text-xl font-black text-slate-900">-</h2>
+                    <div id="card-w" class="bg-white rounded-2xl p-4 lg:p-5 border border-slate-100 shadow-sm border-b-4 border-b-amber-500">
+                        <p id="label-w" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-amber-600 leading-none">Pen % (w Cash)</p>
+                        <h2 id="kpi-w" class="text-lg lg:text-xl font-black text-slate-900 mt-1">-</h2>
                         <div id="growth-container-w" class="growth-container">--</div>
                     </div>
                 </div>
 
-                <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-0">
+                <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 min-h-0 overflow-visible lg:overflow-hidden">
                     <!-- Strategic Performance Card -->
-                    <div class="lg:col-span-8 bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm flex flex-col min-h-0">
+                    <div class="lg:col-span-8 bg-white rounded-3xl p-6 lg:p-8 border border-slate-100 shadow-sm flex flex-col min-h-[450px] lg:min-h-0 overflow-hidden">
                         <div class="flex items-center justify-between mb-8 shrink-0">
-                            <div>
-                                <h3 class="text-lg font-black text-slate-900 uppercase tracking-tight">Market Strategy Breakdown</h3>
-                                <p id="chart-sub" class="text-[10px] font-bold text-red-600 uppercase tracking-widest transition-colors">Target/Actual Volume vs Penetration Rates</p>
+                            <div class="min-w-0">
+                                <h3 class="text-lg font-black text-slate-900 uppercase tracking-tight leading-none">Market Strategy Breakdown</h3>
+                                <p id="chart-sub" class="text-[9px] font-bold text-red-600 uppercase tracking-widest mt-1 truncate transition-colors">Volume Analysis vs Penetration (Locked 100%)</p>
                             </div>
                             
-                            <div class="flex bg-slate-100 p-1 rounded-xl shadow-inner">
+                            <div class="flex bg-slate-100 p-1 rounded-xl shadow-inner shrink-0 scale-90 lg:scale-100">
                                 <button onclick="setEntity('MMKSI')" id="btn-mmksi" class="toggle-btn px-4 py-1.5 rounded-lg text-[10px] font-black transition-all active-mmksi uppercase tracking-wider">MMKSI</button>
                                 <button onclick="setEntity('KTB')" id="btn-ktb" class="toggle-btn px-4 py-1.5 rounded-lg text-[10px] font-black transition-all uppercase tracking-wider">KTB</button>
                             </div>
                         </div>
                         
-                        <div class="flex-1 flex gap-8 min-h-0">
+                        <div class="flex-1 flex flex-col md:flex-row gap-8 min-h-0 overflow-hidden">
                             <div class="flex-1 flex flex-col min-w-0">
-                                <span class="px-2 py-0.5 bg-slate-50 text-slate-500 rounded text-[9px] font-black uppercase tracking-wider mb-4 w-fit">Historical Trend (FY22-25)</span>
+                                <span class="px-2 py-0.5 bg-slate-50 text-slate-500 rounded text-[9px] font-black uppercase tracking-wider mb-4 w-fit shrink-0">Historical Trend (FY22-25)</span>
                                 <div class="flex-1 min-h-0">
                                     <canvas id="annualMixedChart"></canvas>
                                 </div>
                             </div>
-                            <div class="w-px bg-slate-100 self-stretch"></div>
+                            <div class="hidden md:block w-px bg-slate-100 self-stretch shrink-0"></div>
                             <div class="flex-1 flex flex-col min-w-0">
-                                <span id="label-monthly-badge" class="px-2 py-0.5 bg-red-50 text-red-600 rounded text-[9px] font-black uppercase tracking-wider mb-4 w-fit transition-colors">Monthly Pulse Monitoring</span>
+                                <span id="label-monthly-badge" class="px-2 py-0.5 bg-red-50 text-red-600 rounded text-[9px] font-black uppercase tracking-wider mb-4 w-fit shrink-0 transition-colors">Monthly Pulse Monitoring</span>
                                 <div class="flex-1 min-h-0">
                                     <canvas id="monthlyMixedChart"></canvas>
                                 </div>
@@ -240,15 +247,17 @@
                         </div>
                     </div>
 
-                    <!-- Sidebar Progress -->
-                    <div class="lg:col-span-4 flex flex-col gap-6 min-h-0">
-                        <div class="bg-white rounded-[2.5rem] p-7 border border-slate-100 shadow-sm flex flex-col flex-1 min-h-0 overflow-hidden">
-                            <div class="flex items-center justify-between mb-8 shrink-0">
-                                <div class="flex flex-col">
-                                    <h3 class="text-base font-black text-slate-900 uppercase tracking-tight leading-tight">Monthly Performance</h3>
+                    <!-- Right Sidebar -->
+                    <div class="lg:col-span-4 flex flex-col gap-4 lg:gap-6 min-h-0 overflow-visible lg:overflow-hidden">
+                        
+                        <!-- Monthly Progress -->
+                        <div class="bg-white rounded-3xl p-6 lg:p-7 border border-slate-100 shadow-sm flex flex-col min-h-[400px] lg:flex-1 lg:min-h-0 overflow-hidden text-center">
+                            <div class="flex items-center justify-between mb-8 shrink-0 text-left">
+                                <div class="flex flex-col min-w-0">
+                                    <h3 class="text-base font-black text-slate-900 uppercase tracking-tight leading-tight truncate">Monthly Performance</h3>
                                     <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Operational Detail</p>
                                 </div>
-                                <div class="relative">
+                                <div class="relative shrink-0">
                                     <button onclick="toggleDropdown('monthDropdown')" class="flex items-center gap-2 bg-slate-50 hover:bg-slate-100 px-3 py-2 rounded-2xl transition-all border border-slate-100 text-[10px] font-bold text-slate-600 shadow-sm">
                                         <span id="monthDisplay">Dec '25</span>
                                         <i data-lucide="calendar" size="14" class="text-red-500 transition-colors"></i>
@@ -259,18 +268,18 @@
                                 </div>
                             </div>
                             
-                            <div id="monthly-progress-section" class="flex-1 flex flex-col justify-center space-y-8">
-                                <div class="space-y-5">
+                            <div id="monthly-progress-section" class="flex-1 flex flex-col justify-center space-y-6 lg:space-y-8">
+                                <div class="space-y-4 text-left">
                                     <div class="flex justify-between items-center">
                                         <div class="flex flex-col">
-                                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Achievement Rate</span>
+                                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 leading-none">Achievement Rate</span>
                                             <div class="flex items-baseline gap-1">
-                                                <span id="progress-pct" class="text-4xl font-black text-slate-900 tracking-tighter transition-colors">0%</span>
-                                                <span class="text-xs font-bold text-slate-300">of Goal</span>
+                                                <span id="progress-pct" class="text-3xl lg:text-4xl font-black text-slate-900 tracking-tighter transition-colors">0%</span>
+                                                <span class="text-[10px] font-bold text-slate-300">of Goal</span>
                                             </div>
                                         </div>
-                                        <div id="side-chart-icon-box" class="bg-red-50 p-2.5 rounded-[1.25rem] transition-colors duration-500">
-                                            <i id="side-chart-icon" data-lucide="bar-chart-3" class="text-red-500 w-6 h-6 transition-colors duration-500"></i>
+                                        <div id="side-chart-icon-box" class="bg-red-50 p-2 lg:p-2.5 rounded-2xl transition-colors duration-500">
+                                            <i id="side-chart-icon" data-lucide="bar-chart-3" class="text-red-500 w-5 h-5 lg:w-6 lg:h-6 transition-colors"></i>
                                         </div>
                                     </div>
 
@@ -278,26 +287,27 @@
                                         <div id="progress-fill-el" class="progress-fill bg-red-600" style="width: 0%"></div>
                                     </div>
 
-                                    <div id="achievement-alert" class="alert-box flex items-center gap-3 p-4 rounded-[1.5rem] border text-[10px] font-black uppercase transition-all duration-500 shadow-sm bg-white"></div>
+                                    <div id="achievement-alert" class="alert-box flex items-center gap-3 p-3 lg:p-4 rounded-2xl border text-[9px] font-black uppercase transition-all duration-500 shadow-sm bg-white"></div>
                                 </div>
 
                                 <div class="grid grid-cols-2 gap-4">
-                                    <div class="bg-slate-50 p-5 rounded-[2rem] border border-slate-100">
-                                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Target Units</p>
-                                        <h4 id="side-target" class="text-2xl font-black text-slate-900 leading-none">-</h4>
+                                    <div class="bg-slate-50 p-4 lg:p-5 rounded-2xl border border-slate-100 text-left">
+                                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-2 leading-none">Target Units</p>
+                                        <h4 id="side-target" class="text-xl lg:text-2xl font-black text-slate-900 leading-none">-</h4>
                                     </div>
-                                    <div class="bg-slate-50 p-5 rounded-[2rem] border border-slate-100 transition-all duration-500">
-                                        <p id="side-actual-label" class="text-[9px] font-black text-red-600 uppercase tracking-widest mb-2 transition-colors text-right">Actual (Disb)</p>
-                                        <h4 id="side-actual" class="text-2xl font-black text-red-600 leading-none transition-colors text-right">-</h4>
+                                    <div class="bg-slate-50 p-4 lg:p-5 rounded-2xl border border-slate-100 transition-all duration-500 text-right">
+                                        <p id="side-actual-label" class="text-[8px] font-black text-red-600 uppercase tracking-widest mb-2 transition-colors leading-none uppercase">Actual (Disb)</p>
+                                        <h4 id="side-actual" class="text-xl lg:text-2xl font-black text-red-600 leading-none transition-colors">-</h4>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div id="rank-card" class="bg-white rounded-[2.5rem] p-6 border border-slate-100 shadow-sm flex flex-col justify-center group hover:shadow-lg transition-all border-l-4 border-l-red-600 relative">
-                            <div class="flex items-center justify-between mb-2">
-                                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Efficiency Rank</h3>
-                                <div id="rank-icon-color" class="text-red-400 opacity-20 group-hover:rotate-12 duration-500 transition-all"><i data-lucide="award" size="24"></i></div>
+                        <!-- Ranking Card -->
+                        <div id="rank-card" class="bg-white rounded-3xl p-5 lg:p-6 border border-slate-100 shadow-sm flex flex-col justify-center group hover:shadow-lg transition-all border-l-4 border-l-red-600 relative shrink-0 min-h-[110px]">
+                            <div class="flex items-center justify-between mb-1 shrink-0 text-left">
+                                <h3 class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Efficiency Rank</h3>
+                                <div id="rank-icon-color" class="text-red-400 opacity-20 group-hover:rotate-12 duration-500 transition-all"><i data-lucide="award" size="22"></i></div>
                             </div>
                             <div id="rankingDisplay" class="flex flex-col justify-center"></div>
                         </div>
@@ -310,175 +320,341 @@
     <script>
         // --- Core Data Set ---
         const rawData = [
-           {	type:	'KTB'	,	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'TARGET'	,	fy22:	6	,	fy23:	14	,	fy24:	13	,	fy25:	11	,	mar25:	10	,	apr25:	11	,	may25:	11	,	jun25:	11	,	jul25:	9	,	aug25:	9	,	sep25:	22	,	oct25: 	9	,	nov25:	8	,	des25:	10	,	jan26:	10	,	feb26:	10	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'TANGERANG'	,	model:	'TARGET'	,	fy22:	9	,	fy23:	16	,	fy24:	15	,	fy25:	22	,	mar25:	11	,	apr25:	22	,	may25:	22	,	jun25:	22	,	jul25:	19	,	aug25:	11	,	sep25:	10	,	oct25: 	37	,	nov25:	40	,	des25:	20	,	jan26:	20	,	feb26:	20	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'CILEGON'	,	model:	'TARGET'	,	fy22:	21	,	fy23:	42	,	fy24:	38	,	fy25:	19	,	mar25:	30	,	apr25:	21	,	may25:	21	,	jun25:	21	,	jul25:	19	,	aug25:	21	,	sep25:	14	,	oct25: 	20	,	nov25:	15	,	des25:	19	,	jan26:	19	,	feb26:	19	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'SOUTH JAKARTA'	,	model:	'TARGET'	,	fy22:	80	,	fy23:	48	,	fy24:	38	,	fy25:	28	,	mar25:	32	,	apr25:	31	,	may25:	31	,	jun25:	31	,	jul25:	19	,	aug25:	25	,	sep25:	14	,	oct25: 	15	,	nov25:	42	,	des25:	32	,	jan26:	32	,	feb26:	32	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'NORTH JAKARTA'	,	model:	'TARGET'	,	fy22:	37	,	fy23:	49	,	fy24:	43	,	fy25:	26	,	mar25:	34	,	apr25:	28	,	may25:	28	,	jun25:	28	,	jul25:	23	,	aug25:	30	,	sep25:	37	,	oct25: 	21	,	nov25:	18	,	des25:	23	,	jan26:	23	,	feb26:	23	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'CENTRAL JAKARTA'	,	model:	'TARGET'	,	fy22:	60	,	fy23:	128	,	fy24:	112	,	fy25:	110	,	mar25:	93	,	apr25:	104	,	may25:	104	,	jun25:	104	,	jul25:	131	,	aug25:	121	,	sep25:	119	,	oct25: 	132	,	nov25:	85	,	des25:	102	,	jan26:	102	,	feb26:	102	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'CENTRAL JAKARTA'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'CILEGON'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'TANGERANG'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'NORTH JAKARTA'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'SOUTH JAKARTA'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'Actual'	,	fy22:	12	,	fy23:	11	,	fy24:	8	,	fy25:	8	,	mar25:	7	,	apr25:	3	,	may25:	7	,	jun25:	20	,	jul25:	4	,	aug25:	5	,	sep25:	20	,	oct25: 	8	,	nov25:	5	,	des25:	8	,	jan26:	2	,	feb26:	1	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'CENTRAL JAKARTA'	,	model:	'Actual'	,	fy22:	85	,	fy23:	117	,	fy24:	96	,	fy25:	78	,	mar25:	106	,	apr25:	38	,	may25:	62	,	jun25:	42	,	jul25:	99	,	aug25:	70	,	sep25:	69	,	oct25: 	67	,	nov25:	42	,	des25:	114	,	jan26:	103	,	feb26:	151	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'CILEGON'	,	model:	'Actual'	,	fy22:	26	,	fy23:	18	,	fy24:	17	,	fy25:	13	,	mar25:	8	,	apr25:	8	,	may25:	16	,	jun25:	17	,	jul25:	15	,	aug25:	13	,	sep25:	13	,	oct25: 	12	,	nov25:	17	,	des25:	14	,	jan26:	11	,	feb26:	5	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'NORTH JAKARTA'	,	model:	'Actual'	,	fy22:	45	,	fy23:	32	,	fy24:	26	,	fy25:	28	,	mar25:	23	,	apr25:	24	,	may25:	36	,	jun25:	22	,	jul25:	56	,	aug25:	29	,	sep25:	27	,	oct25: 	18	,	nov25:	17	,	des25:	44	,	jan26:	15	,	feb26:	22	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'SOUTH JAKARTA'	,	model:	'Actual'	,	fy22:	37	,	fy23:	21	,	fy24:	41	,	fy25:	24	,	mar25:	18	,	apr25:	13	,	may25:	34	,	jun25:	29	,	jul25:	34	,	aug25:	33	,	sep25:	17	,	oct25: 	18	,	nov25:	44	,	des25:	10	,	jan26:	16	,	feb26:	18	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'TANGERANG'	,	model:	'Actual'	,	fy22:	13	,	fy23:	31	,	fy24:	15	,	fy25:	11	,	mar25:	18	,	apr25:	2	,	may25:	5	,	jun25:	10	,	jul25:	14	,	aug25:	17	,	sep25:	6	,	oct25: 	13	,	nov25:	5	,	des25:	13	,	jan26:	8	,	feb26:	23	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.49	,	fy23:	0.49	,	fy24:	0.55	,	fy25:	0.55	,	mar25:	0.28	,	apr25:	0.29	,	may25:	0.69	,	jun25:	0.25	,	jul25:	1.40	,	aug25:	0.29	,	sep25:	0.40	,	oct25: 	0.63	,	nov25:	1.44	,	des25:	0.86	,	jan26:	0.17	,	feb26:	0.09	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'CENTRAL JAKARTA'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.39	,	fy23:	0.65	,	fy24:	0.61	,	fy25:	0.39	,	mar25:	0.87	,	apr25:	0.28	,	may25:	1.13	,	jun25:	0.55	,	jul25:	0.38	,	aug25:	0.34	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.32	,	des25:	0.53	,	jan26:	0.21	,	feb26:	0.78	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'CILEGON'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.59	,	fy23:	0.61	,	fy24:	0.63	,	fy25:	0.70	,	mar25:	0.80	,	apr25:	0.90	,	may25:	0.77	,	jun25:	1.33	,	jul25:	0.57	,	aug25:	0.72	,	sep25:	0.72	,	oct25: 	0.65	,	nov25:	0.67	,	des25:	0.78	,	jan26:	0.53	,	feb26:	0.32	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'SOUTH JAKARTA'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.81	,	fy23:	0.61	,	fy24:	0.46	,	fy25:	0.38	,	mar25:	0.54	,	apr25:	0.48	,	may25:	0.42	,	jun25:	0.41	,	jul25:	0.51	,	aug25:	0.65	,	sep25:	0.50	,	oct25: 	0.15	,	nov25:	0.20	,	des25:	0.19	,	jan26:	0.35	,	feb26:	0.58	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'NORTH JAKARTA'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.87	,	fy23:	0.68	,	fy24:	1.18	,	fy25:	1.55	,	mar25:	1.00	,	apr25:	2.44	,	may25:	3.00	,	jun25:	1.13	,	jul25:	0.77	,	aug25:	1.67	,	sep25:	1.26	,	oct25: 	2.40	,	nov25:	0.36	,	des25:	3.67	,	jan26:	2.27	,	feb26:	0.00	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'TANGERANG'	,	model:	'Branch Pen % wo Cash'	,	fy22:	1.47	,	fy23:	1.01	,	fy24:	1.11	,	fy25:	0.61	,	mar25:	1.21	,	apr25:	0.17	,	may25:	1.25	,	jun25:	0.25	,	jul25:	1.63	,	aug25:	0.61	,	sep25:	0.71	,	oct25: 	0.31	,	nov25:	0.19	,	des25:	0.91	,	jan26:	0.26	,	feb26:	1.50	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.32	,	fy23:	0.38	,	fy24:	0.34	,	fy25:	0.25	,	mar25:	0.12	,	apr25:	0.14	,	may25:	0.48	,	jun25:	0.17	,	jul25:	0.64	,	aug25:	0.17	,	sep25:	0.22	,	oct25: 	0.35	,	nov25:	0.48	,	des25:	0.23	,	jan26:	0.03	,	feb26:	0.03	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'CENTRAL JAKARTA'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.18	,	fy23:	0.29	,	fy24:	0.17	,	fy25:	0.10	,	mar25:	0.28	,	apr25:	0.08	,	may25:	0.11	,	jun25:	0.14	,	jul25:	0.12	,	aug25:	0.13	,	sep25:	0.06	,	oct25: 	0.09	,	nov25:	0.05	,	des25:	0.09	,	jan26:	0.06	,	feb26:	0.32	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'CILEGON'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.44	,	fy23:	0.46	,	fy24:	0.46	,	fy25:	0.47	,	mar25:	0.40	,	apr25:	0.47	,	may25:	0.61	,	jun25:	0.63	,	jul25:	0.41	,	aug25:	0.51	,	sep25:	0.53	,	oct25: 	0.41	,	nov25:	0.46	,	des25:	0.46	,	jan26:	0.37	,	feb26:	0.29	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'SOUTH JAKARTA'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.49	,	fy23:	0.36	,	fy24:	0.29	,	fy25:	0.23	,	mar25:	0.24	,	apr25:	0.20	,	may25:	0.22	,	jun25:	0.21	,	jul25:	0.34	,	aug25:	0.44	,	sep25:	0.29	,	oct25: 	0.13	,	nov25:	0.13	,	des25:	0.11	,	jan26:	0.23	,	feb26:	0.36	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'NORTH JAKARTA'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.42	,	fy23:	0.34	,	fy24:	0.44	,	fy25:	0.48	,	mar25:	0.55	,	apr25:	1.04	,	may25:	0.49	,	jun25:	0.92	,	jul25:	0.59	,	aug25:	0.46	,	sep25:	0.43	,	oct25: 	0.44	,	nov25:	0.13	,	des25:	0.53	,	jan26:	1.21	,	feb26:	0.71	},
-{	type:	'KTB'	,	region:	'JKT'	,	branch:	'TANGERANG'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.44	,	fy23:	0.52	,	fy24:	0.22	,	fy25:	0.13	,	mar25:	0.27	,	apr25:	0.03	,	may25:	0.39	,	jun25:	0.16	,	jul25:	0.42	,	aug25:	0.29	,	sep25:	0.16	,	oct25: 	0.17	,	nov25:	0.12	,	des25:	0.10	,	jan26:	0.05	,	feb26:	0.09	},
-{	type:	'KTB'	,	region:	'KLM'	,	branch:	'BALIKPAPAN'	,	model:	'TARGET'	,	fy22:	52	,	fy23:	32	,	fy24:	22	,	fy25:	26	,	mar25:	14	,	apr25:	24	,	may25:	24	,	jun25:	24	,	jul25:	29	,	aug25:	28	,	sep25:	47	,	oct25: 	26	,	nov25:	29	,	des25:	17	,	jan26:	17	,	feb26:	17	},
-{	type:	'KTB'	,	region:	'KLM'	,	branch:	'PONTIANAK'	,	model:	'TARGET'	,	fy22:	71	,	fy23:	34	,	fy24:	22	,	fy25:	48	,	mar25:	14	,	apr25:	67	,	may25:	67	,	jun25:	67	,	jul25:	16	,	aug25:	29	,	sep25:	29	,	oct25: 	22	,	nov25:	33	,	des25:	64	,	jan26:	64	,	feb26:	64	},
-{	type:	'KTB'	,	region:	'KLM'	,	branch:	'BANJARMASIN'	,	model:	'TARGET'	,	fy22:	65	,	fy23:	46	,	fy24:	29	,	fy25:	45	,	mar25:	19	,	apr25:	50	,	may25:	50	,	jun25:	50	,	jul25:	40	,	aug25:	46	,	sep25:	40	,	oct25: 	49	,	nov25:	28	,	des25:	49	,	jan26:	49	,	feb26:	49	},
-{	type:	'KTB'	,	region:	'KLM'	,	branch:	'MAKASSAR'	,	model:	'TARGET'	,	fy22:	79	,	fy23:	54	,	fy24:	33	,	fy25:	39	,	mar25:	21	,	apr25:	44	,	may25:	44	,	jun25:	44	,	jul25:	26	,	aug25:	42	,	sep25:	43	,	oct25: 	40	,	nov25:	43	,	des25:	34	,	jan26:	34	,	feb26:	34	},
-{	type:	'KTB'	,	region:	'KLM'	,	branch:	'BALIKPAPAN'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
-{	type:	'KTB'	,	region:	'KLM'	,	branch:	'BANJARMASIN'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
-{	type:	'KTB'	,	region:	'KLM'	,	branch:	'MAKASSAR'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
-{	type:	'KTB'	,	region:	'KLM'	,	branch:	'PONTIANAK'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
-{	type:	'KTB'	,	region:	'KLM'	,	branch:	'BALIKPAPAN'	,	model:	'Actual'	,	fy22:	39	,	fy23:	16	,	fy24:	7	,	fy25:	14	,	mar25:	9	,	apr25:	10	,	may25:	9	,	jun25:	15	,	jul25:	11	,	aug25:	14	,	sep25:	15	,	oct25: 	13	,	nov25:	13	,	des25:	13	,	jan26:	18	,	feb26:	20	},
-{	type:	'KTB'	,	region:	'KLM'	,	branch:	'BANJARMASIN'	,	model:	'Actual'	,	fy22:	55	,	fy23:	35	,	fy24:	23	,	fy25:	23	,	mar25:	28	,	apr25:	15	,	may25:	20	,	jun25:	29	,	jul25:	28	,	aug25:	27	,	sep25:	17	,	oct25: 	26	,	nov25:	17	,	des25:	35	,	jan26:	20	,	feb26:	17	},
-{	type:	'KTB'	,	region:	'KLM'	,	branch:	'MAKASSAR'	,	model:	'Actual'	,	fy22:	63	,	fy23:	25	,	fy24:	16	,	fy25:	27	,	mar25:	14	,	apr25:	20	,	may25:	35	,	jun25:	26	,	jul25:	22	,	aug25:	19	,	sep25:	17	,	oct25: 	24	,	nov25:	37	,	des25:	47	,	jan26:	29	,	feb26:	22	},
-{	type:	'KTB'	,	region:	'KLM'	,	branch:	'PONTIANAK'	,	model:	'Actual'	,	fy22:	40	,	fy23:	52	,	fy24:	28	,	fy25:	20	,	mar25:	16	,	apr25:	32	,	may25:	20	,	jun25:	15	,	jul25:	25	,	aug25:	14	,	sep25:	15	,	oct25: 	28	,	nov25:	8	,	des25:	14	,	jan26:	28	,	feb26:	17	},
-{	type:	'KTB'	,	region:	'KLM'	,	branch:	'BALIKPAPAN'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.51	,	fy23:	0.26	,	fy24:	0.10	,	fy25:	0.55	,	mar25:	0.35	,	apr25:	0.32	,	may25:	0.56	,	jun25:	0.70	,	jul25:	0.46	,	aug25:	0.58	,	sep25:	1.73	,	oct25: 	0.46	,	nov25:	0.40	,	des25:	0.48	,	jan26:	0.67	,	feb26:	0.57	},
-{	type:	'KTB'	,	region:	'KLM'	,	branch:	'BANJARMASIN'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.93	,	fy23:	0.53	,	fy24:	0.74	,	fy25:	1.13	,	mar25:	0.93	,	apr25:	0.93	,	may25:	0.67	,	jun25:	1.40	,	jul25:	1.59	,	aug25:	2.00	,	sep25:	1.00	,	oct25: 	1.35	,	nov25:	1.27	,	des25:	1.60	,	jan26:	1.06	,	feb26:	0.86	},
-{	type:	'KTB'	,	region:	'KLM'	,	branch:	'MAKASSAR'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.33	,	fy23:	0.19	,	fy24:	0.26	,	fy25:	0.44	,	mar25:	0.25	,	apr25:	0.50	,	may25:	0.81	,	jun25:	0.60	,	jul25:	0.36	,	aug25:	0.38	,	sep25:	0.30	,	oct25: 	0.44	,	nov25:	0.60	,	des25:	0.97	,	jan26:	0.63	,	feb26:	0.36	},
-{	type:	'KTB'	,	region:	'KLM'	,	branch:	'PONTIANAK'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.51	,	fy23:	0.90	,	fy24:	0.68	,	fy25:	0.77	,	mar25:	2.13	,	apr25:	1.88	,	may25:	4.00	,	jun25:	2.38	,	jul25:	4.17	,	aug25:	0.50	,	sep25:	0.65	,	oct25: 	0.43	,	nov25:	0.27	,	des25:	0.54	,	jan26:	0.74	,	feb26:	0.57	},
-{	type:	'KTB'	,	region:	'KLM'	,	branch:	'BALIKPAPAN'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.24	,	fy23:	0.13	,	fy24:	0.06	,	fy25:	0.25	,	mar25:	0.12	,	apr25:	0.11	,	may25:	0.20	,	jun25:	0.21	,	jul25:	0.20	,	aug25:	0.24	,	sep25:	0.40	,	oct25: 	0.22	,	nov25:	0.18	,	des25:	0.30	,	jan26:	0.43	,	feb26:	0.40	},
-{	type:	'KTB'	,	region:	'KLM'	,	branch:	'BANJARMASIN'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.58	,	fy23:	0.35	,	fy24:	0.33	,	fy25:	0.29	,	mar25:	0.44	,	apr25:	0.37	,	may25:	0.39	,	jun25:	0.55	,	jul25:	0.44	,	aug25:	0.45	,	sep25:	0.24	,	oct25: 	0.34	,	nov25:	0.24	,	des25:	0.48	,	jan26:	0.17	,	feb26:	0.08	},
-{	type:	'KTB'	,	region:	'KLM'	,	branch:	'MAKASSAR'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.29	,	fy23:	0.17	,	fy24:	0.18	,	fy25:	0.30	,	mar25:	0.15	,	apr25:	0.27	,	may25:	0.65	,	jun25:	0.25	,	jul25:	0.26	,	aug25:	0.21	,	sep25:	0.24	,	oct25: 	0.32	,	nov25:	0.38	,	des25:	0.64	,	jan26:	0.39	,	feb26:	0.30	},
-{	type:	'KTB'	,	region:	'KLM'	,	branch:	'PONTIANAK'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.35	,	fy23:	0.64	,	fy24:	0.40	,	fy25:	0.33	,	mar25:	0.35	,	apr25:	0.46	,	may25:	0.24	,	jun25:	0.35	,	jul25:	0.96	,	aug25:	0.20	,	sep25:	0.22	,	oct25: 	0.33	,	nov25:	0.19	,	des25:	0.25	,	jan26:	0.39	,	feb26:	0.35	},
 {	type:	'KTB'	,	region:	'NS'	,	branch:	'MEDAN II'	,	model:	'TARGET'	,	fy22:	0	,	fy23:	0	,	fy24:	0	,	fy25:	0	,	mar25:	0	,	apr25:	0	,	may25:	0	,	jun25:	0	,	jul25:	0	,	aug25:	0	,	sep25:	0	,	oct25: 	0	,	nov25:	0	,	des25:	0	,	jan26:	0	,	feb26:	0	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'BUKIT TINGGI'	,	model:	'TARGET'	,	fy22:	10	,	fy23:	10	,	fy24:	5	,	fy25:	4	,	mar25:	4	,	apr25:	5	,	may25:	5	,	jun25:	5	,	jul25:	2	,	aug25:	1	,	sep25:	3	,	oct25: 	1	,	nov25:	5	,	des25:	6	,	jan26:	6	,	feb26:	6	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'PADANG SIDEMPUAN'	,	model:	'TARGET'	,	fy22:	22	,	fy23:	21	,	fy24:	11	,	fy25:	8	,	mar25:	9	,	apr25:	8	,	may25:	8	,	jun25:	8	,	jul25:	6	,	aug25:	6	,	sep25:	10	,	oct25: 	8	,	nov25:	7	,	des25:	8	,	jan26:	8	,	feb26:	8	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'RANTAU PRAPAT'	,	model:	'TARGET'	,	fy22:	33	,	fy23:	26	,	fy24:	14	,	fy25:	7	,	mar25:	11	,	apr25:	9	,	may25:	9	,	jun25:	9	,	jul25:	5	,	aug25:	4	,	sep25:	7	,	oct25: 	6	,	nov25:	6	,	des25:	8	,	jan26:	8	,	feb26:	8	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'PADANG'	,	model:	'TARGET'	,	fy22:	27	,	fy23:	28	,	fy24:	15	,	fy25:	7	,	mar25:	12	,	apr25:	8	,	may25:	8	,	jun25:	8	,	jul25:	4	,	aug25:	5	,	sep25:	10	,	oct25: 	11	,	nov25:	5	,	des25:	8	,	jan26:	8	,	feb26:	8	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'DURI'	,	model:	'TARGET'	,	fy22:	32	,	fy23:	39	,	fy24:	21	,	fy25:	23	,	mar25:	16	,	apr25:	16	,	may25:	16	,	jun25:	16	,	jul25:	31	,	aug25:	29	,	sep25:	30	,	oct25: 	34	,	nov25:	38	,	des25:	15	,	jan26:	15	,	feb26:	15	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'MEDAN'	,	model:	'TARGET'	,	fy22:	107	,	fy23:	98	,	fy24:	51	,	fy25:	43	,	mar25:	40	,	apr25:	46	,	may25:	46	,	jun25:	46	,	jul25:	44	,	aug25:	33	,	sep25:	41	,	oct25: 	42	,	nov25:	42	,	des25:	45	,	jan26:	45	,	feb26:	45	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'PEKANBARU'	,	model:	'TARGET'	,	fy22:	110	,	fy23:	129	,	fy24:	68	,	fy25:	67	,	mar25:	53	,	apr25:	51	,	may25:	51	,	jun25:	51	,	jul25:	101	,	aug25:	95	,	sep25:	80	,	oct25: 	75	,	nov25:	85	,	des25:	50	,	jan26:	50	,	feb26:	50	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'BUKIT TINGGI'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'BUKIT TINGGI'	,	model:	'TARGET'	,	fy22:	10	,	fy23:	10	,	fy24:	5	,	fy25:	4	,	mar25:	4	,	apr25:	5	,	may25:	 5 	,	jun25:	5	,	jul25:	2	,	aug25:	1	,	sep25:	3	,	oct25: 	1	,	nov25:	5	,	des25:	6	,	jan26:	6	,	feb26:	6	},
+{	type:	'KTB'	,	region:	'SS'	,	branch:	'MUARA BUNGO'	,	model:	'TARGET'	,	fy22:	16	,	fy23:	10	,	fy24:	6	,	fy25:	3	,	mar25:	5	,	apr25:	6	,	may25:	 6 	,	jun25:	6	,	jul25:	1	,	aug25:	1	,	sep25:	1	,	oct25: 	1	,	nov25:	1	,	des25:	5	,	jan26:	5	,	feb26:	5	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'JEMBER'	,	model:	'TARGET'	,	fy22:	20	,	fy23:	10	,	fy24:	9	,	fy25:	10	,	mar25:	8	,	apr25:	11	,	may25:	 11 	,	jun25:	11	,	jul25:	3	,	aug25:	8	,	sep25:	16	,	oct25: 	8	,	nov25:	7	,	des25:	11	,	jan26:	11	,	feb26:	11	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'PADANG SIDEMPUAN'	,	model:	'TARGET'	,	fy22:	22	,	fy23:	21	,	fy24:	11	,	fy25:	8	,	mar25:	9	,	apr25:	8	,	may25:	 8 	,	jun25:	8	,	jul25:	6	,	aug25:	6	,	sep25:	10	,	oct25: 	8	,	nov25:	7	,	des25:	8	,	jan26:	8	,	feb26:	8	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'PURWOKERTO'	,	model:	'TARGET'	,	fy22:	20	,	fy23:	11	,	fy24:	11	,	fy25:	14	,	mar25:	9	,	apr25:	13	,	may25:	 13 	,	jun25:	13	,	jul25:	18	,	aug25:	16	,	sep25:	10	,	oct25: 	14	,	nov25:	14	,	des25:	14	,	jan26:	14	,	feb26:	14	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'DENPASAR'	,	model:	'TARGET'	,	fy22:	14	,	fy23:	12	,	fy24:	12	,	fy25:	14	,	mar25:	10	,	apr25:	13	,	may25:	 13 	,	jun25:	13	,	jul25:	7	,	aug25:	23	,	sep25:	18	,	oct25: 	16	,	nov25:	7	,	des25:	13	,	jan26:	13	,	feb26:	13	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'TARGET'	,	fy22:	6	,	fy23:	14	,	fy24:	13	,	fy25:	11	,	mar25:	10	,	apr25:	11	,	may25:	 11 	,	jun25:	11	,	jul25:	9	,	aug25:	9	,	sep25:	22	,	oct25: 	9	,	nov25:	8	,	des25:	10	,	jan26:	10	,	feb26:	10	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'RANTAU PRAPAT'	,	model:	'TARGET'	,	fy22:	33	,	fy23:	26	,	fy24:	14	,	fy25:	7	,	mar25:	11	,	apr25:	9	,	may25:	 9 	,	jun25:	9	,	jul25:	5	,	aug25:	4	,	sep25:	7	,	oct25: 	6	,	nov25:	6	,	des25:	8	,	jan26:	8	,	feb26:	8	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'TANGERANG'	,	model:	'TARGET'	,	fy22:	9	,	fy23:	16	,	fy24:	15	,	fy25:	22	,	mar25:	11	,	apr25:	22	,	may25:	 22 	,	jun25:	22	,	jul25:	19	,	aug25:	11	,	sep25:	10	,	oct25: 	37	,	nov25:	40	,	des25:	20	,	jan26:	20	,	feb26:	20	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'PADANG'	,	model:	'TARGET'	,	fy22:	27	,	fy23:	28	,	fy24:	15	,	fy25:	7	,	mar25:	12	,	apr25:	8	,	may25:	 8 	,	jun25:	8	,	jul25:	4	,	aug25:	5	,	sep25:	10	,	oct25: 	11	,	nov25:	5	,	des25:	8	,	jan26:	8	,	feb26:	8	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'SOLO'	,	model:	'TARGET'	,	fy22:	21	,	fy23:	15	,	fy24:	14	,	fy25:	11	,	mar25:	12	,	apr25:	11	,	may25:	 11 	,	jun25:	11	,	jul25:	14	,	aug25:	11	,	sep25:	17	,	oct25: 	12	,	nov25:	7	,	des25:	9	,	jan26:	9	,	feb26:	9	},
+{	type:	'KTB'	,	region:	'WJ'	,	branch:	'KARAWANG'	,	model:	'TARGET'	,	fy22:	29	,	fy23:	22	,	fy24:	18	,	fy25:	16	,	mar25:	13	,	apr25:	16	,	may25:	 16 	,	jun25:	16	,	jul25:	15	,	aug25:	6	,	sep25:	17	,	oct25: 	17	,	nov25:	23	,	des25:	16	,	jan26:	16	,	feb26:	16	},
+{	type:	'KTB'	,	region:	'WJ'	,	branch:	'CIREBON'	,	model:	'TARGET'	,	fy22:	36	,	fy23:	23	,	fy24:	19	,	fy25:	10	,	mar25:	13	,	apr25:	14	,	may25:	 14 	,	jun25:	14	,	jul25:	4	,	aug25:	6	,	sep25:	6	,	oct25: 	5	,	nov25:	13	,	des25:	13	,	jan26:	13	,	feb26:	13	},
+{	type:	'KTB'	,	region:	'SS'	,	branch:	'JAMBI'	,	model:	'TARGET'	,	fy22:	93	,	fy23:	36	,	fy24:	25	,	fy25:	27	,	mar25:	14	,	apr25:	25	,	may25:	 25 	,	jun25:	25	,	jul25:	40	,	aug25:	16	,	sep25:	29	,	oct25: 	24	,	nov25:	38	,	des25:	23	,	jan26:	23	,	feb26:	23	},
+{	type:	'KTB'	,	region:	'KLM'	,	branch:	'BALIKPAPAN'	,	model:	'TARGET'	,	fy22:	52	,	fy23:	32	,	fy24:	22	,	fy25:	26	,	mar25:	14	,	apr25:	24	,	may25:	 24 	,	jun25:	24	,	jul25:	29	,	aug25:	28	,	sep25:	47	,	oct25: 	26	,	nov25:	29	,	des25:	17	,	jan26:	17	,	feb26:	17	},
+{	type:	'KTB'	,	region:	'KLM'	,	branch:	'PONTIANAK'	,	model:	'TARGET'	,	fy22:	71	,	fy23:	34	,	fy24:	22	,	fy25:	48	,	mar25:	14	,	apr25:	67	,	may25:	 67 	,	jun25:	67	,	jul25:	16	,	aug25:	29	,	sep25:	29	,	oct25: 	22	,	nov25:	33	,	des25:	64	,	jan26:	64	,	feb26:	64	},
+{	type:	'KTB'	,	region:	'WJ'	,	branch:	'SUKABUMI'	,	model:	'TARGET'	,	fy22:	25	,	fy23:	19	,	fy24:	18	,	fy25:	9	,	mar25:	14	,	apr25:	9	,	may25:	 9 	,	jun25:	9	,	jul25:	13	,	aug25:	13	,	sep25:	8	,	oct25: 	11	,	nov25:	9	,	des25:	7	,	jan26:	7	,	feb26:	7	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'DURI'	,	model:	'TARGET'	,	fy22:	32	,	fy23:	39	,	fy24:	21	,	fy25:	23	,	mar25:	16	,	apr25:	16	,	may25:	 16 	,	jun25:	16	,	jul25:	31	,	aug25:	29	,	sep25:	30	,	oct25: 	34	,	nov25:	38	,	des25:	15	,	jan26:	15	,	feb26:	15	},
+{	type:	'KTB'	,	region:	'KLM'	,	branch:	'BANJARMASIN'	,	model:	'TARGET'	,	fy22:	65	,	fy23:	46	,	fy24:	29	,	fy25:	45	,	mar25:	19	,	apr25:	50	,	may25:	 50 	,	jun25:	50	,	jul25:	40	,	aug25:	46	,	sep25:	40	,	oct25: 	49	,	nov25:	28	,	des25:	49	,	jan26:	49	,	feb26:	49	},
+{	type:	'KTB'	,	region:	'KLM'	,	branch:	'MAKASSAR'	,	model:	'TARGET'	,	fy22:	79	,	fy23:	54	,	fy24:	33	,	fy25:	39	,	mar25:	21	,	apr25:	44	,	may25:	 44 	,	jun25:	44	,	jul25:	26	,	aug25:	42	,	sep25:	43	,	oct25: 	40	,	nov25:	43	,	des25:	34	,	jan26:	34	,	feb26:	34	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'SEMARANG'	,	model:	'TARGET'	,	fy22:	38	,	fy23:	29	,	fy24:	28	,	fy25:	18	,	mar25:	25	,	apr25:	20	,	may25:	 20 	,	jun25:	20	,	jul25:	20	,	aug25:	20	,	sep25:	24	,	oct25: 	12	,	nov25:	15	,	des25:	17	,	jan26:	17	,	feb26:	17	},
+{	type:	'KTB'	,	region:	'SS'	,	branch:	'LAMPUNG'	,	model:	'TARGET'	,	fy22:	39	,	fy23:	29	,	fy24:	17	,	fy25:	17	,	mar25:	25	,	apr25:	18	,	may25:	 18 	,	jun25:	18	,	jul25:	15	,	aug25:	10	,	sep25:	15	,	oct25: 	15	,	nov25:	28	,	des25:	17	,	jan26:	17	,	feb26:	17	},
+{	type:	'KTB'	,	region:	'SS'	,	branch:	'PALEMBANG'	,	model:	'TARGET'	,	fy22:	112	,	fy23:	53	,	fy24:	31	,	fy25:	38	,	mar25:	28	,	apr25:	30	,	may25:	 30 	,	jun25:	30	,	jul25:	39	,	aug25:	60	,	sep25:	34	,	oct25: 	48	,	nov25:	55	,	des25:	32	,	jan26:	32	,	feb26:	32	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'CILEGON'	,	model:	'TARGET'	,	fy22:	21	,	fy23:	42	,	fy24:	38	,	fy25:	19	,	mar25:	30	,	apr25:	21	,	may25:	 21 	,	jun25:	21	,	jul25:	19	,	aug25:	21	,	sep25:	14	,	oct25: 	20	,	nov25:	15	,	des25:	19	,	jan26:	19	,	feb26:	19	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'SOUTH JAKARTA'	,	model:	'TARGET'	,	fy22:	80	,	fy23:	48	,	fy24:	38	,	fy25:	28	,	mar25:	32	,	apr25:	31	,	may25:	 31 	,	jun25:	31	,	jul25:	19	,	aug25:	25	,	sep25:	14	,	oct25: 	15	,	nov25:	42	,	des25:	32	,	jan26:	32	,	feb26:	32	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'MALANG'	,	model:	'TARGET'	,	fy22:	37	,	fy23:	39	,	fy24:	40	,	fy25:	23	,	mar25:	34	,	apr25:	36	,	may25:	 36 	,	jun25:	36	,	jul25:	6	,	aug25:	4	,	sep25:	10	,	oct25: 	12	,	nov25:	11	,	des25:	35	,	jan26:	35	,	feb26:	35	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'NORTH JAKARTA'	,	model:	'TARGET'	,	fy22:	37	,	fy23:	49	,	fy24:	43	,	fy25:	26	,	mar25:	34	,	apr25:	28	,	may25:	 28 	,	jun25:	28	,	jul25:	23	,	aug25:	30	,	sep25:	37	,	oct25: 	21	,	nov25:	18	,	des25:	23	,	jan26:	23	,	feb26:	23	},
+{	type:	'KTB'	,	region:	'WJ'	,	branch:	'BANDUNG'	,	model:	'TARGET'	,	fy22:	69	,	fy23:	57	,	fy24:	52	,	fy25:	31	,	mar25:	39	,	apr25:	28	,	may25:	 28 	,	jun25:	28	,	jul25:	29	,	aug25:	39	,	sep25:	35	,	oct25: 	39	,	nov25:	32	,	des25:	28	,	jan26:	28	,	feb26:	28	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'MEDAN'	,	model:	'TARGET'	,	fy22:	107	,	fy23:	98	,	fy24:	51	,	fy25:	43	,	mar25:	40	,	apr25:	46	,	may25:	 46 	,	jun25:	46	,	jul25:	44	,	aug25:	33	,	sep25:	41	,	oct25: 	42	,	nov25:	42	,	des25:	45	,	jan26:	45	,	feb26:	45	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'SURABAYA'	,	model:	'TARGET'	,	fy22:	62	,	fy23:	47	,	fy24:	46	,	fy25:	47	,	mar25:	41	,	apr25:	42	,	may25:	 42 	,	jun25:	42	,	jul25:	80	,	aug25:	60	,	sep25:	33	,	oct25: 	38	,	nov25:	63	,	des25:	40	,	jan26:	40	,	feb26:	40	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'PEKANBARU'	,	model:	'TARGET'	,	fy22:	110	,	fy23:	129	,	fy24:	68	,	fy25:	67	,	mar25:	53	,	apr25:	51	,	may25:	 51 	,	jun25:	51	,	jul25:	101	,	aug25:	95	,	sep25:	80	,	oct25: 	75	,	nov25:	85	,	des25:	50	,	jan26:	50	,	feb26:	50	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'CENTRAL JAKARTA'	,	model:	'TARGET'	,	fy22:	60	,	fy23:	128	,	fy24:	112	,	fy25:	110	,	mar25:	93	,	apr25:	104	,	may25:	 104 	,	jun25:	104	,	jul25:	131	,	aug25:	121	,	sep25:	119	,	oct25: 	132	,	nov25:	85	,	des25:	102	,	jan26:	102	,	feb26:	102	},
+{	type:	'KTB'	,	region:	'KLM'	,	branch:	'BALIKPAPAN'	,	model:	'Nat Pen %'	,	fy22:	0	,	fy23:	0	,	fy24:	0	,	fy25:	0	,	mar25:	0	,	apr25:	0	,	may25:	0.29	,	jun25:	0	,	jul25:	0	,	aug25:	0	,	sep25:	0	,	oct25: 	0	,	nov25:	0	,	des25:	0	,	jan26:	0	,	feb26:	0	},
+{	type:	'KTB'	,	region:	'WJ'	,	branch:	'BANDUNG'	,	model:	'Nat Pen %'	,	fy22:	0	,	fy23:	0	,	fy24:	0	,	fy25:	0	,	mar25:	0	,	apr25:	0	,	may25:	0.29	,	jun25:	0	,	jul25:	0	,	aug25:	0	,	sep25:	0	,	oct25: 	0	,	nov25:	0	,	des25:	0	,	jan26:	0	,	feb26:	0	},
+{	type:	'KTB'	,	region:	'KLM'	,	branch:	'BANJARMASIN'	,	model:	'Nat Pen %'	,	fy22:	0	,	fy23:	0	,	fy24:	0	,	fy25:	0	,	mar25:	0	,	apr25:	0	,	may25:	0.29	,	jun25:	0	,	jul25:	0	,	aug25:	0	,	sep25:	0	,	oct25: 	0	,	nov25:	0	,	des25:	0	,	jan26:	0	,	feb26:	0	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'Nat Pen %'	,	fy22:	0	,	fy23:	0	,	fy24:	0	,	fy25:	0	,	mar25:	0	,	apr25:	0	,	may25:	0.29	,	jun25:	0	,	jul25:	0	,	aug25:	0	,	sep25:	0	,	oct25: 	0	,	nov25:	0	,	des25:	0	,	jan26:	0	,	feb26:	0	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'BUKIT TINGGI'	,	model:	'Nat Pen %'	,	fy22:	0	,	fy23:	0	,	fy24:	0	,	fy25:	0	,	mar25:	0	,	apr25:	0	,	may25:	0.29	,	jun25:	0	,	jul25:	0	,	aug25:	0	,	sep25:	0	,	oct25: 	0	,	nov25:	0	,	des25:	0	,	jan26:	0	,	feb26:	0	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'CENTRAL JAKARTA'	,	model:	'Nat Pen %'	,	fy22:	0	,	fy23:	0	,	fy24:	0	,	fy25:	0	,	mar25:	0	,	apr25:	0	,	may25:	0.29	,	jun25:	0	,	jul25:	0	,	aug25:	0	,	sep25:	0	,	oct25: 	0	,	nov25:	0	,	des25:	0	,	jan26:	0	,	feb26:	0	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'CILEGON'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
+{	type:	'KTB'	,	region:	'WJ'	,	branch:	'CIREBON'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'DENPASAR'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
 {	type:	'KTB'	,	region:	'NS'	,	branch:	'DURI'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
+{	type:	'KTB'	,	region:	'SS'	,	branch:	'JAMBI'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'JEMBER'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
+{	type:	'KTB'	,	region:	'WJ'	,	branch:	'KARAWANG'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
+{	type:	'KTB'	,	region:	'SS'	,	branch:	'LAMPUNG'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
+{	type:	'KTB'	,	region:	'KLM'	,	branch:	'MAKASSAR'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'MALANG'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
 {	type:	'KTB'	,	region:	'NS'	,	branch:	'MEDAN II'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
+{	type:	'KTB'	,	region:	'SS'	,	branch:	'MUARA BUNGO'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
 {	type:	'KTB'	,	region:	'NS'	,	branch:	'PADANG'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
 {	type:	'KTB'	,	region:	'NS'	,	branch:	'PADANG SIDEMPUAN'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
+{	type:	'KTB'	,	region:	'SS'	,	branch:	'PALEMBANG'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
 {	type:	'KTB'	,	region:	'NS'	,	branch:	'PEKANBARU'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'RANTAU PRAPAT'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'MEDAN'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'BUKIT TINGGI'	,	model:	'Actual'	,	fy22:	12	,	fy23:	7	,	fy24:	6	,	fy25:	3	,	mar25:	6	,	apr25:	3	,	may25:	3	,	jun25:	4	,	jul25:	2	,	aug25:	3	,	sep25:	0	,	oct25: 	1	,	nov25:	3	,	des25:	11	,	jan26:	5	,	feb26:	2	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'DURI'	,	model:	'Actual'	,	fy22:	34	,	fy23:	17	,	fy24:	10	,	fy25:	17	,	mar25:	9	,	apr25:	14	,	may25:	14	,	jun25:	25	,	jul25:	15	,	aug25:	17	,	sep25:	20	,	oct25: 	23	,	nov25:	20	,	des25:	31	,	jan26:	23	,	feb26:	19	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'MEDAN'	,	model:	'Actual'	,	fy22:	137	,	fy23:	74	,	fy24:	53	,	fy25:	51	,	mar25:	31	,	apr25:	52	,	may25:	60	,	jun25:	51	,	jul25:	53	,	aug25:	40	,	sep25:	37	,	oct25: 	41	,	nov25:	26	,	des25:	24	,	jan26:	32	,	feb26:	24	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'MEDAN II'	,	model:	'Actual'	,	fy22:	0	,	fy23:	0	,	fy24:	0	,	fy25:	0	,	mar25:	0	,	apr25:	0	,	may25:	0	,	jun25:	0	,	jul25:	0	,	aug25:	0	,	sep25:	0	,	oct25: 	0	,	nov25:	0	,	des25:	0	,	jan26:	0	,	feb26:	0	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'PADANG'	,	model:	'Actual'	,	fy22:	22	,	fy23:	15	,	fy24:	7	,	fy25:	8	,	mar25:	8	,	apr25:	2	,	may25:	13	,	jun25:	3	,	jul25:	6	,	aug25:	8	,	sep25:	8	,	oct25: 	11	,	nov25:	9	,	des25:	12	,	jan26:	14	,	feb26:	5	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'PADANG SIDEMPUAN'	,	model:	'Actual'	,	fy22:	6	,	fy23:	4	,	fy24:	3	,	fy25:	3	,	mar25:	2	,	apr25:	3	,	may25:	2	,	jun25:	3	,	jul25:	2	,	aug25:	4	,	sep25:	5	,	oct25: 	8	,	nov25:	9	,	des25:	8	,	jan26:	10	,	feb26:	6	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'PEKANBARU'	,	model:	'Actual'	,	fy22:	157	,	fy23:	87	,	fy24:	47	,	fy25:	60	,	mar25:	52	,	apr25:	40	,	may25:	44	,	jun25:	66	,	jul25:	70	,	aug25:	53	,	sep25:	52	,	oct25: 	61	,	nov25:	85	,	des25:	64	,	jan26:	66	,	feb26:	54	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'RANTAU PRAPAT'	,	model:	'Actual'	,	fy22:	18	,	fy23:	8	,	fy24:	4	,	fy25:	5	,	mar25:	0	,	apr25:	0	,	may25:	0	,	jun25:	5	,	jul25:	0	,	aug25:	0	,	sep25:	6	,	oct25: 	7	,	nov25:	2	,	des25:	10	,	jan26:	8	,	feb26:	5	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'BUKIT TINGGI'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.86	,	fy23:	1.00	,	fy24:	0.78	,	fy25:	0.00	,	mar25:	0.86	,	apr25:	1.00	,	may25:	1.00	,	jun25:	0.57	,	jul25:	1.00	,	aug25:	1.00	,	sep25:	0.50	,	oct25: 	0.67	,	nov25:	1.00	,	des25:	0.86	,	jan26:	1.00	,	feb26:	0.00	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'MEDAN'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.82	,	fy23:	0.59	,	fy24:	0.60	,	fy25:	0.00	,	mar25:	0.66	,	apr25:	0.80	,	may25:	0.75	,	jun25:	0.76	,	jul25:	0.62	,	aug25:	0.57	,	sep25:	0.66	,	oct25: 	0.67	,	nov25:	0.82	,	des25:	0.47	,	jan26:	0.57	,	feb26:	0.00	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'PADANG'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.55	,	fy23:	0.83	,	fy24:	0.59	,	fy25:	0.77	,	mar25:	0.55	,	apr25:	0.29	,	may25:	1.14	,	jun25:	0.38	,	jul25:	0.67	,	aug25:	0.47	,	sep25:	0.69	,	oct25: 	0.91	,	nov25:	0.67	,	des25:	1.00	,	jan26:	1.33	,	feb26:	0.75	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'PEKANBARU'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.67	,	fy23:	0.85	,	fy24:	0.54	,	fy25:	0.68	,	mar25:	0.63	,	apr25:	0.94	,	may25:	0.49	,	jun25:	0.61	,	jul25:	1.43	,	aug25:	0.71	,	sep25:	0.63	,	oct25: 	0.55	,	nov25:	0.56	,	des25:	0.69	,	jan26:	0.80	,	feb26:	0.95	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'DURI'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.85	,	fy23:	0.71	,	fy24:	0.44	,	fy25:	0.00	,	mar25:	0.60	,	apr25:	0.70	,	may25:	0.82	,	jun25:	0.78	,	jul25:	0.71	,	aug25:	0.57	,	sep25:	0.60	,	oct25: 	0.51	,	nov25:	0.61	,	des25:	0.54	,	jan26:	0.50	,	feb26:	0.00	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'PADANG SIDEMPUAN'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.88	,	fy23:	0.92	,	fy24:	0.94	,	fy25:	0.00	,	mar25:	1.00	,	apr25:	1.00	,	may25:	1.00	,	jun25:	1.00	,	jul25:	1.00	,	aug25:	1.00	,	sep25:	0.00	,	oct25: 	1.00	,	nov25:	1.00	,	des25:	1.00	,	jan26:	1.00	,	feb26:	0.00	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'RANTAU PRAPAT'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.93	,	fy23:	1.19	,	fy24:	0.17	,	fy25:	0.00	,	mar25:	0.00	,	apr25:	0.00	,	may25:	0.00	,	jun25:	0.83	,	jul25:	0.00	,	aug25:	0.00	,	sep25:	0.75	,	oct25: 	0.80	,	nov25:	0.80	,	des25:	0.63	,	jan26:	0.00	,	feb26:	0.00	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'BUKIT TINGGI'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.71	,	fy23:	0.70	,	fy24:	0.55	,	fy25:	0.00	,	mar25:	0.55	,	apr25:	0.43	,	may25:	0.38	,	jun25:	0.50	,	jul25:	0.67	,	aug25:	0.50	,	sep25:	0.38	,	oct25: 	0.67	,	nov25:	0.71	,	des25:	0.67	,	jan26:	0.67	,	feb26:	0.00	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'MEDAN'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.65	,	fy23:	0.47	,	fy24:	0.38	,	fy25:	0.00	,	mar25:	0.38	,	apr25:	0.47	,	may25:	0.51	,	jun25:	0.53	,	jul25:	0.41	,	aug25:	0.37	,	sep25:	0.39	,	oct25: 	0.47	,	nov25:	0.38	,	des25:	0.24	,	jan26:	0.43	,	feb26:	0.00	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'PADANG'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.45	,	fy23:	0.65	,	fy24:	0.39	,	fy25:	0.53	,	mar25:	0.38	,	apr25:	0.13	,	may25:	1.00	,	jun25:	0.28	,	jul25:	0.30	,	aug25:	0.32	,	sep25:	0.56	,	oct25: 	0.63	,	nov25:	0.60	,	des25:	0.76	,	jan26:	0.94	,	feb26:	0.40	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'PEKANBARU'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.59	,	fy23:	0.63	,	fy24:	0.33	,	fy25:	0.47	,	mar25:	0.37	,	apr25:	0.38	,	may25:	0.31	,	jun25:	0.44	,	jul25:	0.61	,	aug25:	0.48	,	sep25:	0.46	,	oct25: 	0.47	,	nov25:	0.50	,	des25:	0.45	,	jan26:	0.52	,	feb26:	0.61	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'DURI'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.79	,	fy23:	0.56	,	fy24:	0.36	,	fy25:	0.00	,	mar25:	0.56	,	apr25:	0.44	,	may25:	0.78	,	jun25:	0.64	,	jul25:	0.50	,	aug25:	0.53	,	sep25:	0.52	,	oct25: 	0.47	,	nov25:	0.40	,	des25:	0.43	,	jan26:	0.40	,	feb26:	0.00	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'PADANG SIDEMPUAN'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.81	,	fy23:	0.90	,	fy24:	0.92	,	fy25:	0.00	,	mar25:	1.00	,	apr25:	0.75	,	may25:	1.00	,	jun25:	1.00	,	jul25:	1.00	,	aug25:	0.67	,	sep25:	0.00	,	oct25: 	0.67	,	nov25:	0.75	,	des25:	1.00	,	jan26:	1.00	,	feb26:	0.00	},
-{	type:	'KTB'	,	region:	'NS'	,	branch:	'RANTAU PRAPAT'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.84	,	fy23:	1.09	,	fy24:	0.17	,	fy25:	0.00	,	mar25:	0.00	,	apr25:	0.00	,	may25:	0.00	,	jun25:	0.56	,	jul25:	0.00	,	aug25:	0.00	,	sep25:	0.50	,	oct25: 	0.80	,	nov25:	0.40	,	des25:	0.63	,	jan26:	0.00	,	feb26:	0.00	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'JEMBER'	,	model:	'TARGET'	,	fy22:	20	,	fy23:	10	,	fy24:	9	,	fy25:	10	,	mar25:	8	,	apr25:	11	,	may25:	11	,	jun25:	11	,	jul25:	3	,	aug25:	8	,	sep25:	16	,	oct25: 	8	,	nov25:	7	,	des25:	11	,	jan26:	11	,	feb26:	11	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'PURWOKERTO'	,	model:	'TARGET'	,	fy22:	20	,	fy23:	11	,	fy24:	11	,	fy25:	14	,	mar25:	9	,	apr25:	13	,	may25:	13	,	jun25:	13	,	jul25:	18	,	aug25:	16	,	sep25:	10	,	oct25: 	14	,	nov25:	14	,	des25:	14	,	jan26:	14	,	feb26:	14	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'DENPASAR'	,	model:	'TARGET'	,	fy22:	14	,	fy23:	12	,	fy24:	12	,	fy25:	14	,	mar25:	10	,	apr25:	13	,	may25:	13	,	jun25:	13	,	jul25:	7	,	aug25:	23	,	sep25:	18	,	oct25: 	16	,	nov25:	7	,	des25:	13	,	jan26:	13	,	feb26:	13	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'SOLO'	,	model:	'TARGET'	,	fy22:	21	,	fy23:	15	,	fy24:	14	,	fy25:	11	,	mar25:	12	,	apr25:	11	,	may25:	11	,	jun25:	11	,	jul25:	14	,	aug25:	11	,	sep25:	17	,	oct25: 	12	,	nov25:	7	,	des25:	9	,	jan26:	9	,	feb26:	9	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'SEMARANG'	,	model:	'TARGET'	,	fy22:	38	,	fy23:	29	,	fy24:	28	,	fy25:	18	,	mar25:	25	,	apr25:	20	,	may25:	20	,	jun25:	20	,	jul25:	20	,	aug25:	20	,	sep25:	24	,	oct25: 	12	,	nov25:	15	,	des25:	17	,	jan26:	17	,	feb26:	17	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'MALANG'	,	model:	'TARGET'	,	fy22:	37	,	fy23:	39	,	fy24:	40	,	fy25:	23	,	mar25:	34	,	apr25:	36	,	may25:	36	,	jun25:	36	,	jul25:	6	,	aug25:	4	,	sep25:	10	,	oct25: 	12	,	nov25:	11	,	des25:	35	,	jan26:	35	,	feb26:	35	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'SURABAYA'	,	model:	'TARGET'	,	fy22:	62	,	fy23:	47	,	fy24:	46	,	fy25:	47	,	mar25:	41	,	apr25:	42	,	may25:	42	,	jun25:	42	,	jul25:	80	,	aug25:	60	,	sep25:	33	,	oct25: 	38	,	nov25:	63	,	des25:	40	,	jan26:	40	,	feb26:	40	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'DENPASAR'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'JEMBER'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'MALANG'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
+{	type:	'KTB'	,	region:	'KLM'	,	branch:	'PONTIANAK'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
 {	type:	'KTB'	,	region:	'SBY'	,	branch:	'PURWOKERTO'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'RANTAU PRAPAT'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
 {	type:	'KTB'	,	region:	'SBY'	,	branch:	'SEMARANG'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
 {	type:	'KTB'	,	region:	'SBY'	,	branch:	'SOLO'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'SURABAYA'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'DENPASAR'	,	model:	'Actual'	,	fy22:	16	,	fy23:	11	,	fy24:	14	,	fy25:	10	,	mar25:	11	,	apr25:	8	,	may25:	11	,	jun25:	15	,	jul25:	13	,	aug25:	14	,	sep25:	11	,	oct25: 	13	,	nov25:	10	,	des25:	7	,	jan26:	5	,	feb26:	8	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'JEMBER'	,	model:	'Actual'	,	fy22:	12	,	fy23:	12	,	fy24:	10	,	fy25:	8	,	mar25:	16	,	apr25:	11	,	may25:	8	,	jun25:	11	,	jul25:	5	,	aug25:	11	,	sep25:	13	,	oct25: 	3	,	nov25:	7	,	des25:	7	,	jan26:	10	,	feb26:	2	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'MALANG'	,	model:	'Actual'	,	fy22:	56	,	fy23:	29	,	fy24:	36	,	fy25:	20	,	mar25:	84	,	apr25:	18	,	may25:	12	,	jun25:	33	,	jul25:	6	,	aug25:	5	,	sep25:	32	,	oct25: 	33	,	nov25:	32	,	des25:	1	,	jan26:	6	,	feb26:	41	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'PURWOKERTO'	,	model:	'Actual'	,	fy22:	15	,	fy23:	12	,	fy24:	14	,	fy25:	10	,	mar25:	8	,	apr25:	11	,	may25:	3	,	jun25:	16	,	jul25:	10	,	aug25:	5	,	sep25:	9	,	oct25: 	14	,	nov25:	12	,	des25:	14	,	jan26:	10	,	feb26:	3	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'SEMARANG'	,	model:	'Actual'	,	fy22:	35	,	fy23:	19	,	fy24:	16	,	fy25:	16	,	mar25:	26	,	apr25:	11	,	may25:	23	,	jun25:	21	,	jul25:	21	,	aug25:	11	,	sep25:	13	,	oct25: 	15	,	nov25:	16	,	des25:	10	,	jan26:	18	,	feb26:	14	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'SOLO'	,	model:	'Actual'	,	fy22:	19	,	fy23:	13	,	fy24:	8	,	fy25:	10	,	mar25:	6	,	apr25:	5	,	may25:	8	,	jun25:	18	,	jul25:	12	,	aug25:	9	,	sep25:	9	,	oct25: 	14	,	nov25:	6	,	des25:	20	,	jan26:	3	,	feb26:	10	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'SURABAYA'	,	model:	'Actual'	,	fy22:	56	,	fy23:	41	,	fy24:	39	,	fy25:	38	,	mar25:	41	,	apr25:	21	,	may25:	28	,	jun25:	25	,	jul25:	49	,	aug25:	29	,	sep25:	29	,	oct25: 	32	,	nov25:	31	,	des25:	76	,	jan26:	45	,	feb26:	56	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'DENPASAR'	,	model:	'Branch Pen % wo Cash'	,	fy22:	1.52	,	fy23:	1.07	,	fy24:	0.70	,	fy25:	0.73	,	mar25:	0.69	,	apr25:	0.88	,	may25:	0.69	,	jun25:	1.15	,	jul25:	0.76	,	aug25:	1.00	,	sep25:	1.33	,	oct25: 	0.76	,	nov25:	0.67	,	des25:	0.62	,	jan26:	0.29	,	feb26:	0.40	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'JEMBER'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.85	,	fy23:	1.04	,	fy24:	0.91	,	fy25:	0.80	,	mar25:	1.89	,	apr25:	0.67	,	may25:	0.59	,	jun25:	6.00	,	jul25:	1.40	,	aug25:	0.58	,	sep25:	1.21	,	oct25: 	0.48	,	nov25:	0.43	,	des25:	0.81	,	jan26:	0.37	,	feb26:	0.40	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'MALANG'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.64	,	fy23:	0.34	,	fy24:	0.37	,	fy25:	1.08	,	mar25:	1.00	,	apr25:	0.67	,	may25:	0.67	,	jun25:	0.43	,	jul25:	0.64	,	aug25:	0.26	,	sep25:	1.57	,	oct25: 	1.50	,	nov25:	2.00	,	des25:	0.20	,	jan26:	1.00	,	feb26:	1.32	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'PURWOKERTO'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.53	,	fy23:	0.69	,	fy24:	0.76	,	fy25:	0.99	,	mar25:	0.71	,	apr25:	1.67	,	may25:	0.20	,	jun25:	1.11	,	jul25:	1.17	,	aug25:	0.63	,	sep25:	0.56	,	oct25: 	1.33	,	nov25:	2.20	,	des25:	1.60	,	jan26:	1.00	,	feb26:	0.40	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'SEMARANG'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.62	,	fy23:	0.74	,	fy24:	0.64	,	fy25:	0.63	,	mar25:	0.80	,	apr25:	0.77	,	may25:	0.71	,	jun25:	1.04	,	jul25:	0.62	,	aug25:	0.33	,	sep25:	0.43	,	oct25: 	0.25	,	nov25:	1.05	,	des25:	0.84	,	jan26:	0.84	,	feb26:	0.74	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'SOLO'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.43	,	fy23:	0.47	,	fy24:	0.37	,	fy25:	0.87	,	mar25:	0.53	,	apr25:	0.78	,	may25:	0.90	,	jun25:	0.28	,	jul25:	0.65	,	aug25:	0.69	,	sep25:	0.92	,	oct25: 	0.75	,	nov25:	2.20	,	des25:	1.46	,	jan26:	0.50	,	feb26:	1.57	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'SURABAYA'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.58	,	fy23:	0.52	,	fy24:	0.44	,	fy25:	0.56	,	mar25:	0.53	,	apr25:	0.40	,	may25:	0.36	,	jun25:	0.38	,	jul25:	0.91	,	aug25:	0.39	,	sep25:	0.57	,	oct25: 	0.41	,	nov25:	0.37	,	des25:	0.75	,	jan26:	0.81	,	feb26:	1.41	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'DENPASAR'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.64	,	fy23:	0.41	,	fy24:	0.45	,	fy25:	0.49	,	mar25:	0.58	,	apr25:	0.78	,	may25:	0.47	,	jun25:	0.68	,	jul25:	0.62	,	aug25:	0.64	,	sep25:	0.53	,	oct25: 	0.62	,	nov25:	0.45	,	des25:	0.36	,	jan26:	0.17	,	feb26:	0.29	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'JEMBER'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.66	,	fy23:	0.83	,	fy24:	0.80	,	fy25:	0.63	,	mar25:	1.82	,	apr25:	0.60	,	may25:	0.41	,	jun25:	3.27	,	jul25:	0.64	,	aug25:	0.48	,	sep25:	1.10	,	oct25: 	0.43	,	nov25:	0.40	,	des25:	0.64	,	jan26:	0.35	,	feb26:	0.14	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'MALANG'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.45	,	fy23:	0.20	,	fy24:	0.18	,	fy25:	0.73	,	mar25:	0.60	,	apr25:	0.14	,	may25:	0.15	,	jun25:	0.27	,	jul25:	0.44	,	aug25:	0.23	,	sep25:	1.38	,	oct25: 	1.31	,	nov25:	1.67	,	des25:	0.11	,	jan26:	0.67	,	feb26:	0.89	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'PURWOKERTO'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.43	,	fy23:	0.49	,	fy24:	0.50	,	fy25:	0.47	,	mar25:	0.45	,	apr25:	0.83	,	may25:	0.13	,	jun25:	0.45	,	jul25:	0.39	,	aug25:	0.36	,	sep25:	0.38	,	oct25: 	0.63	,	nov25:	0.85	,	des25:	0.67	,	jan26:	0.43	,	feb26:	0.17	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'SEMARANG'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.42	,	fy23:	0.37	,	fy24:	0.32	,	fy25:	0.34	,	mar25:	0.39	,	apr25:	0.33	,	may25:	0.36	,	jun25:	0.45	,	jul25:	0.28	,	aug25:	0.18	,	sep25:	0.22	,	oct25: 	0.19	,	nov25:	0.48	,	des25:	0.49	,	jan26:	0.62	,	feb26:	0.37	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'SOLO'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.30	,	fy23:	0.30	,	fy24:	0.23	,	fy25:	0.51	,	mar25:	0.27	,	apr25:	0.44	,	may25:	0.38	,	jun25:	0.20	,	jul25:	0.38	,	aug25:	0.38	,	sep25:	0.38	,	oct25: 	0.51	,	nov25:	1.38	,	des25:	0.83	,	jan26:	0.39	,	feb26:	0.73	},
-{	type:	'KTB'	,	region:	'SBY'	,	branch:	'SURABAYA'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.36	,	fy23:	0.27	,	fy24:	0.18	,	fy25:	0.19	,	mar25:	0.22	,	apr25:	0.12	,	may25:	0.12	,	jun25:	0.15	,	jul25:	0.31	,	aug25:	0.16	,	sep25:	0.17	,	oct25: 	0.16	,	nov25:	0.13	,	des25:	0.23	,	jan26:	0.27	,	feb26:	0.33	},
-{	type:	'KTB'	,	region:	'SS'	,	branch:	'MUARA BUNGO'	,	model:	'TARGET'	,	fy22:	16	,	fy23:	10	,	fy24:	6	,	fy25:	3	,	mar25:	5	,	apr25:	6	,	may25:	6	,	jun25:	6	,	jul25:	1	,	aug25:	1	,	sep25:	1	,	oct25: 	1	,	nov25:	1	,	des25:	5	,	jan26:	5	,	feb26:	5	},
-{	type:	'KTB'	,	region:	'SS'	,	branch:	'JAMBI'	,	model:	'TARGET'	,	fy22:	93	,	fy23:	36	,	fy24:	25	,	fy25:	27	,	mar25:	14	,	apr25:	25	,	may25:	25	,	jun25:	25	,	jul25:	40	,	aug25:	16	,	sep25:	29	,	oct25: 	24	,	nov25:	38	,	des25:	23	,	jan26:	23	,	feb26:	23	},
-{	type:	'KTB'	,	region:	'SS'	,	branch:	'LAMPUNG'	,	model:	'TARGET'	,	fy22:	39	,	fy23:	29	,	fy24:	17	,	fy25:	17	,	mar25:	25	,	apr25:	18	,	may25:	18	,	jun25:	18	,	jul25:	15	,	aug25:	10	,	sep25:	15	,	oct25: 	15	,	nov25:	28	,	des25:	17	,	jan26:	17	,	feb26:	17	},
-{	type:	'KTB'	,	region:	'SS'	,	branch:	'PALEMBANG'	,	model:	'TARGET'	,	fy22:	112	,	fy23:	53	,	fy24:	31	,	fy25:	38	,	mar25:	28	,	apr25:	30	,	may25:	30	,	jun25:	30	,	jul25:	39	,	aug25:	60	,	sep25:	34	,	oct25: 	48	,	nov25:	55	,	des25:	32	,	jan26:	32	,	feb26:	32	},
-{	type:	'KTB'	,	region:	'SS'	,	branch:	'JAMBI'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
-{	type:	'KTB'	,	region:	'SS'	,	branch:	'LAMPUNG'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
-{	type:	'KTB'	,	region:	'SS'	,	branch:	'MUARA BUNGO'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
-{	type:	'KTB'	,	region:	'SS'	,	branch:	'PALEMBANG'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
-{	type:	'KTB'	,	region:	'SS'	,	branch:	'JAMBI'	,	model:	'Actual'	,	fy22:	76	,	fy23:	18	,	fy24:	20	,	fy25:	19	,	mar25:	3	,	apr25:	8	,	may25:	14	,	jun25:	18	,	jul25:	36	,	aug25:	14	,	sep25:	10	,	oct25: 	26	,	nov25:	40	,	des25:	31	,	jan26:	6	,	feb26:	5	},
-{	type:	'KTB'	,	region:	'SS'	,	branch:	'LAMPUNG'	,	model:	'Actual'	,	fy22:	46	,	fy23:	19	,	fy24:	13	,	fy25:	19	,	mar25:	16	,	apr25:	10	,	may25:	12	,	jun25:	15	,	jul25:	29	,	aug25:	35	,	sep25:	20	,	oct25: 	22	,	nov25:	28	,	des25:	17	,	jan26:	10	,	feb26:	12	},
-{	type:	'KTB'	,	region:	'SS'	,	branch:	'MUARA BUNGO'	,	model:	'Actual'	,	fy22:	18	,	fy23:	5	,	fy24:	4	,	fy25:	3	,	mar25:	4	,	apr25:	1	,	may25:	4	,	jun25:	1	,	jul25:	1	,	aug25:	3	,	sep25:	5	,	oct25: 	5	,	nov25:	4	,	des25:	2	,	jan26:	2	,	feb26:	4	},
-{	type:	'KTB'	,	region:	'SS'	,	branch:	'PALEMBANG'	,	model:	'Actual'	,	fy22:	77	,	fy23:	27	,	fy24:	25	,	fy25:	45	,	mar25:	19	,	apr25:	16	,	may25:	30	,	jun25:	41	,	jul25:	41	,	aug25:	45	,	sep25:	35	,	oct25: 	66	,	nov25:	70	,	des25:	60	,	jan26:	41	,	feb26:	46	},
-{	type:	'KTB'	,	region:	'SS'	,	branch:	'JAMBI'	,	model:	'Branch Pen % wo Cash'	,	fy22:	1.00	,	fy23:	0.58	,	fy24:	0.87	,	fy25:	0.70	,	mar25:	0.57	,	apr25:	0.89	,	may25:	0.82	,	jun25:	0.46	,	jul25:	1.05	,	aug25:	0.34	,	sep25:	0.37	,	oct25: 	1.00	,	nov25:	1.35	,	des25:	1.29	,	jan26:	0.47	,	feb26:	0.28	},
-{	type:	'KTB'	,	region:	'SS'	,	branch:	'LAMPUNG'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.77	,	fy23:	0.42	,	fy24:	0.51	,	fy25:	0.68	,	mar25:	0.56	,	apr25:	0.50	,	may25:	0.43	,	jun25:	0.54	,	jul25:	0.76	,	aug25:	1.19	,	sep25:	0.35	,	oct25: 	0.86	,	nov25:	3.13	,	des25:	1.36	,	jan26:	0.34	,	feb26:	0.53	},
-{	type:	'KTB'	,	region:	'SS'	,	branch:	'MUARA BUNGO'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.19	,	fy23:	0.38	,	fy24:	0.48	,	fy25:	0.52	,	mar25:	0.00	,	apr25:	0.50	,	may25:	0.50	,	jun25:	0.00	,	jul25:	1.00	,	aug25:	0.50	,	sep25:	1.00	,	oct25: 	0.50	,	nov25:	0.67	,	des25:	2.00	,	jan26:	1.00	,	feb26:	0.20	},
-{	type:	'KTB'	,	region:	'SS'	,	branch:	'PALEMBANG'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.52	,	fy23:	0.48	,	fy24:	0.52	,	fy25:	0.76	,	mar25:	0.49	,	apr25:	0.43	,	may25:	0.64	,	jun25:	0.69	,	jul25:	0.65	,	aug25:	0.80	,	sep25:	0.61	,	oct25: 	1.02	,	nov25:	1.12	,	des25:	0.75	,	jan26:	0.69	,	feb26:	0.77	},
-{	type:	'KTB'	,	region:	'SS'	,	branch:	'JAMBI'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.53	,	fy23:	0.36	,	fy24:	0.63	,	fy25:	0.40	,	mar25:	0.38	,	apr25:	0.57	,	may25:	0.32	,	jun25:	0.37	,	jul25:	0.55	,	aug25:	0.22	,	sep25:	0.24	,	oct25: 	0.22	,	nov25:	0.58	,	des25:	0.89	,	jan26:	0.28	,	feb26:	0.21	},
-{	type:	'KTB'	,	region:	'SS'	,	branch:	'LAMPUNG'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.60	,	fy23:	0.31	,	fy24:	0.23	,	fy25:	0.41	,	mar25:	0.26	,	apr25:	0.10	,	may25:	0.26	,	jun25:	0.25	,	jul25:	0.35	,	aug25:	0.63	,	sep25:	0.23	,	oct25: 	0.50	,	nov25:	1.14	,	des25:	0.83	,	jan26:	0.30	,	feb26:	0.41	},
-{	type:	'KTB'	,	region:	'SS'	,	branch:	'MUARA BUNGO'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.17	,	fy23:	0.33	,	fy24:	0.40	,	fy25:	0.20	,	mar25:	0.00	,	apr25:	0.33	,	may25:	0.50	,	jun25:	0.00	,	jul25:	0.50	,	aug25:	0.17	,	sep25:	0.19	,	oct25: 	0.12	,	nov25:	0.29	,	des25:	2.00	,	jan26:	0.50	,	feb26:	0.13	},
-{	type:	'KTB'	,	region:	'SS'	,	branch:	'PALEMBANG'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.45	,	fy23:	0.33	,	fy24:	0.43	,	fy25:	0.64	,	mar25:	0.39	,	apr25:	0.36	,	may25:	0.52	,	jun25:	0.51	,	jul25:	0.58	,	aug25:	0.67	,	sep25:	0.51	,	oct25: 	0.88	,	nov25:	1.04	,	des25:	0.62	,	jan26:	0.59	,	feb26:	0.66	},
-{	type:	'KTB'	,	region:	'WJ'	,	branch:	'KARAWANG'	,	model:	'TARGET'	,	fy22:	29	,	fy23:	22	,	fy24:	18	,	fy25:	16	,	mar25:	13	,	apr25:	16	,	may25:	16	,	jun25:	16	,	jul25:	15	,	aug25:	6	,	sep25:	17	,	oct25: 	17	,	nov25:	23	,	des25:	16	,	jan26:	16	,	feb26:	16	},
-{	type:	'KTB'	,	region:	'WJ'	,	branch:	'CIREBON'	,	model:	'TARGET'	,	fy22:	36	,	fy23:	23	,	fy24:	19	,	fy25:	10	,	mar25:	13	,	apr25:	14	,	may25:	14	,	jun25:	14	,	jul25:	4	,	aug25:	6	,	sep25:	6	,	oct25: 	5	,	nov25:	13	,	des25:	13	,	jan26:	13	,	feb26:	13	},
-{	type:	'KTB'	,	region:	'WJ'	,	branch:	'SUKABUMI'	,	model:	'TARGET'	,	fy22:	25	,	fy23:	19	,	fy24:	18	,	fy25:	9	,	mar25:	14	,	apr25:	9	,	may25:	9	,	jun25:	9	,	jul25:	13	,	aug25:	13	,	sep25:	8	,	oct25: 	11	,	nov25:	9	,	des25:	7	,	jan26:	7	,	feb26:	7	},
-{	type:	'KTB'	,	region:	'WJ'	,	branch:	'BANDUNG'	,	model:	'TARGET'	,	fy22:	69	,	fy23:	57	,	fy24:	52	,	fy25:	31	,	mar25:	39	,	apr25:	28	,	may25:	28	,	jun25:	28	,	jul25:	29	,	aug25:	39	,	sep25:	35	,	oct25: 	39	,	nov25:	32	,	des25:	28	,	jan26:	28	,	feb26:	28	},
-{	type:	'KTB'	,	region:	'WJ'	,	branch:	'BANDUNG'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
-{	type:	'KTB'	,	region:	'WJ'	,	branch:	'CIREBON'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
-{	type:	'KTB'	,	region:	'WJ'	,	branch:	'KARAWANG'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
 {	type:	'KTB'	,	region:	'WJ'	,	branch:	'SUKABUMI'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'SURABAYA'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'TANGERANG'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'MEDAN'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'NORTH JAKARTA'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'SOUTH JAKARTA'	,	model:	'Nat Pen %'	,	fy22:	0.41	,	fy23:	0.35	,	fy24:	0.29	,	fy25:	0.29	,	mar25:	0.34	,	apr25:	0.27	,	may25:	0.29	,	jun25:	0.30	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.28	,	des25:	0.28	,	jan26:	0.25	,	feb26:	0.26	},
+{	type:	'KTB'	,	region:	'KLM'	,	branch:	'BALIKPAPAN'	,	model:	'Actual'	,	fy22:	39	,	fy23:	16	,	fy24:	7	,	fy25:	14	,	mar25:	9	,	apr25:	10	,	may25:	9	,	jun25:	15	,	jul25:	11	,	aug25:	14	,	sep25:	15	,	oct25: 	13	,	nov25:	13	,	des25:	13	,	jan26:	18	,	feb26:	20	},
 {	type:	'KTB'	,	region:	'WJ'	,	branch:	'BANDUNG'	,	model:	'Actual'	,	fy22:	58	,	fy23:	44	,	fy24:	34	,	fy25:	34	,	mar25:	29	,	apr25:	24	,	may25:	31	,	jun25:	29	,	jul25:	28	,	aug25:	45	,	sep25:	24	,	oct25: 	49	,	nov25:	35	,	des25:	40	,	jan26:	28	,	feb26:	37	},
+{	type:	'KTB'	,	region:	'KLM'	,	branch:	'BANJARMASIN'	,	model:	'Actual'	,	fy22:	55	,	fy23:	35	,	fy24:	23	,	fy25:	23	,	mar25:	28	,	apr25:	15	,	may25:	20	,	jun25:	29	,	jul25:	28	,	aug25:	27	,	sep25:	17	,	oct25: 	26	,	nov25:	17	,	des25:	35	,	jan26:	20	,	feb26:	17	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'Actual'	,	fy22:	12	,	fy23:	11	,	fy24:	8	,	fy25:	8	,	mar25:	7	,	apr25:	3	,	may25:	7	,	jun25:	20	,	jul25:	4	,	aug25:	5	,	sep25:	20	,	oct25: 	8	,	nov25:	5	,	des25:	8	,	jan26:	2	,	feb26:	1	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'BUKIT TINGGI'	,	model:	'Actual'	,	fy22:	12	,	fy23:	7	,	fy24:	6	,	fy25:	3	,	mar25:	6	,	apr25:	3	,	may25:	3	,	jun25:	4	,	jul25:	2	,	aug25:	3	,	sep25:	0	,	oct25: 	1	,	nov25:	3	,	des25:	11	,	jan26:	5	,	feb26:	2	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'CENTRAL JAKARTA'	,	model:	'Actual'	,	fy22:	85	,	fy23:	117	,	fy24:	96	,	fy25:	78	,	mar25:	106	,	apr25:	38	,	may25:	62	,	jun25:	42	,	jul25:	99	,	aug25:	70	,	sep25:	69	,	oct25: 	67	,	nov25:	42	,	des25:	114	,	jan26:	103	,	feb26:	151	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'CILEGON'	,	model:	'Actual'	,	fy22:	26	,	fy23:	18	,	fy24:	17	,	fy25:	13	,	mar25:	8	,	apr25:	8	,	may25:	16	,	jun25:	17	,	jul25:	15	,	aug25:	13	,	sep25:	13	,	oct25: 	12	,	nov25:	17	,	des25:	14	,	jan26:	11	,	feb26:	5	},
 {	type:	'KTB'	,	region:	'WJ'	,	branch:	'CIREBON'	,	model:	'Actual'	,	fy22:	26	,	fy23:	22	,	fy24:	16	,	fy25:	11	,	mar25:	6	,	apr25:	9	,	may25:	11	,	jun25:	5	,	jul25:	10	,	aug25:	5	,	sep25:	8	,	oct25: 	12	,	nov25:	19	,	des25:	18	,	jan26:	7	,	feb26:	13	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'DENPASAR'	,	model:	'Actual'	,	fy22:	16	,	fy23:	11	,	fy24:	14	,	fy25:	10	,	mar25:	11	,	apr25:	8	,	may25:	11	,	jun25:	15	,	jul25:	13	,	aug25:	14	,	sep25:	11	,	oct25: 	13	,	nov25:	10	,	des25:	7	,	jan26:	5	,	feb26:	8	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'DURI'	,	model:	'Actual'	,	fy22:	34	,	fy23:	17	,	fy24:	10	,	fy25:	17	,	mar25:	9	,	apr25:	14	,	may25:	14	,	jun25:	25	,	jul25:	15	,	aug25:	17	,	sep25:	20	,	oct25: 	23	,	nov25:	20	,	des25:	31	,	jan26:	23	,	feb26:	19	},
+{	type:	'KTB'	,	region:	'SS'	,	branch:	'JAMBI'	,	model:	'Actual'	,	fy22:	76	,	fy23:	18	,	fy24:	20	,	fy25:	19	,	mar25:	3	,	apr25:	8	,	may25:	14	,	jun25:	18	,	jul25:	36	,	aug25:	14	,	sep25:	10	,	oct25: 	26	,	nov25:	40	,	des25:	31	,	jan26:	6	,	feb26:	5	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'JEMBER'	,	model:	'Actual'	,	fy22:	12	,	fy23:	12	,	fy24:	10	,	fy25:	8	,	mar25:	16	,	apr25:	11	,	may25:	8	,	jun25:	11	,	jul25:	5	,	aug25:	11	,	sep25:	13	,	oct25: 	3	,	nov25:	7	,	des25:	7	,	jan26:	10	,	feb26:	2	},
 {	type:	'KTB'	,	region:	'WJ'	,	branch:	'KARAWANG'	,	model:	'Actual'	,	fy22:	28	,	fy23:	22	,	fy24:	20	,	fy25:	12	,	mar25:	7	,	apr25:	10	,	may25:	7	,	jun25:	18	,	jul25:	18	,	aug25:	7	,	sep25:	12	,	oct25: 	7	,	nov25:	13	,	des25:	17	,	jan26:	15	,	feb26:	11	},
-{	type:	'KTB'	,	region:	'WJ'	,	branch:	'SUKABUMI'	,	model:	'Actual'	,	fy22:	28	,	fy23:	10	,	fy24:	9	,	fy25:	11	,	mar25:	11	,	apr25:	7	,	may25:	15	,	jun25:	12	,	jul25:	13	,	aug25:	14	,	sep25:	5	,	oct25: 	6	,	nov25:	20	,	des25:	10	,	jan26:	12	,	feb26:	5	},
-{	type:	'KTB'	,	region:	'WJ'	,	branch:	'BANDUNG'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.58	,	fy23:	0.58	,	fy24:	0.59	,	fy25:	0.69	,	mar25:	0.60	,	apr25:	0.63	,	may25:	0.60	,	jun25:	0.57	,	jul25:	0.70	,	aug25:	0.90	,	sep25:	0.56	,	oct25: 	0.70	,	nov25:	0.78	,	des25:	0.66	,	jan26:	0.63	,	feb26:	0.95	},
-{	type:	'KTB'	,	region:	'WJ'	,	branch:	'CIREBON'	,	model:	'Branch Pen % wo Cash'	,	fy22:	1.05	,	fy23:	1.01	,	fy24:	1.07	,	fy25:	0.94	,	mar25:	1.17	,	apr25:	1.11	,	may25:	2.17	,	jun25:	0.86	,	jul25:	1.00	,	aug25:	0.67	,	sep25:	0.89	,	oct25: 	1.08	,	nov25:	1.16	,	des25:	0.83	,	jan26:	0.50	,	feb26:	1.00	},
-{	type:	'KTB'	,	region:	'WJ'	,	branch:	'KARAWANG'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.66	,	fy23:	0.60	,	fy24:	0.61	,	fy25:	0.85	,	mar25:	0.75	,	apr25:	3.00	,	may25:	0.43	,	jun25:	1.12	,	jul25:	2.63	,	aug25:	0.40	,	sep25:	0.71	,	oct25: 	0.15	,	nov25:	0.73	,	des25:	1.50	,	jan26:	1.25	,	feb26:	0.75	},
-{	type:	'KTB'	,	region:	'WJ'	,	branch:	'SUKABUMI'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.65	,	fy23:	0.64	,	fy24:	0.51	,	fy25:	1.05	,	mar25:	0.55	,	apr25:	0.78	,	may25:	0.63	,	jun25:	0.50	,	jul25:	1.21	,	aug25:	3.00	,	sep25:	0.14	,	oct25: 	1.29	,	nov25:	2.33	,	des25:	2.20	,	jan26:	3.30	,	feb26:	0.70	},
-{	type:	'KTB'	,	region:	'WJ'	,	branch:	'BANDUNG'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.47	,	fy23:	0.43	,	fy24:	0.41	,	fy25:	0.44	,	mar25:	0.38	,	apr25:	0.38	,	may25:	0.36	,	jun25:	0.30	,	jul25:	0.35	,	aug25:	0.61	,	sep25:	0.35	,	oct25: 	0.55	,	nov25:	0.44	,	des25:	0.50	,	jan26:	0.42	,	feb26:	0.67	},
-{	type:	'KTB'	,	region:	'WJ'	,	branch:	'CIREBON'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.90	,	fy23:	0.78	,	fy24:	0.72	,	fy25:	0.68	,	mar25:	1.00	,	apr25:	1.00	,	may25:	1.30	,	jun25:	0.75	,	jul25:	0.70	,	aug25:	0.31	,	sep25:	0.73	,	oct25: 	0.70	,	nov25:	1.10	,	des25:	0.65	,	jan26:	0.50	,	feb26:	0.55	},
-{	type:	'KTB'	,	region:	'WJ'	,	branch:	'KARAWANG'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.59	,	fy23:	0.44	,	fy24:	0.45	,	fy25:	0.56	,	mar25:	0.21	,	apr25:	0.90	,	may25:	0.26	,	jun25:	0.58	,	jul25:	1.75	,	aug25:	0.27	,	sep25:	0.37	,	oct25: 	0.13	,	nov25:	0.73	,	des25:	1.00	,	jan26:	0.83	,	feb26:	0.45	},
-{	type:	'KTB'	,	region:	'WJ'	,	branch:	'SUKABUMI'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.22	,	fy23:	0.21	,	fy24:	0.17	,	fy25:	0.16	,	mar25:	0.31	,	apr25:	0.09	,	may25:	0.14	,	jun25:	0.14	,	jul25:	0.28	,	aug25:	0.20	,	sep25:	0.03	,	oct25: 	0.09	,	nov25:	0.18	,	des25:	0.17	,	jan26:	0.40	,	feb26:	0.08	}
+{	type:	'KTB'	,	region:	'SS'	,	branch:	'LAMPUNG'	,	model:	'Actual'	,	fy22:	46	,	fy23:	19	,	fy24:	13	,	fy25:	19	,	mar25:	16	,	apr25:	10	,	may25:	12	,	jun25:	15	,	jul25:	29	,	aug25:	35	,	sep25:	20	,	oct25: 	22	,	nov25:	28	,	des25:	17	,	jan26:	10	,	feb26:	12	},
+{	type:	'KTB'	,	region:	'KLM'	,	branch:	'MAKASSAR'	,	model:	'Actual'	,	fy22:	63	,	fy23:	25	,	fy24:	16	,	fy25:	27	,	mar25:	14	,	apr25:	20	,	may25:	35	,	jun25:	26	,	jul25:	22	,	aug25:	19	,	sep25:	17	,	oct25: 	24	,	nov25:	37	,	des25:	47	,	jan26:	29	,	feb26:	22	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'MALANG'	,	model:	'Actual'	,	fy22:	56	,	fy23:	29	,	fy24:	36	,	fy25:	20	,	mar25:	84	,	apr25:	18	,	may25:	12	,	jun25:	33	,	jul25:	6	,	aug25:	5	,	sep25:	32	,	oct25: 	33	,	nov25:	32	,	des25:	1	,	jan26:	6	,	feb26:	41	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'MEDAN'	,	model:	'Actual'	,	fy22:	137	,	fy23:	74	,	fy24:	53	,	fy25:	51	,	mar25:	31	,	apr25:	52	,	may25:	60	,	jun25:	51	,	jul25:	53	,	aug25:	40	,	sep25:	37	,	oct25: 	41	,	nov25:	26	,	des25:	24	,	jan26:	32	,	feb26:	24	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'MEDAN II'	,	model:	'Actual'	,	fy22:	0	,	fy23:	0	,	fy24:	0	,	fy25:	0	,	mar25:	0	,	apr25:	0	,	may25:	0	,	jun25:	0	,	jul25:	0	,	aug25:	0	,	sep25:	0	,	oct25: 	0	,	nov25:	0	,	des25:	0	,	jan26:	0	,	feb26:	0	},
+{	type:	'KTB'	,	region:	'SS'	,	branch:	'MUARA BUNGO'	,	model:	'Actual'	,	fy22:	18	,	fy23:	5	,	fy24:	4	,	fy25:	3	,	mar25:	4	,	apr25:	1	,	may25:	4	,	jun25:	1	,	jul25:	1	,	aug25:	3	,	sep25:	5	,	oct25: 	5	,	nov25:	4	,	des25:	2	,	jan26:	2	,	feb26:	4	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'NORTH JAKARTA'	,	model:	'Actual'	,	fy22:	45	,	fy23:	32	,	fy24:	26	,	fy25:	28	,	mar25:	23	,	apr25:	24	,	may25:	36	,	jun25:	22	,	jul25:	56	,	aug25:	29	,	sep25:	27	,	oct25: 	18	,	nov25:	17	,	des25:	44	,	jan26:	15	,	feb26:	22	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'PADANG'	,	model:	'Actual'	,	fy22:	22	,	fy23:	15	,	fy24:	7	,	fy25:	8	,	mar25:	8	,	apr25:	2	,	may25:	13	,	jun25:	3	,	jul25:	6	,	aug25:	8	,	sep25:	8	,	oct25: 	11	,	nov25:	9	,	des25:	12	,	jan26:	14	,	feb26:	5	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'PADANG SIDEMPUAN'	,	model:	'Actual'	,	fy22:	6	,	fy23:	4	,	fy24:	3	,	fy25:	3	,	mar25:	2	,	apr25:	3	,	may25:	2	,	jun25:	3	,	jul25:	2	,	aug25:	4	,	sep25:	5	,	oct25: 	8	,	nov25:	9	,	des25:	8	,	jan26:	10	,	feb26:	6	},
+{	type:	'KTB'	,	region:	'SS'	,	branch:	'PALEMBANG'	,	model:	'Actual'	,	fy22:	77	,	fy23:	27	,	fy24:	25	,	fy25:	45	,	mar25:	19	,	apr25:	16	,	may25:	30	,	jun25:	41	,	jul25:	41	,	aug25:	45	,	sep25:	35	,	oct25: 	66	,	nov25:	70	,	des25:	60	,	jan26:	41	,	feb26:	46	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'PEKANBARU'	,	model:	'Actual'	,	fy22:	157	,	fy23:	87	,	fy24:	47	,	fy25:	60	,	mar25:	52	,	apr25:	40	,	may25:	44	,	jun25:	66	,	jul25:	70	,	aug25:	53	,	sep25:	52	,	oct25: 	61	,	nov25:	85	,	des25:	64	,	jan26:	66	,	feb26:	54	},
+{	type:	'KTB'	,	region:	'KLM'	,	branch:	'PONTIANAK'	,	model:	'Actual'	,	fy22:	40	,	fy23:	52	,	fy24:	28	,	fy25:	20	,	mar25:	16	,	apr25:	32	,	may25:	20	,	jun25:	15	,	jul25:	25	,	aug25:	14	,	sep25:	15	,	oct25: 	28	,	nov25:	8	,	des25:	14	,	jan26:	28	,	feb26:	17	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'PURWOKERTO'	,	model:	'Actual'	,	fy22:	15	,	fy23:	12	,	fy24:	14	,	fy25:	10	,	mar25:	8	,	apr25:	11	,	may25:	3	,	jun25:	16	,	jul25:	10	,	aug25:	5	,	sep25:	9	,	oct25: 	14	,	nov25:	12	,	des25:	14	,	jan26:	10	,	feb26:	3	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'RANTAU PRAPAT'	,	model:	'Actual'	,	fy22:	18	,	fy23:	8	,	fy24:	4	,	fy25:	5	,	mar25:	14	,	apr25:	20	,	may25:	35	,	jun25:	5	,	jul25:	0	,	aug25:	0	,	sep25:	6	,	oct25: 	7	,	nov25:	2	,	des25:	10	,	jan26:	8	,	feb26:	5	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'SEMARANG'	,	model:	'Actual'	,	fy22:	35	,	fy23:	19	,	fy24:	16	,	fy25:	16	,	mar25:	84	,	apr25:	18	,	may25:	12	,	jun25:	21	,	jul25:	21	,	aug25:	11	,	sep25:	13	,	oct25: 	15	,	nov25:	16	,	des25:	10	,	jan26:	18	,	feb26:	14	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'SOLO'	,	model:	'Actual'	,	fy22:	19	,	fy23:	13	,	fy24:	8	,	fy25:	10	,	mar25:	31	,	apr25:	52	,	may25:	60	,	jun25:	18	,	jul25:	12	,	aug25:	9	,	sep25:	9	,	oct25: 	14	,	nov25:	6	,	des25:	20	,	jan26:	3	,	feb26:	10	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'SOUTH JAKARTA'	,	model:	'Actual'	,	fy22:	37	,	fy23:	21	,	fy24:	41	,	fy25:	24	,	mar25:	0	,	apr25:	0	,	may25:	0	,	jun25:	29	,	jul25:	34	,	aug25:	33	,	sep25:	17	,	oct25: 	18	,	nov25:	44	,	des25:	10	,	jan26:	16	,	feb26:	18	},
+{	type:	'KTB'	,	region:	'WJ'	,	branch:	'SUKABUMI'	,	model:	'Actual'	,	fy22:	28	,	fy23:	10	,	fy24:	9	,	fy25:	11	,	mar25:	4	,	apr25:	1	,	may25:	4	,	jun25:	12	,	jul25:	13	,	aug25:	14	,	sep25:	5	,	oct25: 	6	,	nov25:	20	,	des25:	10	,	jan26:	12	,	feb26:	5	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'SURABAYA'	,	model:	'Actual'	,	fy22:	56	,	fy23:	41	,	fy24:	39	,	fy25:	38	,	mar25:	23	,	apr25:	24	,	may25:	36	,	jun25:	25	,	jul25:	49	,	aug25:	29	,	sep25:	29	,	oct25: 	32	,	nov25:	31	,	des25:	76	,	jan26:	45	,	feb26:	56	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'TANGERANG'	,	model:	'Actual'	,	fy22:	13	,	fy23:	31	,	fy24:	15	,	fy25:	11	,	mar25:	8	,	apr25:	2	,	may25:	13	,	jun25:	10	,	jul25:	14	,	aug25:	17	,	sep25:	6	,	oct25: 	13	,	nov25:	5	,	des25:	13	,	jan26:	8	,	feb26:	23	},
+{	type:	'KTB'	,	region:	'KLM'	,	branch:	'BALIKPAPAN'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.51	,	fy23:	0.26	,	fy24:	0.10	,	fy25:	0.55	,	mar25:	2.00	,	apr25:	3.00	,	may25:	2.00	,	jun25:	0.70	,	jul25:	0.46	,	aug25:	0.58	,	sep25:	1.73	,	oct25: 	0.46	,	nov25:	0.40	,	des25:	0.48	,	jan26:	0.67	,	feb26:	0.57	},
+{	type:	'KTB'	,	region:	'WJ'	,	branch:	'BANDUNG'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.58	,	fy23:	0.58	,	fy24:	0.59	,	fy25:	0.69	,	mar25:	19.00	,	apr25:	16.00	,	may25:	30.00	,	jun25:	0.57	,	jul25:	0.70	,	aug25:	0.90	,	sep25:	0.56	,	oct25: 	0.70	,	nov25:	0.78	,	des25:	0.66	,	jan26:	0.63	,	feb26:	0.95	},
+{	type:	'KTB'	,	region:	'KLM'	,	branch:	'BANJARMASIN'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.93	,	fy23:	0.53	,	fy24:	0.74	,	fy25:	1.13	,	mar25:	52.00	,	apr25:	40.00	,	may25:	44.00	,	jun25:	1.40	,	jul25:	1.59	,	aug25:	2.00	,	sep25:	1.00	,	oct25: 	1.35	,	nov25:	1.27	,	des25:	1.60	,	jan26:	1.06	,	feb26:	0.86	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.49	,	fy23:	0.49	,	fy24:	0.55	,	fy25:	0.55	,	mar25:	16.00	,	apr25:	32.00	,	may25:	20.00	,	jun25:	0.25	,	jul25:	1.40	,	aug25:	0.29	,	sep25:	0.40	,	oct25: 	0.63	,	nov25:	1.44	,	des25:	0.86	,	jan26:	0.17	,	feb26:	0.09	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'BUKIT TINGGI'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.86	,	fy23:	1.00	,	fy24:	0.78	,	fy25:	0.78	,	mar25:	8.00	,	apr25:	11.00	,	may25:	3.00	,	jun25:	0.57	,	jul25:	1.00	,	aug25:	1.00	,	sep25:	0.50	,	oct25: 	0.67	,	nov25:	1.00	,	des25:	0.86	,	jan26:	1.00	,	feb26:	0.00	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'CENTRAL JAKARTA'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.39	,	fy23:	0.65	,	fy24:	0.61	,	fy25:	0.39	,	mar25:	0.00	,	apr25:	0.00	,	may25:	0.00	,	jun25:	0.55	,	jul25:	0.38	,	aug25:	0.34	,	sep25:	0.26	,	oct25: 	0.29	,	nov25:	0.32	,	des25:	0.53	,	jan26:	0.21	,	feb26:	0.78	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'CILEGON'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.59	,	fy23:	0.61	,	fy24:	0.63	,	fy25:	0.70	,	mar25:	26.00	,	apr25:	11.00	,	may25:	23.00	,	jun25:	1.33	,	jul25:	0.57	,	aug25:	0.72	,	sep25:	0.72	,	oct25: 	0.65	,	nov25:	0.67	,	des25:	0.78	,	jan26:	0.53	,	feb26:	0.32	},
+{	type:	'KTB'	,	region:	'WJ'	,	branch:	'CIREBON'	,	model:	'Branch Pen % wo Cash'	,	fy22:	1.05	,	fy23:	1.01	,	fy24:	1.07	,	fy25:	0.94	,	mar25:	6.00	,	apr25:	5.00	,	may25:	8.00	,	jun25:	0.86	,	jul25:	1.00	,	aug25:	0.67	,	sep25:	0.89	,	oct25: 	1.08	,	nov25:	1.16	,	des25:	0.83	,	jan26:	0.50	,	feb26:	1.00	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'DENPASAR'	,	model:	'Branch Pen % wo Cash'	,	fy22:	1.52	,	fy23:	1.07	,	fy24:	0.70	,	fy25:	0.73	,	mar25:	18.00	,	apr25:	13.00	,	may25:	34.00	,	jun25:	1.15	,	jul25:	0.76	,	aug25:	1.00	,	sep25:	1.33	,	oct25: 	0.76	,	nov25:	0.67	,	des25:	0.62	,	jan26:	0.29	,	feb26:	0.40	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'SOUTH JAKARTA'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.81	,	fy23:	0.61	,	fy24:	0.46	,	fy25:	0.38	,	mar25:	11.00	,	apr25:	7.00	,	may25:	15.00	,	jun25:	0.41	,	jul25:	0.51	,	aug25:	0.65	,	sep25:	0.50	,	oct25: 	0.15	,	nov25:	0.20	,	des25:	0.19	,	jan26:	0.35	,	feb26:	0.58	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'NORTH JAKARTA'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.87	,	fy23:	0.68	,	fy24:	1.18	,	fy25:	1.55	,	mar25:	41.00	,	apr25:	21.00	,	may25:	28.00	,	jun25:	1.13	,	jul25:	0.77	,	aug25:	1.67	,	sep25:	1.26	,	oct25: 	2.40	,	nov25:	0.36	,	des25:	3.67	,	jan26:	2.27	,	feb26:	0.00	},
+{	type:	'KTB'	,	region:	'SS'	,	branch:	'JAMBI'	,	model:	'Branch Pen % wo Cash'	,	fy22:	1.00	,	fy23:	0.58	,	fy24:	0.87	,	fy25:	0.70	,	mar25:	18.00	,	apr25:	2.00	,	may25:	5.00	,	jun25:	0.46	,	jul25:	1.05	,	aug25:	0.34	,	sep25:	0.37	,	oct25: 	1.00	,	nov25:	1.35	,	des25:	1.29	,	jan26:	0.47	,	feb26:	0.28	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'JEMBER'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.85	,	fy23:	1.04	,	fy24:	0.91	,	fy25:	0.80	,	mar25:	180.00	,	apr25:	88.00	,	may25:	160.00	,	jun25:	6.00	,	jul25:	1.40	,	aug25:	0.58	,	sep25:	1.21	,	oct25: 	0.48	,	nov25:	0.43	,	des25:	0.81	,	jan26:	0.37	,	feb26:	0.40	},
+{	type:	'KTB'	,	region:	'WJ'	,	branch:	'KARAWANG'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.66	,	fy23:	0.60	,	fy24:	0.61	,	fy25:	0.85	,	mar25:	67.00	,	apr25:	77.00	,	may25:	84.00	,	jun25:	1.12	,	jul25:	2.63	,	aug25:	0.40	,	sep25:	0.71	,	oct25: 	0.15	,	nov25:	0.73	,	des25:	1.50	,	jan26:	1.25	,	feb26:	0.75	},
+{	type:	'KTB'	,	region:	'SS'	,	branch:	'LAMPUNG'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.77	,	fy23:	0.42	,	fy24:	0.51	,	fy25:	0.68	,	mar25:	123.00	,	apr25:	92.00	,	may25:	126.00	,	jun25:	0.54	,	jul25:	0.76	,	aug25:	1.19	,	sep25:	0.35	,	oct25: 	0.86	,	nov25:	3.13	,	des25:	1.36	,	jan26:	0.34	,	feb26:	0.53	},
+{	type:	'KTB'	,	region:	'KLM'	,	branch:	'MAKASSAR'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.33	,	fy23:	0.19	,	fy24:	0.26	,	fy25:	0.44	,	mar25:	192.00	,	apr25:	85.00	,	may25:	93.00	,	jun25:	0.60	,	jul25:	0.36	,	aug25:	0.38	,	sep25:	0.30	,	oct25: 	0.44	,	nov25:	0.60	,	des25:	0.97	,	jan26:	0.63	,	feb26:	0.36	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'MALANG'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.64	,	fy23:	0.34	,	fy24:	0.37	,	fy25:	1.08	,	mar25:	42.00	,	apr25:	35.00	,	may25:	60.00	,	jun25:	0.43	,	jul25:	0.64	,	aug25:	0.26	,	sep25:	1.57	,	oct25: 	1.50	,	nov25:	2.00	,	des25:	0.20	,	jan26:	1.00	,	feb26:	1.32	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'MEDAN'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.82	,	fy23:	0.59	,	fy24:	0.60	,	fy25:	0.66	,	mar25:	53.00	,	apr25:	50.00	,	may25:	64.00	,	jun25:	0.76	,	jul25:	0.62	,	aug25:	0.57	,	sep25:	0.66	,	oct25: 	0.67	,	nov25:	0.82	,	des25:	0.47	,	jan26:	0.57	,	feb26:	0.55	},
+{	type:	'KTB'	,	region:	'SS'	,	branch:	'MUARA BUNGO'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.19	,	fy23:	0.38	,	fy24:	0.48	,	fy25:	0.52	,	mar25:	0.81	,	apr25:	0.60	,	may25:	1.11	,	jun25:	0.00	,	jul25:	1.00	,	aug25:	0.50	,	sep25:	1.00	,	oct25: 	0.50	,	nov25:	0.67	,	des25:	2.00	,	jan26:	1.00	,	feb26:	0.20	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'PADANG'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.55	,	fy23:	0.83	,	fy24:	0.59	,	fy25:	0.77	,	mar25:	0.65	,	apr25:	0.75	,	may25:	0.64	,	jun25:	0.38	,	jul25:	0.67	,	aug25:	0.47	,	sep25:	0.69	,	oct25: 	0.91	,	nov25:	0.67	,	des25:	1.00	,	jan26:	1.33	,	feb26:	0.75	},
+{	type:	'KTB'	,	region:	'SS'	,	branch:	'PALEMBANG'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.52	,	fy23:	0.48	,	fy24:	0.52	,	fy25:	0.76	,	mar25:	0.92	,	apr25:	0.64	,	may25:	0.51	,	jun25:	0.69	,	jul25:	0.65	,	aug25:	0.80	,	sep25:	0.61	,	oct25: 	1.02	,	nov25:	1.12	,	des25:	0.75	,	jan26:	0.69	,	feb26:	0.77	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'PEKANBARU'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.67	,	fy23:	0.85	,	fy24:	0.54	,	fy25:	0.68	,	mar25:	0.60	,	apr25:	0.69	,	may25:	0.75	,	jun25:	0.61	,	jul25:	1.43	,	aug25:	0.71	,	sep25:	0.63	,	oct25: 	0.55	,	nov25:	0.56	,	des25:	0.69	,	jan26:	0.80	,	feb26:	0.95	},
+{	type:	'KTB'	,	region:	'KLM'	,	branch:	'PONTIANAK'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.51	,	fy23:	0.90	,	fy24:	0.68	,	fy25:	0.77	,	mar25:	0.51	,	apr25:	0.57	,	may25:	0.61	,	jun25:	2.38	,	jul25:	4.17	,	aug25:	0.50	,	sep25:	0.65	,	oct25: 	0.43	,	nov25:	0.27	,	des25:	0.54	,	jan26:	0.74	,	feb26:	0.57	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'PURWOKERTO'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.53	,	fy23:	0.69	,	fy24:	0.76	,	fy25:	0.99	,	mar25:	0.56	,	apr25:	1.02	,	may25:	0.70	,	jun25:	1.11	,	jul25:	1.17	,	aug25:	0.63	,	sep25:	0.56	,	oct25: 	1.33	,	nov25:	2.20	,	des25:	1.60	,	jan26:	1.00	,	feb26:	0.40	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'SEMARANG'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.62	,	fy23:	0.74	,	fy24:	0.64	,	fy25:	0.63	,	mar25:	0.35	,	apr25:	0.32	,	may25:	0.56	,	jun25:	1.04	,	jul25:	0.62	,	aug25:	0.33	,	sep25:	0.43	,	oct25: 	0.25	,	nov25:	1.05	,	des25:	0.84	,	jan26:	0.84	,	feb26:	0.74	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'SOLO'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.43	,	fy23:	0.47	,	fy24:	0.37	,	fy25:	0.87	,	mar25:	0.60	,	apr25:	0.63	,	may25:	0.60	,	jun25:	0.28	,	jul25:	0.65	,	aug25:	0.69	,	sep25:	0.92	,	oct25: 	0.75	,	nov25:	2.20	,	des25:	1.46	,	jan26:	0.50	,	feb26:	1.57	},
+{	type:	'KTB'	,	region:	'WJ'	,	branch:	'SUKABUMI'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.65	,	fy23:	0.64	,	fy24:	0.51	,	fy25:	1.05	,	mar25:	0.93	,	apr25:	0.93	,	may25:	0.67	,	jun25:	0.50	,	jul25:	1.21	,	aug25:	3.00	,	sep25:	0.14	,	oct25: 	1.29	,	nov25:	2.33	,	des25:	2.20	,	jan26:	3.30	,	feb26:	0.70	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'SURABAYA'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.58	,	fy23:	0.52	,	fy24:	0.44	,	fy25:	0.56	,	mar25:	0.28	,	apr25:	0.29	,	may25:	0.69	,	jun25:	0.38	,	jul25:	0.91	,	aug25:	0.39	,	sep25:	0.57	,	oct25: 	0.41	,	nov25:	0.37	,	des25:	0.75	,	jan26:	0.81	,	feb26:	1.41	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'TANGERANG'	,	model:	'Branch Pen % wo Cash'	,	fy22:	1.47	,	fy23:	1.01	,	fy24:	1.11	,	fy25:	0.61	,	mar25:	0.86	,	apr25:	1.00	,	may25:	1.00	,	jun25:	0.25	,	jul25:	1.63	,	aug25:	0.61	,	sep25:	0.71	,	oct25: 	0.31	,	nov25:	0.19	,	des25:	0.91	,	jan26:	0.26	,	feb26:	1.50	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'DURI'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.85	,	fy23:	0.71	,	fy24:	0.44	,	fy25:	0.64	,	mar25:	0.87	,	apr25:	0.28	,	may25:	1.13	,	jun25:	0.78	,	jul25:	0.71	,	aug25:	0.57	,	sep25:	0.60	,	oct25: 	0.51	,	nov25:	0.61	,	des25:	0.54	,	jan26:	0.50	,	feb26:	0.65	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'PADANG SIDEMPUAN'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.88	,	fy23:	0.92	,	fy24:	0.94	,	fy25:	0.82	,	mar25:	0.80	,	apr25:	0.90	,	may25:	0.77	,	jun25:	1.00	,	jul25:	1.00	,	aug25:	1.00	,	sep25:	0.00	,	oct25: 	1.00	,	nov25:	1.00	,	des25:	1.00	,	jan26:	1.00	,	feb26:	0.00	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'RANTAU PRAPAT'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.93	,	fy23:	1.19	,	fy24:	0.17	,	fy25:	0.35	,	mar25:	1.17	,	apr25:	1.11	,	may25:	2.17	,	jun25:	0.83	,	jul25:	0.00	,	aug25:	0.00	,	sep25:	0.75	,	oct25: 	0.80	,	nov25:	0.80	,	des25:	0.63	,	jan26:	0.00	,	feb26:	0.00	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'BUKIT TINGGI'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.71	,	fy23:	0.70	,	fy24:	0.55	,	fy25:	0.51	,	mar25:	0.69	,	apr25:	0.88	,	may25:	0.69	,	jun25:	0.50	,	jul25:	0.67	,	aug25:	0.50	,	sep25:	0.38	,	oct25: 	0.67	,	nov25:	0.71	,	des25:	0.67	,	jan26:	0.67	,	feb26:	0.00	},
+{	type:	'KTB'	,	region:	'KLM'	,	branch:	'BALIKPAPAN'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.24	,	fy23:	0.13	,	fy24:	0.06	,	fy25:	0.25	,	mar25:	0.54	,	apr25:	0.48	,	may25:	0.42	,	jun25:	0.21	,	jul25:	0.20	,	aug25:	0.24	,	sep25:	0.40	,	oct25: 	0.22	,	nov25:	0.18	,	des25:	0.30	,	jan26:	0.43	,	feb26:	0.40	},
+{	type:	'KTB'	,	region:	'WJ'	,	branch:	'BANDUNG'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.47	,	fy23:	0.43	,	fy24:	0.41	,	fy25:	0.44	,	mar25:	1.00	,	apr25:	2.44	,	may25:	3.00	,	jun25:	0.30	,	jul25:	0.35	,	aug25:	0.61	,	sep25:	0.35	,	oct25: 	0.55	,	nov25:	0.44	,	des25:	0.50	,	jan26:	0.42	,	feb26:	0.67	},
+{	type:	'KTB'	,	region:	'KLM'	,	branch:	'BANJARMASIN'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.58	,	fy23:	0.35	,	fy24:	0.33	,	fy25:	0.29	,	mar25:	0.57	,	apr25:	0.89	,	may25:	0.82	,	jun25:	0.55	,	jul25:	0.44	,	aug25:	0.45	,	sep25:	0.24	,	oct25: 	0.34	,	nov25:	0.24	,	des25:	0.48	,	jan26:	0.17	,	feb26:	0.08	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.32	,	fy23:	0.38	,	fy24:	0.34	,	fy25:	0.25	,	mar25:	1.89	,	apr25:	0.67	,	may25:	0.59	,	jun25:	0.17	,	jul25:	0.64	,	aug25:	0.17	,	sep25:	0.22	,	oct25: 	0.35	,	nov25:	0.48	,	des25:	0.23	,	jan26:	0.03	,	feb26:	0.03	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'CENTRAL JAKARTA'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.18	,	fy23:	0.29	,	fy24:	0.17	,	fy25:	0.10	,	mar25:	0.75	,	apr25:	3.00	,	may25:	0.43	,	jun25:	0.14	,	jul25:	0.12	,	aug25:	0.13	,	sep25:	0.06	,	oct25: 	0.09	,	nov25:	0.05	,	des25:	0.09	,	jan26:	0.06	,	feb26:	0.32	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'CILEGON'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.44	,	fy23:	0.46	,	fy24:	0.46	,	fy25:	0.47	,	mar25:	0.56	,	apr25:	0.50	,	may25:	0.43	,	jun25:	0.63	,	jul25:	0.41	,	aug25:	0.51	,	sep25:	0.53	,	oct25: 	0.41	,	nov25:	0.46	,	des25:	0.46	,	jan26:	0.37	,	feb26:	0.29	},
+{	type:	'KTB'	,	region:	'WJ'	,	branch:	'CIREBON'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.90	,	fy23:	0.78	,	fy24:	0.72	,	fy25:	0.68	,	mar25:	0.25	,	apr25:	0.50	,	may25:	0.81	,	jun25:	0.75	,	jul25:	0.70	,	aug25:	0.31	,	sep25:	0.73	,	oct25: 	0.70	,	nov25:	1.10	,	des25:	0.65	,	jan26:	0.50	,	feb26:	0.55	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'DENPASAR'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.64	,	fy23:	0.41	,	fy24:	0.45	,	fy25:	0.49	,	mar25:	1.00	,	apr25:	0.67	,	may25:	0.67	,	jun25:	0.68	,	jul25:	0.62	,	aug25:	0.64	,	sep25:	0.53	,	oct25: 	0.62	,	nov25:	0.45	,	des25:	0.36	,	jan26:	0.17	,	feb26:	0.29	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'SOUTH JAKARTA'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.49	,	fy23:	0.36	,	fy24:	0.29	,	fy25:	0.23	,	mar25:	0.60	,	apr25:	0.70	,	may25:	0.82	,	jun25:	0.21	,	jul25:	0.34	,	aug25:	0.44	,	sep25:	0.29	,	oct25: 	0.13	,	nov25:	0.13	,	des25:	0.11	,	jan26:	0.23	,	feb26:	0.36	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'NORTH JAKARTA'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.42	,	fy23:	0.34	,	fy24:	0.44	,	fy25:	0.48	,	mar25:	0.00	,	apr25:	0.50	,	may25:	0.50	,	jun25:	0.92	,	jul25:	0.59	,	aug25:	0.46	,	sep25:	0.43	,	oct25: 	0.44	,	nov25:	0.13	,	des25:	0.53	,	jan26:	1.21	,	feb26:	0.71	},
+{	type:	'KTB'	,	region:	'SS'	,	branch:	'JAMBI'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.53	,	fy23:	0.36	,	fy24:	0.63	,	fy25:	0.40	,	mar25:	0.66	,	apr25:	0.80	,	may25:	0.75	,	jun25:	0.37	,	jul25:	0.55	,	aug25:	0.22	,	sep25:	0.24	,	oct25: 	0.22	,	nov25:	0.58	,	des25:	0.89	,	jan26:	0.28	,	feb26:	0.21	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'JEMBER'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.66	,	fy23:	0.83	,	fy24:	0.80	,	fy25:	0.63	,	mar25:	0.49	,	apr25:	0.43	,	may25:	0.64	,	jun25:	3.27	,	jul25:	0.64	,	aug25:	0.48	,	sep25:	1.10	,	oct25: 	0.43	,	nov25:	0.40	,	des25:	0.64	,	jan26:	0.35	,	feb26:	0.14	},
+{	type:	'KTB'	,	region:	'WJ'	,	branch:	'KARAWANG'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.59	,	fy23:	0.44	,	fy24:	0.45	,	fy25:	0.56	,	mar25:	0.55	,	apr25:	0.29	,	may25:	1.14	,	jun25:	0.58	,	jul25:	1.75	,	aug25:	0.27	,	sep25:	0.37	,	oct25: 	0.13	,	nov25:	0.73	,	des25:	1.00	,	jan26:	0.83	,	feb26:	0.45	},
+{	type:	'KTB'	,	region:	'SS'	,	branch:	'LAMPUNG'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.60	,	fy23:	0.31	,	fy24:	0.23	,	fy25:	0.41	,	mar25:	2.13	,	apr25:	1.88	,	may25:	4.00	,	jun25:	0.25	,	jul25:	0.35	,	aug25:	0.63	,	sep25:	0.23	,	oct25: 	0.50	,	nov25:	1.14	,	des25:	0.83	,	jan26:	0.30	,	feb26:	0.41	},
+{	type:	'KTB'	,	region:	'KLM'	,	branch:	'MAKASSAR'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.29	,	fy23:	0.17	,	fy24:	0.18	,	fy25:	0.30	,	mar25:	0.71	,	apr25:	1.67	,	may25:	0.20	,	jun25:	0.25	,	jul25:	0.26	,	aug25:	0.21	,	sep25:	0.24	,	oct25: 	0.32	,	nov25:	0.38	,	des25:	0.64	,	jan26:	0.39	,	feb26:	0.30	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'MALANG'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.45	,	fy23:	0.20	,	fy24:	0.18	,	fy25:	0.73	,	mar25:	0.80	,	apr25:	0.77	,	may25:	0.71	,	jun25:	0.27	,	jul25:	0.44	,	aug25:	0.23	,	sep25:	1.38	,	oct25: 	1.31	,	nov25:	1.67	,	des25:	0.11	,	jan26:	0.67	,	feb26:	0.89	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'MEDAN'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.65	,	fy23:	0.47	,	fy24:	0.38	,	fy25:	0.41	,	mar25:	0.53	,	apr25:	0.78	,	may25:	0.90	,	jun25:	0.53	,	jul25:	0.41	,	aug25:	0.37	,	sep25:	0.39	,	oct25: 	0.47	,	nov25:	0.38	,	des25:	0.24	,	jan26:	0.43	,	feb26:	0.28	},
+{	type:	'KTB'	,	region:	'SS'	,	branch:	'MUARA BUNGO'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.17	,	fy23:	0.33	,	fy24:	0.40	,	fy25:	0.20	,	mar25:	0.55	,	apr25:	0.78	,	may25:	0.63	,	jun25:	0.00	,	jul25:	0.50	,	aug25:	0.17	,	sep25:	0.19	,	oct25: 	0.12	,	nov25:	0.29	,	des25:	2.00	,	jan26:	0.50	,	feb26:	0.13	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'PADANG'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.45	,	fy23:	0.65	,	fy24:	0.39	,	fy25:	0.53	,	mar25:	0.53	,	apr25:	0.40	,	may25:	0.36	,	jun25:	0.28	,	jul25:	0.30	,	aug25:	0.32	,	sep25:	0.56	,	oct25: 	0.63	,	nov25:	0.60	,	des25:	0.76	,	jan26:	0.94	,	feb26:	0.40	},
+{	type:	'KTB'	,	region:	'SS'	,	branch:	'PALEMBANG'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.45	,	fy23:	0.33	,	fy24:	0.43	,	fy25:	0.64	,	mar25:	1.21	,	apr25:	0.17	,	may25:	1.25	,	jun25:	0.51	,	jul25:	0.58	,	aug25:	0.67	,	sep25:	0.51	,	oct25: 	0.88	,	nov25:	1.04	,	des25:	0.62	,	jan26:	0.59	,	feb26:	0.66	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'PEKANBARU'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.59	,	fy23:	0.63	,	fy24:	0.33	,	fy25:	0.47	,	mar25:	1.00	,	apr25:	1.00	,	may25:	1.00	,	jun25:	0.44	,	jul25:	0.61	,	aug25:	0.48	,	sep25:	0.46	,	oct25: 	0.47	,	nov25:	0.50	,	des25:	0.45	,	jan26:	0.52	,	feb26:	0.61	},
+{	type:	'KTB'	,	region:	'KLM'	,	branch:	'PONTIANAK'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.35	,	fy23:	0.64	,	fy24:	0.40	,	fy25:	0.33	,	mar25:	0.63	,	apr25:	0.94	,	may25:	0.49	,	jun25:	0.35	,	jul25:	0.96	,	aug25:	0.20	,	sep25:	0.22	,	oct25: 	0.33	,	nov25:	0.19	,	des25:	0.25	,	jan26:	0.39	,	feb26:	0.35	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'PURWOKERTO'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.43	,	fy23:	0.49	,	fy24:	0.50	,	fy25:	0.47	,	mar25:	0.00	,	apr25:	0.00	,	may25:	0.00	,	jun25:	0.45	,	jul25:	0.39	,	aug25:	0.36	,	sep25:	0.38	,	oct25: 	0.63	,	nov25:	0.85	,	des25:	0.67	,	jan26:	0.43	,	feb26:	0.17	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'SEMARANG'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.42	,	fy23:	0.37	,	fy24:	0.32	,	fy25:	0.34	,	mar25:	0.55	,	apr25:	0.43	,	may25:	0.38	,	jun25:	0.45	,	jul25:	0.28	,	aug25:	0.18	,	sep25:	0.22	,	oct25: 	0.19	,	nov25:	0.48	,	des25:	0.49	,	jan26:	0.62	,	feb26:	0.37	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'SOLO'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.30	,	fy23:	0.30	,	fy24:	0.23	,	fy25:	0.51	,	mar25:	0.30	,	apr25:	0.17	,	may25:	0.24	,	jun25:	0.20	,	jul25:	0.38	,	aug25:	0.38	,	sep25:	0.38	,	oct25: 	0.51	,	nov25:	1.38	,	des25:	0.83	,	jan26:	0.39	,	feb26:	0.73	},
+{	type:	'KTB'	,	region:	'WJ'	,	branch:	'SUKABUMI'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.22	,	fy23:	0.21	,	fy24:	0.17	,	fy25:	0.16	,	mar25:	0.36	,	apr25:	0.29	,	may25:	0.30	,	jun25:	0.14	,	jul25:	0.28	,	aug25:	0.20	,	sep25:	0.03	,	oct25: 	0.09	,	nov25:	0.18	,	des25:	0.17	,	jan26:	0.40	,	feb26:	0.08	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'DURI'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.79	,	fy23:	0.56	,	fy24:	0.36	,	fy25:	0.51	,	mar25:	0.50	,	apr25:	0.28	,	may25:	0.21	,	jun25:	0.64	,	jul25:	0.50	,	aug25:	0.53	,	sep25:	0.52	,	oct25: 	0.47	,	nov25:	0.40	,	des25:	0.43	,	jan26:	0.40	,	feb26:	0.55	},
+{	type:	'KTB'	,	region:	'SBY'	,	branch:	'SURABAYA'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.36	,	fy23:	0.27	,	fy24:	0.18	,	fy25:	0.19	,	mar25:	0.24	,	apr25:	0.27	,	may25:	0.33	,	jun25:	0.15	,	jul25:	0.31	,	aug25:	0.16	,	sep25:	0.17	,	oct25: 	0.16	,	nov25:	0.13	,	des25:	0.23	,	jan26:	0.27	,	feb26:	0.33	},
+{	type:	'KTB'	,	region:	'JKT'	,	branch:	'TANGERANG'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.44	,	fy23:	0.52	,	fy24:	0.22	,	fy25:	0.13	,	mar25:	0.34	,	apr25:	0.36	,	may25:	0.41	,	jun25:	0.16	,	jul25:	0.42	,	aug25:	0.29	,	sep25:	0.16	,	oct25: 	0.17	,	nov25:	0.12	,	des25:	0.10	,	jan26:	0.05	,	feb26:	0.09	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'PADANG SIDEMPUAN'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.81	,	fy23:	0.90	,	fy24:	0.92	,	fy25:	0.71	,	mar25:	0.38	,	apr25:	0.39	,	may25:	0.43	,	jun25:	1.00	,	jul25:	1.00	,	aug25:	0.67	,	sep25:	0.00	,	oct25: 	0.67	,	nov25:	0.75	,	des25:	1.00	,	jan26:	1.00	,	feb26:	0.00	},
+{	type:	'KTB'	,	region:	'NS'	,	branch:	'Rantau Prapat'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.84	,	fy23:	1.09	,	fy24:	0.17	,	fy25:	0.26	,	mar25:	0.12	,	apr25:	0.11	,	may25:	0.20	,	jun25:	0.56	,	jul25:	0.00	,	aug25:	0.00	,	sep25:	0.50	,	oct25: 	0.80	,	nov25:	0.40	,	des25:	0.63	,	jan26:	0.00	,	feb26:	0.00	},
+
+{	type:	'MMKSI'	,	region:	'SS'	,	branch:	'MUARA BUNGO'	,	model:	'TARGET'	,	fy22:	7	,	fy23:	7	,	fy24:	3	,	fy25:	7	,	mar25:	4	,	apr25:	6	,	may25:	6	,	jun25:	6	,	jul25:	5	,	aug25:	7	,	sep25:	7	,	oct25: 	9	,	nov25:	9	,	des25:	8	,	jan26:	8	,	feb26:	8	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'BUKIT TINGGI'	,	model:	'TARGET'	,	fy22:	20	,	fy23:	15	,	fy24:	6	,	fy25:	10	,	mar25:	7	,	apr25:	8	,	may25:	9	,	jun25:	8	,	jul25:	7	,	aug25:	10	,	sep25:	9	,	oct25: 	11	,	nov25:	9	,	des25:	13	,	jan26:	11	,	feb26:	10	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'PADANG SIDEMPUAN'	,	model:	'TARGET'	,	fy22:	19	,	fy23:	20	,	fy24:	9	,	fy25:	10	,	mar25:	11	,	apr25:	8	,	may25:	9	,	jun25:	7	,	jul25:	9	,	aug25:	10	,	sep25:	11	,	oct25: 	11	,	nov25:	15	,	des25:	12	,	jan26:	9	,	feb26:	10	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'RANTAU PRAPAT'	,	model:	'TARGET'	,	fy22:	19	,	fy23:	20	,	fy24:	10	,	fy25:	11	,	mar25:	11	,	apr25:	12	,	may25:	11	,	jun25:	10	,	jul25:	8	,	aug25:	10	,	sep25:	10	,	oct25: 	14	,	nov25:	15	,	des25:	15	,	jan26:	10	,	feb26:	10	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'DURI'	,	model:	'TARGET'	,	fy22:	19	,	fy23:	20	,	fy24:	10	,	fy25:	21	,	mar25:	12	,	apr25:	20	,	may25:	23	,	jun25:	19	,	jul25:	20	,	aug25:	20	,	sep25:	20	,	oct25: 	24	,	nov25:	22	,	des25:	24	,	jan26:	20	,	feb26:	23	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'PADANG'	,	model:	'TARGET'	,	fy22:	35	,	fy23:	26	,	fy24:	12	,	fy25:	13	,	mar25:	15	,	apr25:	14	,	may25:	13	,	jun25:	13	,	jul25:	14	,	aug25:	11	,	sep25:	10	,	oct25: 	12	,	nov25:	14	,	des25:	18	,	jan26:	13	,	feb26:	12	},
+{	type:	'MMKSI'	,	region:	'SS'	,	branch:	'JAMBI'	,	model:	'TARGET'	,	fy22:	51	,	fy23:	33	,	fy24:	20	,	fy25:	27	,	mar25:	32	,	apr25:	27	,	may25:	29	,	jun25:	22	,	jul25:	23	,	aug25:	22	,	sep25:	27	,	oct25: 	29	,	nov25:	30	,	des25:	30	,	jan26:	29	,	feb26:	26	},
+{	type:	'MMKSI'	,	region:	'WJ'	,	branch:	'CIREBON'	,	model:	'TARGET'	,	fy22:	33	,	fy23:	28	,	fy24:	22	,	fy25:	20	,	mar25:	24	,	apr25:	15	,	may25:	14	,	jun25:	21	,	jul25:	16	,	aug25:	13	,	sep25:	19	,	oct25: 	17	,	nov25:	39	,	des25:	25	,	jan26:	22	,	feb26:	15	},
+{	type:	'MMKSI'	,	region:	'KLM'	,	branch:	'PONTIANAK'	,	model:	'TARGET'	,	fy22:	39	,	fy23:	39	,	fy24:	24	,	fy25:	32	,	mar25:	26	,	apr25:	26	,	may25:	33	,	jun25:	31	,	jul25:	33	,	aug25:	29	,	sep25:	40	,	oct25: 	37	,	nov25:	29	,	des25:	35	,	jan26:	29	,	feb26:	26	},
+{	type:	'MMKSI'	,	region:	'WJ'	,	branch:	'SUKABUMI'	,	model:	'TARGET'	,	fy22:	35	,	fy23:	35	,	fy24:	25	,	fy25:	26	,	mar25:	26	,	apr25:	24	,	may25:	27	,	jun25:	20	,	jul25:	23	,	aug25:	32	,	sep25:	28	,	oct25: 	23	,	nov25:	31	,	des25:	31	,	jan26:	25	,	feb26:	22	},
+{	type:	'MMKSI'	,	region:	'SS'	,	branch:	'LAMPUNG'	,	model:	'TARGET'	,	fy22:	54	,	fy23:	47	,	fy24:	26	,	fy25:	21	,	mar25:	24	,	apr25:	21	,	may25:	23	,	jun25:	21	,	jul25:	17	,	aug25:	20	,	sep25:	16	,	oct25: 	21	,	nov25:	25	,	des25:	28	,	jan26:	17	,	feb26:	21	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'PURWOKERTO'	,	model:	'TARGET'	,	fy22:	36	,	fy23:	31	,	fy24:	26	,	fy25:	25	,	mar25:	34	,	apr25:	23	,	may25:	24	,	jun25:	18	,	jul25:	20	,	aug25:	24	,	sep25:	29	,	oct25: 	24	,	nov25:	27	,	des25:	33	,	jan26:	24	,	feb26:	24	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'MEDAN'	,	model:	'TARGET'	,	fy22:	75	,	fy23:	76	,	fy24:	29	,	fy25:	29	,	mar25:	34	,	apr25:	25	,	may25:	29	,	jun25:	24	,	jul25:	29	,	aug25:	28	,	sep25:	24	,	oct25: 	32	,	nov25:	35	,	des25:	37	,	jan26:	26	,	feb26:	33	},
+{	type:	'MMKSI'	,	region:	'WJ'	,	branch:	'KARAWANG'	,	model:	'TARGET'	,	fy22:	47	,	fy23:	43	,	fy24:	30	,	fy25:	30	,	mar25:	32	,	apr25:	23	,	may25:	23	,	jun25:	31	,	jul25:	27	,	aug25:	35	,	sep25:	32	,	oct25: 	29	,	nov25:	36	,	des25:	37	,	jan26:	33	,	feb26:	29	},
+{	type:	'MMKSI'	,	region:	'KLM'	,	branch:	'MAKASSAR'	,	model:	'TARGET'	,	fy22:	72	,	fy23:	61	,	fy24:	37	,	fy25:	34	,	mar25:	37	,	apr25:	35	,	may25:	32	,	jun25:	31	,	jul25:	37	,	aug25:	30	,	sep25:	27	,	oct25: 	39	,	nov25:	35	,	des25:	45	,	jan26:	35	,	feb26:	33	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'JEMBER'	,	model:	'TARGET'	,	fy22:	54	,	fy23:	42	,	fy24:	37	,	fy25:	37	,	mar25:	48	,	apr25:	36	,	may25:	33	,	jun25:	35	,	jul25:	32	,	aug25:	34	,	sep25:	31	,	oct25: 	38	,	nov25:	44	,	des25:	47	,	jan26:	35	,	feb26:	44	},
+{	type:	'MMKSI'	,	region:	'SS'	,	branch:	'PALEMBANG'	,	model:	'TARGET'	,	fy22:	106	,	fy23:	73	,	fy24:	42	,	fy25:	52	,	mar25:	52	,	apr25:	43	,	may25:	52	,	jun25:	56	,	jul25:	53	,	aug25:	50	,	sep25:	47	,	oct25: 	51	,	nov25:	74	,	des25:	50	,	jan26:	46	,	feb26:	55	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'DENPASAR'	,	model:	'TARGET'	,	fy22:	36	,	fy23:	44	,	fy24:	42	,	fy25:	46	,	mar25:	53	,	apr25:	40	,	may25:	41	,	jun25:	47	,	jul25:	46	,	aug25:	44	,	sep25:	45	,	oct25: 	46	,	nov25:	58	,	des25:	54	,	jan26:	42	,	feb26:	42	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'CILEGON'	,	model:	'TARGET'	,	fy22:	49	,	fy23:	66	,	fy24:	47	,	fy25:	24	,	mar25:	61	,	apr25:	29	,	may25:	20	,	jun25:	19	,	jul25:	21	,	aug25:	23	,	sep25:	24	,	oct25: 	22	,	nov25:	27	,	des25:	28	,	jan26:	23	,	feb26:	23	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'MALANG'	,	model:	'TARGET'	,	fy22:	70	,	fy23:	52	,	fy24:	48	,	fy25:	46	,	mar25:	66	,	apr25:	41	,	may25:	41	,	jun25:	38	,	jul25:	40	,	aug25:	43	,	sep25:	45	,	oct25: 	57	,	nov25:	49	,	des25:	52	,	jan26:	50	,	feb26:	53	},
+{	type:	'MMKSI'	,	region:	'KLM'	,	branch:	'BANJARMASIN'	,	model:	'TARGET'	,	fy22:	80	,	fy23:	78	,	fy24:	49	,	fy25:	62	,	mar25:	55	,	apr25:	59	,	may25:	71	,	jun25:	64	,	jul25:	61	,	aug25:	62	,	sep25:	60	,	oct25: 	64	,	nov25:	69	,	des25:	62	,	jan26:	54	,	feb26:	60	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'TANGERANG'	,	model:	'TARGET'	,	fy22:	50	,	fy23:	62	,	fy24:	52	,	fy25:	51	,	mar25:	72	,	apr25:	38	,	may25:	35	,	jun25:	43	,	jul25:	40	,	aug25:	71	,	sep25:	53	,	oct25: 	42	,	nov25:	60	,	des25:	74	,	jan26:	50	,	feb26:	50	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'SEMARANG'	,	model:	'TARGET'	,	fy22:	61	,	fy23:	65	,	fy24:	58	,	fy25:	56	,	mar25:	75	,	apr25:	49	,	may25:	52	,	jun25:	45	,	jul25:	45	,	aug25:	51	,	sep25:	51	,	oct25: 	63	,	nov25:	71	,	des25:	78	,	jan26:	55	,	feb26:	55	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'TARGET'	,	fy22:	63	,	fy23:	83	,	fy24:	68	,	fy25:	57	,	mar25:	95	,	apr25:	49	,	may25:	45	,	jun25:	53	,	jul25:	49	,	aug25:	70	,	sep25:	63	,	oct25: 	55	,	nov25:	57	,	des25:	81	,	jan26:	56	,	feb26:	50	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'PEKANBARU'	,	model:	'TARGET'	,	fy22:	79	,	fy23:	98	,	fy24:	69	,	fy25:	101	,	mar25:	100	,	apr25:	98	,	may25:	106	,	jun25:	107	,	jul25:	97	,	aug25:	91	,	sep25:	102	,	oct25: 	103	,	nov25:	116	,	des25:	106	,	jan26:	92	,	feb26:	92	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'MEDAN II'	,	model:	'TARGET'	,	fy22:	95	,	fy23:	104	,	fy24:	72	,	fy25:	68	,	mar25:	89	,	apr25:	57	,	may25:	63	,	jun25:	65	,	jul25:	69	,	aug25:	73	,	sep25:	73	,	oct25: 	78	,	nov25:	71	,	des25:	70	,	jan26:	67	,	feb26:	67	},
+{	type:	'MMKSI'	,	region:	'WJ'	,	branch:	'BANDUNG'	,	model:	'TARGET'	,	fy22:	95	,	fy23:	99	,	fy24:	73	,	fy25:	83	,	mar25:	76	,	apr25:	65	,	may25:	77	,	jun25:	68	,	jul25:	81	,	aug25:	80	,	sep25:	84	,	oct25: 	95	,	nov25:	99	,	des25:	115	,	jan26:	70	,	feb26:	78	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'SOLO'	,	model:	'TARGET'	,	fy22:	64	,	fy23:	86	,	fy24:	78	,	fy25:	64	,	mar25:	100	,	apr25:	62	,	may25:	61	,	jun25:	56	,	jul25:	57	,	aug25:	61	,	sep25:	61	,	oct25: 	75	,	nov25:	80	,	des25:	68	,	jan26:	62	,	feb26:	65	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'NORTH JAKARTA'	,	model:	'TARGET'	,	fy22:	138	,	fy23:	103	,	fy24:	85	,	fy25:	65	,	mar25:	117	,	apr25:	65	,	may25:	50	,	jun25:	60	,	jul25:	62	,	aug25:	91	,	sep25:	72	,	oct25: 	57	,	nov25:	58	,	des25:	82	,	jan26:	54	,	feb26:	68	},
+{	type:	'MMKSI'	,	region:	'KLM'	,	branch:	'BALIKPAPAN'	,	model:	'TARGET'	,	fy22:	103	,	fy23:	104	,	fy24:	90	,	fy25:	104	,	mar25:	113	,	apr25:	99	,	may25:	102	,	jun25:	106	,	jul25:	101	,	aug25:	100	,	sep25:	106	,	oct25: 	101	,	nov25:	115	,	des25:	115	,	jan26:	93	,	feb26:	100	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'SOUTH JAKARTA'	,	model:	'TARGET'	,	fy22:	117	,	fy23:	148	,	fy24:	120	,	fy25:	100	,	mar25:	164	,	apr25:	88	,	may25:	87	,	jun25:	81	,	jul25:	91	,	aug25:	109	,	sep25:	115	,	oct25: 	113	,	nov25:	92	,	des25:	121	,	jan26:	91	,	feb26:	111	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'CENTRAL JAKARTA'	,	model:	'TARGET'	,	fy22:	198	,	fy23:	149	,	fy24:	123	,	fy25:	137	,	mar25:	169	,	apr25:	117	,	may25:	107	,	jun25:	131	,	jul25:	120	,	aug25:	153	,	sep25:	165	,	oct25: 	139	,	nov25:	132	,	des25:	168	,	jan26:	123	,	feb26:	155	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'SURABAYA'	,	model:	'TARGET'	,	fy22:	167	,	fy23:	150	,	fy24:	136	,	fy25:	144	,	mar25:	175	,	apr25:	125	,	may25:	123	,	jun25:	123	,	jul25:	114	,	aug25:	115	,	sep25:	171	,	oct25: 	169	,	nov25:	168	,	des25:	165	,	jan26:	156	,	feb26:	160	},
+{	type:	'MMKSI'	,	region:	'KLM'	,	branch:	'BALIKPAPAN'	,	model:	'Nat Pen %'	,	fy22:	0.25	,	fy23:	0.24	,	fy24:	0.24	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'WJ'	,	branch:	'BANDUNG'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'KLM'	,	branch:	'BANJARMASIN'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'BUKIT TINGGI'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'CENTRAL JAKARTA'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'CILEGON'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'WJ'	,	branch:	'CIREBON'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'DENPASAR'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'DURI'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'SS'	,	branch:	'JAMBI'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'JEMBER'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'WJ'	,	branch:	'KARAWANG'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'SS'	,	branch:	'LAMPUNG'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'KLM'	,	branch:	'MAKASSAR'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'MALANG'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'MEDAN II'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'SS'	,	branch:	'MUARA BUNGO'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'PADANG'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'PADANG SIDEMPUAN'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'SS'	,	branch:	'PALEMBANG'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'PEKANBARU'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'KLM'	,	branch:	'PONTIANAK'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'PURWOKERTO'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'RANTAU PRAPAT'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'SEMARANG'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'SOLO'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'WJ'	,	branch:	'SUKABUMI'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'SURABAYA'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'TANGERANG'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'MEDAN'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'NORTH JAKARTA'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'SOUTH JAKARTA'	,	model:	'Nat Pen %'	,	fy22:	0.26	,	fy23:	0.24	,	fy24:	0.25	,	fy25:	0.31	,	mar25:	0.33	,	apr25:	0.23	,	may25:	0.24	,	jun25:	0.23	,	jul25:	0.31	,	aug25:	0.34	,	sep25:	0.43	,	oct25: 	0.35	,	nov25:	0.28	,	des25:	0.36	,	jan26:	0.33	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'KLM'	,	branch:	'BALIKPAPAN'	,	model:	'Actual'	,	fy22:	103	,	fy23:	95	,	fy24:	65	,	fy25:	65	,	mar25:	56	,	apr25:	103	,	may25:	81	,	jun25:	35	,	jul25:	102	,	aug25:	77	,	sep25:	87	,	oct25: 	42	,	nov25:	54	,	des25:	52	,	jan26:	46	,	feb26:	32	},
+{	type:	'MMKSI'	,	region:	'WJ'	,	branch:	'BANDUNG'	,	model:	'Actual'	,	fy22:	97	,	fy23:	82	,	fy24:	71	,	fy25:	106	,	mar25:	92	,	apr25:	46	,	may25:	58	,	jun25:	53	,	jul25:	90	,	aug25:	96	,	sep25:	112	,	oct25: 	129	,	nov25:	139	,	des25:	185	,	jan26:	125	,	feb26:	129	},
+{	type:	'MMKSI'	,	region:	'KLM'	,	branch:	'BANJARMASIN'	,	model:	'Actual'	,	fy22:	68	,	fy23:	57	,	fy24:	46	,	fy25:	82	,	mar25:	63	,	apr25:	66	,	may25:	62	,	jun25:	106	,	jul25:	97	,	aug25:	91	,	sep25:	69	,	oct25: 	82	,	nov25:	71	,	des25:	84	,	jan26:	75	,	feb26:	94	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'Actual'	,	fy22:	60	,	fy23:	49	,	fy24:	62	,	fy25:	74	,	mar25:	90	,	apr25:	25	,	may25:	50	,	jun25:	46	,	jul25:	45	,	aug25:	126	,	sep25:	117	,	oct25: 	84	,	nov25:	55	,	des25:	129	,	jan26:	72	,	feb26:	61	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'BUKIT TINGGI'	,	model:	'Actual'	,	fy22:	15	,	fy23:	8	,	fy24:	8	,	fy25:	5	,	mar25:	14	,	apr25:	3	,	may25:	5	,	jun25:	7	,	jul25:	5	,	aug25:	5	,	sep25:	5	,	oct25: 	9	,	nov25:	7	,	des25:	10	,	jan26:	10	,	feb26:	9	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'CENTRAL JAKARTA'	,	model:	'Actual'	,	fy22:	123	,	fy23:	120	,	fy24:	141	,	fy25:	126	,	mar25:	237	,	apr25:	54	,	may25:	107	,	jun25:	117	,	jul25:	69	,	aug25:	169	,	sep25:	218	,	oct25: 	163	,	nov25:	104	,	des25:	130	,	jan26:	115	,	feb26:	135	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'CILEGON'	,	model:	'Actual'	,	fy22:	41	,	fy23:	26	,	fy24:	18	,	fy25:	25	,	mar25:	21	,	apr25:	8	,	may25:	15	,	jun25:	11	,	jul25:	22	,	aug25:	32	,	sep25:	40	,	oct25: 	33	,	nov25:	26	,	des25:	38	,	jan26:	25	,	feb26:	23	},
+{	type:	'MMKSI'	,	region:	'WJ'	,	branch:	'CIREBON'	,	model:	'Actual'	,	fy22:	29	,	fy23:	18	,	fy24:	15	,	fy25:	34	,	mar25:	10	,	apr25:	5	,	may25:	24	,	jun25:	16	,	jul25:	18	,	aug25:	27	,	sep25:	62	,	oct25: 	72	,	nov25:	44	,	des25:	39	,	jan26:	40	,	feb26:	30	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'DENPASAR'	,	model:	'Actual'	,	fy22:	46	,	fy23:	41	,	fy24:	48	,	fy25:	47	,	mar25:	51	,	apr25:	22	,	may25:	35	,	jun25:	43	,	jul25:	37	,	aug25:	53	,	sep25:	48	,	oct25: 	52	,	nov25:	50	,	des25:	76	,	jan26:	53	,	feb26:	45	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'DURI'	,	model:	'Actual'	,	fy22:	24	,	fy23:	7	,	fy24:	13	,	fy25:	9	,	mar25:	8	,	apr25:	4	,	may25:	17	,	jun25:	8	,	jul25:	5	,	aug25:	11	,	sep25:	14	,	oct25: 	18	,	nov25:	19	,	des25:	36	,	jan26:	16	,	feb26:	14	},
+{	type:	'MMKSI'	,	region:	'SS'	,	branch:	'JAMBI'	,	model:	'Actual'	,	fy22:	34	,	fy23:	30	,	fy24:	20	,	fy25:	29	,	mar25:	21	,	apr25:	13	,	may25:	25	,	jun25:	24	,	jul25:	14	,	aug25:	31	,	sep25:	25	,	oct25: 	36	,	nov25:	36	,	des25:	50	,	jan26:	29	,	feb26:	36	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'JEMBER'	,	model:	'Actual'	,	fy22:	45	,	fy23:	39	,	fy24:	40	,	fy25:	44	,	mar25:	48	,	apr25:	32	,	may25:	33	,	jun25:	37	,	jul25:	35	,	aug25:	39	,	sep25:	46	,	oct25: 	43	,	nov25:	49	,	des25:	79	,	jan26:	44	,	feb26:	42	},
+{	type:	'MMKSI'	,	region:	'WJ'	,	branch:	'KARAWANG'	,	model:	'Actual'	,	fy22:	39	,	fy23:	26	,	fy24:	30	,	fy25:	47	,	mar25:	48	,	apr25:	24	,	may25:	23	,	jun25:	37	,	jul25:	43	,	aug25:	53	,	sep25:	66	,	oct25: 	65	,	nov25:	49	,	des25:	71	,	jan26:	37	,	feb26:	48	},
+{	type:	'MMKSI'	,	region:	'SS'	,	branch:	'LAMPUNG'	,	model:	'Actual'	,	fy22:	59	,	fy23:	21	,	fy24:	16	,	fy25:	27	,	mar25:	25	,	apr25:	13	,	may25:	14	,	jun25:	17	,	jul25:	26	,	aug25:	31	,	sep25:	36	,	oct25: 	29	,	nov25:	35	,	des25:	26	,	jan26:	33	,	feb26:	41	},
+{	type:	'MMKSI'	,	region:	'KLM'	,	branch:	'MAKASSAR'	,	model:	'Actual'	,	fy22:	49	,	fy23:	28	,	fy24:	30	,	fy25:	77	,	mar25:	42	,	apr25:	37	,	may25:	48	,	jun25:	50	,	jul25:	52	,	aug25:	51	,	sep25:	86	,	oct25: 	94	,	nov25:	92	,	des25:	144	,	jan26:	98	,	feb26:	92	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'MALANG'	,	model:	'Actual'	,	fy22:	53	,	fy23:	36	,	fy24:	49	,	fy25:	61	,	mar25:	85	,	apr25:	35	,	may25:	55	,	jun25:	47	,	jul25:	41	,	aug25:	49	,	sep25:	90	,	oct25: 	66	,	nov25:	74	,	des25:	79	,	jan26:	68	,	feb26:	67	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'MEDAN'	,	model:	'Actual'	,	fy22:	102	,	fy23:	57	,	fy24:	30	,	fy25:	51	,	mar25:	40	,	apr25:	49	,	may25:	47	,	jun25:	29	,	jul25:	81	,	aug25:	50	,	sep25:	46	,	oct25: 	44	,	nov25:	32	,	des25:	46	,	jan26:	36	,	feb26:	39	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'MEDAN II'	,	model:	'Actual'	,	fy22:	192	,	fy23:	129	,	fy24:	155	,	fy25:	124	,	mar25:	182	,	apr25:	82	,	may25:	96	,	jun25:	98	,	jul25:	146	,	aug25:	198	,	sep25:	89	,	oct25: 	80	,	nov25:	53	,	des25:	106	,	jan26:	74	,	feb26:	65	},
+{	type:	'MMKSI'	,	region:	'SS'	,	branch:	'MUARA BUNGO'	,	model:	'Actual'	,	fy22:	7	,	fy23:	5	,	fy24:	5	,	fy25:	17	,	mar25:	11	,	apr25:	6	,	may25:	11	,	jun25:	8	,	jul25:	10	,	aug25:	13	,	sep25:	18	,	oct25: 	22	,	nov25:	23	,	des25:	30	,	jan26:	28	,	feb26:	19	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'NORTH JAKARTA'	,	model:	'Actual'	,	fy22:	81	,	fy23:	82	,	fy24:	71	,	fy25:	81	,	mar25:	113	,	apr25:	39	,	may25:	8	,	jun25:	71	,	jul25:	52	,	aug25:	119	,	sep25:	138	,	oct25: 	130	,	nov25:	71	,	des25:	123	,	jan26:	67	,	feb26:	69	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'PADANG'	,	model:	'Actual'	,	fy22:	24	,	fy23:	14	,	fy24:	11	,	fy25:	16	,	mar25:	25	,	apr25:	8	,	may25:	15	,	jun25:	7	,	jul25:	7	,	aug25:	19	,	sep25:	18	,	oct25: 	19	,	nov25:	20	,	des25:	16	,	jan26:	27	,	feb26:	15	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'PADANG SIDEMPUAN'	,	model:	'Actual'	,	fy22:	8	,	fy23:	3	,	fy24:	4	,	fy25:	5	,	mar25:	6	,	apr25:	2	,	may25:	1	,	jun25:	2	,	jul25:	13	,	aug25:	8	,	sep25:	18	,	oct25: 	15	,	nov25:	13	,	des25:	20	,	jan26:	21	,	feb26:	6	},
+{	type:	'MMKSI'	,	region:	'SS'	,	branch:	'PALEMBANG'	,	model:	'Actual'	,	fy22:	74	,	fy23:	53	,	fy24:	40	,	fy25:	81	,	mar25:	63	,	apr25:	36	,	may25:	37	,	jun25:	49	,	jul25:	62	,	aug25:	74	,	sep25:	81	,	oct25: 	69	,	nov25:	72	,	des25:	162	,	jan26:	165	,	feb26:	87	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'PEKANBARU'	,	model:	'Actual'	,	fy22:	106	,	fy23:	107	,	fy24:	75	,	fy25:	100	,	mar25:	73	,	apr25:	55	,	may25:	76	,	jun25:	68	,	jul25:	84	,	aug25:	102	,	sep25:	85	,	oct25: 	109	,	nov25:	146	,	des25:	178	,	jan26:	102	,	feb26:	92	},
+{	type:	'MMKSI'	,	region:	'KLM'	,	branch:	'PONTIANAK'	,	model:	'Actual'	,	fy22:	34	,	fy23:	33	,	fy24:	27	,	fy25:	27	,	mar25:	25	,	apr25:	22	,	may25:	13	,	jun25:	21	,	jul25:	23	,	aug25:	16	,	sep25:	28	,	oct25: 	35	,	nov25:	32	,	des25:	41	,	jan26:	34	,	feb26:	30	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'PURWOKERTO'	,	model:	'Actual'	,	fy22:	31	,	fy23:	24	,	fy24:	24	,	fy25:	36	,	mar25:	33	,	apr25:	14	,	may25:	20	,	jun25:	22	,	jul25:	29	,	aug25:	41	,	sep25:	38	,	oct25: 	46	,	nov25:	56	,	des25:	50	,	jan26:	54	,	feb26:	31	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'RANTAU PRAPAT'	,	model:	'Actual'	,	fy22:	13	,	fy23:	11	,	fy24:	11	,	fy25:	9	,	mar25:	10	,	apr25:	10	,	may25:	10	,	jun25:	7	,	jul25:	10	,	aug25:	10	,	sep25:	10	,	oct25: 	8	,	nov25:	8	,	des25:	12	,	jan26:	10	,	feb26:	9	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'SEMARANG'	,	model:	'Actual'	,	fy22:	64	,	fy23:	64	,	fy24:	56	,	fy25:	85	,	mar25:	99	,	apr25:	44	,	may25:	43	,	jun25:	50	,	jul25:	64	,	aug25:	75	,	sep25:	90	,	oct25: 	101	,	nov25:	100	,	des25:	144	,	jan26:	128	,	feb26:	98	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'SOLO'	,	model:	'Actual'	,	fy22:	85	,	fy23:	74	,	fy24:	60	,	fy25:	68	,	mar25:	74	,	apr25:	38	,	may25:	39	,	jun25:	44	,	jul25:	48	,	aug25:	79	,	sep25:	89	,	oct25: 	75	,	nov25:	86	,	des25:	116	,	jan26:	80	,	feb26:	55	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'SOUTH JAKARTA'	,	model:	'Actual'	,	fy22:	107	,	fy23:	99	,	fy24:	106	,	fy25:	111	,	mar25:	168	,	apr25:	56	,	may25:	68	,	jun25:	59	,	jul25:	82	,	aug25:	150	,	sep25:	138	,	oct25: 	116	,	nov25:	115	,	des25:	148	,	jan26:	101	,	feb26:	191	},
+{	type:	'MMKSI'	,	region:	'WJ'	,	branch:	'SUKABUMI'	,	model:	'Actual'	,	fy22:	33	,	fy23:	24	,	fy24:	22	,	fy25:	32	,	mar25:	27	,	apr25:	15	,	may25:	14	,	jun25:	17	,	jul25:	12	,	aug25:	51	,	sep25:	51	,	oct25: 	51	,	nov25:	28	,	des25:	48	,	jan26:	23	,	feb26:	41	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'SURABAYA'	,	model:	'Actual'	,	fy22:	145	,	fy23:	141	,	fy24:	153	,	fy25:	181	,	mar25:	232	,	apr25:	104	,	may25:	114	,	jun25:	134	,	jul25:	152	,	aug25:	170	,	sep25:	274	,	oct25: 	211	,	nov25:	179	,	des25:	268	,	jan26:	176	,	feb26:	206	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'TANGERANG'	,	model:	'Actual'	,	fy22:	47	,	fy23:	50	,	fy24:	54	,	fy25:	66	,	mar25:	101	,	apr25:	23	,	may25:	48	,	jun25:	38	,	jul25:	41	,	aug25:	115	,	sep25:	106	,	oct25: 	84	,	nov25:	60	,	des25:	95	,	jan26:	54	,	feb26:	64	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'BUKIT TINGGI'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.41	,	fy23:	0.29	,	fy24:	0.29	,	fy25:	0.36	,	mar25:	0.40	,	apr25:	0.30	,	may25:	0.36	,	jun25:	0.32	,	jul25:	0.26	,	aug25:	0.45	,	sep25:	0.40	,	oct25: 	0.35	,	nov25:	0.42	,	des25:	0.26	,	jan26:	0.46	,	feb26:	0.40	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'DURI'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.41	,	fy23:	0.24	,	fy24:	0.28	,	fy25:	0.32	,	mar25:	0.24	,	apr25:	0.16	,	may25:	0.52	,	jun25:	0.30	,	jul25:	0.16	,	aug25:	0.28	,	sep25:	0.30	,	oct25: 	0.33	,	nov25:	0.41	,	des25:	0.50	,	jan26:	0.27	,	feb26:	0.30	},
+{	type:	'MMKSI'	,	region:	'KLM'	,	branch:	'BALIKPAPAN'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.68	,	fy23:	0.93	,	fy24:	0.69	,	fy25:	0.76	,	mar25:	1.16	,	apr25:	1.64	,	may25:	1.36	,	jun25:	0.71	,	jul25:	1.48	,	aug25:	1.09	,	sep25:	0.81	,	oct25: 	0.45	,	nov25:	0.45	,	des25:	0.44	,	jan26:	0.56	,	feb26:	0.43	},
+{	type:	'MMKSI'	,	region:	'WJ'	,	branch:	'BANDUNG'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.47	,	fy23:	0.45	,	fy24:	0.50	,	fy25:	0.87	,	mar25:	0.82	,	apr25:	0.77	,	may25:	0.84	,	jun25:	0.91	,	jul25:	0.93	,	aug25:	0.68	,	sep25:	0.80	,	oct25: 	0.78	,	nov25:	0.80	,	des25:	0.79	,	jan26:	0.73	,	feb26:	0.81	},
+{	type:	'MMKSI'	,	region:	'KLM'	,	branch:	'BANJARMASIN'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.54	,	fy23:	0.63	,	fy24:	0.62	,	fy25:	1.00	,	mar25:	0.88	,	apr25:	1.28	,	may25:	0.70	,	jun25:	1.23	,	jul25:	1.04	,	aug25:	1.26	,	sep25:	1.08	,	oct25: 	0.95	,	nov25:	0.82	,	des25:	0.84	,	jan26:	0.96	,	feb26:	0.91	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.36	,	fy23:	0.39	,	fy24:	0.54	,	fy25:	0.63	,	mar25:	0.58	,	apr25:	0.39	,	may25:	0.69	,	jun25:	0.83	,	jul25:	0.80	,	aug25:	0.57	,	sep25:	0.78	,	oct25: 	0.55	,	nov25:	0.43	,	des25:	0.62	,	jan26:	0.87	,	feb26:	0.58	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'CENTRAL JAKARTA'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.35	,	fy23:	0.41	,	fy24:	0.59	,	fy25:	0.69	,	mar25:	0.79	,	apr25:	0.53	,	may25:	0.47	,	jun25:	0.61	,	jul25:	0.69	,	aug25:	0.65	,	sep25:	0.88	,	oct25: 	0.82	,	nov25:	0.53	,	des25:	0.68	,	jan26:	0.59	,	feb26:	0.88	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'CILEGON'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.48	,	fy23:	0.37	,	fy24:	0.34	,	fy25:	0.52	,	mar25:	0.45	,	apr25:	0.28	,	may25:	0.80	,	jun25:	0.76	,	jul25:	1.82	,	aug25:	0.59	,	sep25:	0.77	,	oct25: 	0.46	,	nov25:	0.53	,	des25:	0.46	,	jan26:	0.36	,	feb26:	0.36	},
+{	type:	'MMKSI'	,	region:	'WJ'	,	branch:	'CIREBON'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.43	,	fy23:	0.33	,	fy24:	0.39	,	fy25:	0.90	,	mar25:	0.43	,	apr25:	0.44	,	may25:	0.93	,	jun25:	1.27	,	jul25:	0.40	,	aug25:	0.37	,	sep25:	1.45	,	oct25: 	2.18	,	nov25:	0.84	,	des25:	0.96	,	jan26:	1.11	,	feb26:	0.65	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'DENPASAR'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.63	,	fy23:	0.38	,	fy24:	0.41	,	fy25:	0.48	,	mar25:	0.53	,	apr25:	0.41	,	may25:	0.43	,	jun25:	0.48	,	jul25:	0.51	,	aug25:	0.56	,	sep25:	0.45	,	oct25: 	0.41	,	nov25:	0.42	,	des25:	0.54	,	jan26:	0.59	,	feb26:	0.43	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'SOUTH JAKARTA'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.24	,	fy23:	0.31	,	fy24:	0.41	,	fy25:	0.55	,	mar25:	0.62	,	apr25:	0.34	,	may25:	0.46	,	jun25:	0.62	,	jul25:	0.79	,	aug25:	0.66	,	sep25:	0.74	,	oct25: 	0.47	,	nov25:	0.45	,	des25:	0.57	,	jan26:	0.56	,	feb26:	0.43	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'NORTH JAKARTA'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.34	,	fy23:	0.36	,	fy24:	0.47	,	fy25:	0.72	,	mar25:	0.52	,	apr25:	0.45	,	may25:	0.55	,	jun25:	0.67	,	jul25:	1.02	,	aug25:	0.72	,	sep25:	0.89	,	oct25: 	0.81	,	nov25:	0.69	,	des25:	0.86	,	jan26:	0.57	,	feb26:	0.54	},
+{	type:	'MMKSI'	,	region:	'SS'	,	branch:	'JAMBI'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.64	,	fy23:	0.63	,	fy24:	0.46	,	fy25:	0.46	,	mar25:	0.53	,	apr25:	0.47	,	may25:	0.59	,	jun25:	0.31	,	jul25:	0.33	,	aug25:	0.43	,	sep25:	0.39	,	oct25: 	0.48	,	nov25:	0.45	,	des25:	0.64	,	jan26:	0.56	,	feb26:	0.42	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'JEMBER'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.55	,	fy23:	0.55	,	fy24:	0.63	,	fy25:	0.72	,	mar25:	0.94	,	apr25:	0.49	,	may25:	0.85	,	jun25:	0.48	,	jul25:	0.77	,	aug25:	0.67	,	sep25:	0.98	,	oct25: 	0.83	,	nov25:	0.79	,	des25:	0.96	,	jan26:	0.59	,	feb26:	0.64	},
+{	type:	'MMKSI'	,	region:	'WJ'	,	branch:	'KARAWANG'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.49	,	fy23:	0.35	,	fy24:	0.44	,	fy25:	0.69	,	mar25:	1.02	,	apr25:	1.14	,	may25:	0.45	,	jun25:	0.58	,	jul25:	1.09	,	aug25:	0.58	,	sep25:	0.79	,	oct25: 	0.81	,	nov25:	0.60	,	des25:	0.77	,	jan26:	0.43	,	feb26:	0.83	},
+{	type:	'MMKSI'	,	region:	'SS'	,	branch:	'LAMPUNG'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.52	,	fy23:	0.38	,	fy24:	0.37	,	fy25:	0.44	,	mar25:	0.51	,	apr25:	0.24	,	may25:	0.37	,	jun25:	0.46	,	jul25:	0.69	,	aug25:	0.43	,	sep25:	0.55	,	oct25: 	0.49	,	nov25:	0.46	,	des25:	0.23	,	jan26:	0.55	,	feb26:	0.48	},
+{	type:	'MMKSI'	,	region:	'KLM'	,	branch:	'MAKASSAR'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.17	,	fy23:	0.15	,	fy24:	0.19	,	fy25:	0.45	,	mar25:	0.50	,	apr25:	0.30	,	may25:	0.39	,	jun25:	0.60	,	jul25:	0.57	,	aug25:	0.34	,	sep25:	0.57	,	oct25: 	0.53	,	nov25:	0.43	,	des25:	0.45	,	jan26:	0.45	,	feb26:	0.39	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'MALANG'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.47	,	fy23:	0.38	,	fy24:	0.56	,	fy25:	0.68	,	mar25:	0.78	,	apr25:	0.57	,	may25:	0.70	,	jun25:	0.88	,	jul25:	0.87	,	aug25:	0.46	,	sep25:	1.29	,	oct25: 	0.60	,	nov25:	0.65	,	des25:	0.64	,	jan26:	0.70	,	feb26:	0.51	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'MEDAN'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.73	,	fy23:	0.44	,	fy24:	0.30	,	fy25:	0.47	,	mar25:	0.42	,	apr25:	0.66	,	may25:	0.50	,	jun25:	0.35	,	jul25:	0.60	,	aug25:	0.45	,	sep25:	0.33	,	oct25: 	0.36	,	nov25:	0.39	,	des25:	0.41	,	jan26:	0.43	,	feb26:	0.70	},
+{	type:	'MMKSI'	,	region:	'SS'	,	branch:	'MUARA BUNGO'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.31	,	fy23:	0.22	,	fy24:	0.31	,	fy25:	0.67	,	mar25:	0.20	,	apr25:	0.25	,	may25:	0.50	,	jun25:	0.00	,	jul25:	0.67	,	aug25:	0.38	,	sep25:	1.20	,	oct25: 	0.70	,	nov25:	1.00	,	des25:	0.71	,	jan26:	0.80	,	feb26:	1.00	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'PADANG'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.31	,	fy23:	0.19	,	fy24:	0.21	,	fy25:	0.34	,	mar25:	0.37	,	apr25:	0.22	,	may25:	0.55	,	jun25:	0.23	,	jul25:	0.19	,	aug25:	0.35	,	sep25:	0.43	,	oct25: 	0.37	,	nov25:	0.43	,	des25:	0.20	,	jan26:	0.55	,	feb26:	0.24	},
+{	type:	'MMKSI'	,	region:	'SS'	,	branch:	'PALEMBANG'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.52	,	fy23:	0.53	,	fy24:	0.30	,	fy25:	0.52	,	mar25:	0.38	,	apr25:	0.40	,	may25:	0.58	,	jun25:	0.55	,	jul25:	0.55	,	aug25:	0.58	,	sep25:	0.58	,	oct25: 	0.45	,	nov25:	0.21	,	des25:	0.60	,	jan26:	0.80	,	feb26:	0.46	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'PEKANBARU'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.36	,	fy23:	0.35	,	fy24:	0.35	,	fy25:	0.48	,	mar25:	0.31	,	apr25:	0.56	,	may25:	0.39	,	jun25:	0.36	,	jul25:	0.43	,	aug25:	0.42	,	sep25:	0.39	,	oct25: 	0.52	,	nov25:	0.73	,	des25:	0.66	,	jan26:	0.50	,	feb26:	0.33	},
+{	type:	'MMKSI'	,	region:	'KLM'	,	branch:	'PONTIANAK'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.53	,	fy23:	0.66	,	fy24:	0.62	,	fy25:	0.61	,	mar25:	0.44	,	apr25:	0.73	,	may25:	0.52	,	jun25:	1.00	,	jul25:	1.35	,	aug25:	0.73	,	sep25:	0.87	,	oct25: 	0.76	,	nov25:	0.65	,	des25:	0.66	,	jan26:	0.46	,	feb26:	0.27	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'PURWOKERTO'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.55	,	fy23:	0.58	,	fy24:	0.55	,	fy25:	1.04	,	mar25:	1.00	,	apr25:	0.65	,	may25:	0.81	,	jun25:	1.13	,	jul25:	1.60	,	aug25:	1.72	,	sep25:	1.72	,	oct25: 	1.33	,	nov25:	1.16	,	des25:	0.81	,	jan26:	0.80	,	feb26:	0.69	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'SEMARANG'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.38	,	fy23:	0.46	,	fy24:	0.51	,	fy25:	0.79	,	mar25:	0.62	,	apr25:	0.61	,	may25:	0.70	,	jun25:	0.83	,	jul25:	1.50	,	aug25:	0.89	,	sep25:	1.14	,	oct25: 	0.90	,	nov25:	0.89	,	des25:	0.88	,	jan26:	1.20	,	feb26:	0.59	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'SOLO'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.58	,	fy23:	0.63	,	fy24:	0.66	,	fy25:	0.91	,	mar25:	1.25	,	apr25:	0.88	,	may25:	0.88	,	jun25:	1.26	,	jul25:	0.94	,	aug25:	1.24	,	sep25:	1.15	,	oct25: 	0.96	,	nov25:	0.68	,	des25:	0.99	,	jan26:	0.69	,	feb26:	0.77	},
+{	type:	'MMKSI'	,	region:	'WJ'	,	branch:	'SUKABUMI'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.33	,	fy23:	0.33	,	fy24:	0.36	,	fy25:	0.66	,	mar25:	0.53	,	apr25:	0.50	,	may25:	0.50	,	jun25:	0.64	,	jul25:	0.67	,	aug25:	0.85	,	sep25:	0.68	,	oct25: 	0.73	,	nov25:	0.47	,	des25:	0.75	,	jan26:	0.59	,	feb26:	0.66	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'MEDAN II'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.63	,	fy23:	0.48	,	fy24:	0.50	,	fy25:	0.62	,	mar25:	0.61	,	apr25:	0.62	,	may25:	0.71	,	jun25:	0.64	,	jul25:	0.61	,	aug25:	0.66	,	sep25:	0.69	,	oct25: 	0.60	,	nov25:	0.58	,	des25:	0.55	,	jan26:	0.59	,	feb26:	0.60	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'PADANG SIDEMPUAN'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.86	,	fy23:	0.70	,	fy24:	0.61	,	fy25:	0.92	,	mar25:	1.00	,	apr25:	1.00	,	may25:	1.00	,	jun25:	1.00	,	jul25:	0.93	,	aug25:	0.89	,	sep25:	1.00	,	oct25: 	0.91	,	nov25:	0.80	,	des25:	0.89	,	jan26:	1.00	,	feb26:	0.67	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'SURABAYA'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.41	,	fy23:	0.42	,	fy24:	0.53	,	fy25:	0.78	,	mar25:	0.77	,	apr25:	0.63	,	may25:	0.72	,	jun25:	0.97	,	jul25:	1.34	,	aug25:	0.64	,	sep25:	0.99	,	oct25: 	0.80	,	nov25:	0.77	,	des25:	0.89	,	jan26:	0.62	,	feb26:	0.59	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'TANGERANG'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.53	,	fy23:	0.45	,	fy24:	0.51	,	fy25:	0.59	,	mar25:	0.70	,	apr25:	0.41	,	may25:	0.73	,	jun25:	0.81	,	jul25:	0.85	,	aug25:	0.58	,	sep25:	0.63	,	oct25: 	0.68	,	nov25:	0.51	,	des25:	0.61	,	jan26:	0.48	,	feb26:	0.44	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'RANTAU PRAPAT'	,	model:	'Branch Pen % wo Cash'	,	fy22:	0.63	,	fy23:	0.63	,	fy24:	0.44	,	fy25:	0.43	,	mar25:	0.50	,	apr25:	0.50	,	may25:	0.50	,	jun25:	0.47	,	jul25:	0.50	,	aug25:	0.48	,	sep25:	0.43	,	oct25: 	0.27	,	nov25:	0.33	,	des25:	0.35	,	jan26:	0.48	,	feb26:	0.48	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'BUKIT TINGGI'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.34	,	fy23:	0.25	,	fy24:	0.25	,	fy25:	0.30	,	mar25:	0.37	,	apr25:	0.21	,	may25:	0.29	,	jun25:	0.28	,	jul25:	0.24	,	aug25:	0.38	,	sep25:	0.32	,	oct25: 	0.26	,	nov25:	0.35	,	des25:	0.20	,	jan26:	0.36	,	feb26:	0.36	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'DURI'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.35	,	fy23:	0.20	,	fy24:	0.20	,	fy25:	0.25	,	mar25:	0.19	,	apr25:	0.13	,	may25:	0.44	,	jun25:	0.27	,	jul25:	0.13	,	aug25:	0.21	,	sep25:	0.20	,	oct25: 	0.26	,	nov25:	0.31	,	des25:	0.37	,	jan26:	0.22	,	feb26:	0.27	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'PADANG SIDEMPUAN'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.74	,	fy23:	0.64	,	fy24:	0.52	,	fy25:	0.82	,	mar25:	0.75	,	apr25:	1.00	,	may25:	1.00	,	jun25:	0.67	,	jul25:	0.93	,	aug25:	0.73	,	sep25:	0.90	,	oct25: 	0.91	,	nov25:	0.50	,	des25:	0.89	,	jan26:	0.88	,	feb26:	0.57	},
+{	type:	'MMKSI'	,	region:	'KLM'	,	branch:	'BALIKPAPAN'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.26	,	fy23:	0.27	,	fy24:	0.18	,	fy25:	0.26	,	mar25:	0.20	,	apr25:	0.33	,	may25:	0.45	,	jun25:	0.13	,	jul25:	0.30	,	aug25:	0.46	,	sep25:	0.39	,	oct25: 	0.19	,	nov25:	0.16	,	des25:	0.19	,	jan26:	0.25	,	feb26:	0.18	},
+{	type:	'MMKSI'	,	region:	'WJ'	,	branch:	'BANDUNG'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.33	,	fy23:	0.31	,	fy24:	0.32	,	fy25:	0.54	,	mar25:	0.40	,	apr25:	0.39	,	may25:	0.33	,	jun25:	0.26	,	jul25:	0.59	,	aug25:	0.41	,	sep25:	0.52	,	oct25: 	0.55	,	nov25:	0.51	,	des25:	0.58	,	jan26:	0.51	,	feb26:	0.57	},
+{	type:	'MMKSI'	,	region:	'KLM'	,	branch:	'BANJARMASIN'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.38	,	fy23:	0.33	,	fy24:	0.31	,	fy25:	0.45	,	mar25:	0.39	,	apr25:	0.60	,	may25:	0.34	,	jun25:	0.62	,	jul25:	0.51	,	aug25:	0.54	,	sep25:	0.44	,	oct25: 	0.38	,	nov25:	0.37	,	des25:	0.38	,	jan26:	0.35	,	feb26:	0.48	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.21	,	fy23:	0.21	,	fy24:	0.34	,	fy25:	0.30	,	mar25:	0.38	,	apr25:	0.12	,	may25:	0.25	,	jun25:	0.27	,	jul25:	0.34	,	aug25:	0.34	,	sep25:	0.50	,	oct25: 	0.33	,	nov25:	0.19	,	des25:	0.37	,	jan26:	0.33	,	feb26:	0.25	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'CENTRAL JAKARTA'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.18	,	fy23:	0.17	,	fy24:	0.21	,	fy25:	0.22	,	mar25:	0.35	,	apr25:	0.11	,	may25:	0.12	,	jun25:	0.12	,	jul25:	0.19	,	aug25:	0.30	,	sep25:	0.41	,	oct25: 	0.27	,	nov25:	0.16	,	des25:	0.21	,	jan26:	0.19	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'CILEGON'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.37	,	fy23:	0.27	,	fy24:	0.23	,	fy25:	0.29	,	mar25:	0.23	,	apr25:	0.15	,	may25:	0.18	,	jun25:	0.15	,	jul25:	1.00	,	aug25:	0.38	,	sep25:	0.48	,	oct25: 	0.34	,	nov25:	0.28	,	des25:	0.30	,	jan26:	0.27	,	feb26:	0.22	},
+{	type:	'MMKSI'	,	region:	'WJ'	,	branch:	'CIREBON'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.30	,	fy23:	0.25	,	fy24:	0.27	,	fy25:	0.52	,	mar25:	0.25	,	apr25:	0.13	,	may25:	0.48	,	jun25:	0.30	,	jul25:	0.33	,	aug25:	0.31	,	sep25:	0.94	,	oct25: 	1.28	,	nov25:	0.55	,	des25:	0.55	,	jan26:	0.76	,	feb26:	0.41	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'DENPASAR'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.29	,	fy23:	0.19	,	fy24:	0.24	,	fy25:	0.26	,	mar25:	0.33	,	apr25:	0.20	,	may25:	0.26	,	jun25:	0.24	,	jul25:	0.24	,	aug25:	0.33	,	sep25:	0.29	,	oct25: 	0.25	,	nov25:	0.22	,	des25:	0.30	,	jan26:	0.29	,	feb26:	0.21	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'SOUTH JAKARTA'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.13	,	fy23:	0.16	,	fy24:	0.20	,	fy25:	0.25	,	mar25:	0.27	,	apr25:	0.15	,	may25:	0.15	,	jun25:	0.19	,	jul25:	0.32	,	aug25:	0.38	,	sep25:	0.39	,	oct25: 	0.24	,	nov25:	0.22	,	des25:	0.26	,	jan26:	0.22	,	feb26:	0.19	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'NORTH JAKARTA'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.17	,	fy23:	0.19	,	fy24:	0.20	,	fy25:	0.25	,	mar25:	0.23	,	apr25:	0.16	,	may25:	0.15	,	jun25:	0.13	,	jul25:	0.13	,	aug25:	0.38	,	sep25:	0.47	,	oct25: 	0.39	,	nov25:	0.18	,	des25:	0.34	,	jan26:	0.23	,	feb26:	0.20	},
+{	type:	'MMKSI'	,	region:	'SS'	,	branch:	'JAMBI'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.24	,	fy23:	0.36	,	fy24:	0.32	,	fy25:	0.30	,	mar25:	0.36	,	apr25:	0.22	,	may25:	0.23	,	jun25:	0.21	,	jul25:	0.19	,	aug25:	0.28	,	sep25:	0.26	,	oct25: 	0.38	,	nov25:	0.32	,	des25:	0.45	,	jan26:	0.38	,	feb26:	0.30	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'JEMBER'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.40	,	fy23:	0.40	,	fy24:	0.47	,	fy25:	0.49	,	mar25:	0.69	,	apr25:	0.41	,	may25:	0.43	,	jun25:	0.33	,	jul25:	0.49	,	aug25:	0.48	,	sep25:	0.67	,	oct25: 	0.52	,	nov25:	0.51	,	des25:	0.63	,	jan26:	0.45	,	feb26:	0.48	},
+{	type:	'MMKSI'	,	region:	'WJ'	,	branch:	'KARAWANG'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.37	,	fy23:	0.27	,	fy24:	0.30	,	fy25:	0.38	,	mar25:	0.52	,	apr25:	0.45	,	may25:	0.26	,	jun25:	0.31	,	jul25:	0.45	,	aug25:	0.27	,	sep25:	0.48	,	oct25: 	0.58	,	nov25:	0.35	,	des25:	0.42	,	jan26:	0.28	,	feb26:	0.40	},
+{	type:	'MMKSI'	,	region:	'SS'	,	branch:	'LAMPUNG'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.39	,	fy23:	0.25	,	fy24:	0.20	,	fy25:	0.25	,	mar25:	0.24	,	apr25:	0.10	,	may25:	0.19	,	jun25:	0.26	,	jul25:	0.30	,	aug25:	0.27	,	sep25:	0.31	,	oct25: 	0.27	,	nov25:	0.31	,	des25:	0.16	,	jan26:	0.39	,	feb26:	0.24	},
+{	type:	'MMKSI'	,	region:	'KLM'	,	branch:	'MAKASSAR'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.11	,	fy23:	0.10	,	fy24:	0.11	,	fy25:	0.26	,	mar25:	0.18	,	apr25:	0.17	,	may25:	0.18	,	jun25:	0.26	,	jul25:	0.27	,	aug25:	0.19	,	sep25:	0.36	,	oct25: 	0.34	,	nov25:	0.27	,	des25:	0.29	,	jan26:	0.26	,	feb26:	0.21	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'MALANG'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.31	,	fy23:	0.25	,	fy24:	0.34	,	fy25:	0.42	,	mar25:	0.56	,	apr25:	0.37	,	may25:	0.43	,	jun25:	0.35	,	jul25:	0.38	,	aug25:	0.30	,	sep25:	0.87	,	oct25: 	0.41	,	nov25:	0.48	,	des25:	0.40	,	jan26:	0.50	,	feb26:	0.32	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'MEDAN'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.58	,	fy23:	0.35	,	fy24:	0.21	,	fy25:	0.32	,	mar25:	0.27	,	apr25:	0.47	,	may25:	0.39	,	jun25:	0.24	,	jul25:	0.47	,	aug25:	0.26	,	sep25:	0.27	,	oct25: 	0.25	,	nov25:	0.22	,	des25:	0.22	,	jan26:	0.25	,	feb26:	0.53	},
+{	type:	'MMKSI'	,	region:	'SS'	,	branch:	'MUARA BUNGO'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.23	,	fy23:	0.18	,	fy24:	0.22	,	fy25:	0.46	,	mar25:	0.13	,	apr25:	0.20	,	may25:	0.44	,	jun25:	0.00	,	jul25:	0.50	,	aug25:	0.23	,	sep25:	0.75	,	oct25: 	0.54	,	nov25:	0.89	,	des25:	0.45	,	jan26:	0.67	,	feb26:	0.36	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'PADANG'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.24	,	fy23:	0.15	,	fy24:	0.15	,	fy25:	0.21	,	mar25:	0.29	,	apr25:	0.15	,	may25:	0.35	,	jun25:	0.09	,	jul25:	0.10	,	aug25:	0.21	,	sep25:	0.26	,	oct25: 	0.24	,	nov25:	0.25	,	des25:	0.13	,	jan26:	0.43	,	feb26:	0.17	},
+{	type:	'MMKSI'	,	region:	'SS'	,	branch:	'PALEMBANG'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.34	,	fy23:	0.31	,	fy24:	0.19	,	fy25:	0.33	,	mar25:	0.24	,	apr25:	0.21	,	may25:	0.28	,	jun25:	0.31	,	jul25:	0.36	,	aug25:	0.33	,	sep25:	0.32	,	oct25: 	0.26	,	nov25:	0.15	,	des25:	0.46	,	jan26:	0.56	,	feb26:	0.32	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'PEKANBARU'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.26	,	fy23:	0.22	,	fy24:	0.20	,	fy25:	0.29	,	mar25:	0.17	,	apr25:	0.18	,	may25:	0.24	,	jun25:	0.17	,	jul25:	0.27	,	aug25:	0.33	,	sep25:	0.24	,	oct25: 	0.32	,	nov25:	0.41	,	des25:	0.45	,	jan26:	0.28	,	feb26:	0.21	},
+{	type:	'MMKSI'	,	region:	'KLM'	,	branch:	'PONTIANAK'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.33	,	fy23:	0.34	,	fy24:	0.29	,	fy25:	0.25	,	mar25:	0.26	,	apr25:	0.29	,	may25:	0.14	,	jun25:	0.19	,	jul25:	0.24	,	aug25:	0.19	,	sep25:	0.26	,	oct25: 	0.33	,	nov25:	0.27	,	des25:	0.39	,	jan26:	0.25	,	feb26:	0.19	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'PURWOKERTO'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.38	,	fy23:	0.39	,	fy24:	0.36	,	fy25:	0.53	,	mar25:	0.47	,	apr25:	0.52	,	may25:	0.37	,	jun25:	0.33	,	jul25:	0.52	,	aug25:	0.63	,	sep25:	0.65	,	oct25: 	0.73	,	nov25:	0.77	,	des25:	0.44	,	jan26:	0.56	,	feb26:	0.39	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'SEMARANG'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.20	,	fy23:	0.25	,	fy24:	0.26	,	fy25:	0.40	,	mar25:	0.39	,	apr25:	0.32	,	may25:	0.22	,	jun25:	0.27	,	jul25:	0.45	,	aug25:	0.45	,	sep25:	0.50	,	oct25: 	0.50	,	nov25:	0.48	,	des25:	0.54	,	jan26:	0.70	,	feb26:	0.37	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'SOLO'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.33	,	fy23:	0.37	,	fy24:	0.38	,	fy25:	0.44	,	mar25:	0.73	,	apr25:	0.35	,	may25:	0.31	,	jun25:	0.40	,	jul25:	0.34	,	aug25:	0.55	,	sep25:	0.60	,	oct25: 	0.49	,	nov25:	0.43	,	des25:	0.50	,	jan26:	0.49	,	feb26:	0.40	},
+{	type:	'MMKSI'	,	region:	'WJ'	,	branch:	'SUKABUMI'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.20	,	fy23:	0.18	,	fy24:	0.17	,	fy25:	0.24	,	mar25:	0.20	,	apr25:	0.14	,	may25:	0.10	,	jun25:	0.14	,	jul25:	0.14	,	aug25:	0.31	,	sep25:	0.32	,	oct25: 	0.33	,	nov25:	0.20	,	des25:	0.35	,	jan26:	0.23	,	feb26:	0.29	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'MEDAN II'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.46	,	fy23:	0.36	,	fy24:	0.35	,	fy25:	0.44	,	mar25:	0.42	,	apr25:	0.44	,	may25:	0.52	,	jun25:	0.41	,	jul25:	0.43	,	aug25:	0.42	,	sep25:	0.53	,	oct25: 	0.45	,	nov25:	0.43	,	des25:	0.41	,	jan26:	0.39	,	feb26:	0.41	},
+{	type:	'MMKSI'	,	region:	'NS'	,	branch:	'RANTAU PRAPAT'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.53	,	fy23:	0.57	,	fy24:	0.37	,	fy25:	0.36	,	mar25:	0.42	,	apr25:	0.42	,	may25:	0.42	,	jun25:	0.35	,	jul25:	0.42	,	aug25:	0.40	,	sep25:	0.35	,	oct25: 	0.24	,	nov25:	0.29	,	des25:	0.30	,	jan26:	0.40	,	feb26:	0.40	},
+{	type:	'MMKSI'	,	region:	'SBY'	,	branch:	'SURABAYA'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.28	,	fy23:	0.27	,	fy24:	0.34	,	fy25:	0.42	,	mar25:	0.48	,	apr25:	0.35	,	may25:	0.29	,	jun25:	0.31	,	jul25:	0.43	,	aug25:	0.39	,	sep25:	0.64	,	oct25: 	0.48	,	nov25:	0.42	,	des25:	0.47	,	jan26:	0.45	,	feb26:	0.40	},
+{	type:	'MMKSI'	,	region:	'JKT'	,	branch:	'TANGERANG'	,	model:	'Branch Pen % w Cash'	,	fy22:	0.21	,	fy23:	0.24	,	fy24:	0.28	,	fy25:	0.26	,	mar25:	0.39	,	apr25:	0.17	,	may25:	0.23	,	jun25:	0.20	,	jul25:	0.25	,	aug25:	0.35	,	sep25:	0.40	,	oct25: 	0.29	,	nov25:	0.21	,	des25:	0.26	,	jan26:	0.20	,	feb26:	0.25	}
 
         ];
 
         let state = { region: 'All', branch: 'All', entity: 'MMKSI', selectedMonth: 'des25', sidebarExpanded: true };
         let annualChart, monthlyChart;
-        const monthsData = [{ id: 'mar25', label: "Mar'25" }, { id: 'apr25', label: "Apr'25" }, { id: 'mayl25', label: "May'25" }, { id: 'jun25', label: "Jun'25" }, { id: 'jul25', label: "Jul'25" }, { id: 'aug25', label: "Aug'25" }, { id: 'sep25', label: "Sep'25" }, { id: 'oct25', label: "Oct'25" }, { id: 'nov25', label: "Nov'25" }, { id: 'des25', label: "Dec'25" },  { id: 'jan26', label: "Jan'26" },  { id: 'feb26', label: "Feb'25" }];
+        const monthsData = [{ id: 'mar25', label: "Mar'25" }, { id: 'apr25', label: "Apr'25" }, { id: 'may25', label: "May'25" }, { id: 'jun25', label: "Jun'25" }, { id: 'jul25', label: "Jul'25" }, { id: 'aug25', label: "Aug'25" }, { id: 'sep25', label: "Sep'25" }, { id: 'oct25', label: "Oct'25" }, { id: 'nov25', label: "Nov'25" }, { id: 'des25', label: "Dec'25" }, { id: 'jan26', label: "Jan'25" }, { id: 'feb26', label: "Feb'26" }];
 
         const toPercent = (v) => (v * 100).toFixed(1) + '%';
         const toUnit = (v) => Math.round(v);
@@ -555,14 +731,14 @@
 
         function setupFilters() {
             const regions = ['All', ...new Set(rawData.map(d => d.region))];
-            document.getElementById('regionList').innerHTML = regions.map(r => `<button onclick="setRegion('${r}')" class="dropdown-item w-full text-left px-4 py-2 rounded-lg text-sm font-semibold transition-all ${state.region === r ? 'active' : ''}">${r}</button>`).join('');
-            document.getElementById('monthList').innerHTML = monthsData.map(m => `<button onclick="setMonth('${m.id}')" class="dropdown-item w-full text-left px-4 py-2 rounded-lg text-[10px] font-bold uppercase transition-all ${state.selectedMonth === m.id ? 'active' : ''}">${m.label}</button>`).join('');
+            document.getElementById('regionList').innerHTML = regions.map(r => `<button onclick="setRegion('${r}')" class="dropdown-item w-full text-left px-4 py-2 rounded-lg text-sm font-semibold transition-all ${state.region === r ? 'bg-slate-50 text-red-600' : ''}">${r}</button>`).join('');
+            document.getElementById('monthList').innerHTML = monthsData.map(m => `<button onclick="setMonth('${m.id}')" class="dropdown-item w-full text-left px-4 py-2 rounded-lg text-[10px] font-bold uppercase transition-all ${state.selectedMonth === m.id ? 'bg-slate-50 text-red-600' : ''}">${m.label}</button>`).join('');
             updateBranchDropdown();
         }
 
         function updateBranchDropdown() {
             const branches = ['All', ...new Set(rawData.filter(d => state.region === 'All' || d.region === state.region).map(d => d.branch))];
-            document.getElementById('branchList').innerHTML = branches.map(b => `<button onclick="setBranch('${b}')" class="dropdown-item w-full text-left px-4 py-2 rounded-lg text-sm font-semibold transition-all ${state.branch === b ? 'active' : ''}">${b}</button>`).join('');
+            document.getElementById('branchList').innerHTML = branches.map(b => `<button onclick="setBranch('${b}')" class="dropdown-item w-full text-left px-4 py-2 rounded-lg text-sm font-semibold transition-all ${state.branch === b ? 'bg-slate-50 text-red-600' : ''}">${b}</button>`).join('');
         }
 
         function setRegion(val) {
@@ -619,7 +795,9 @@
             const updateChartData = (chart, keys) => {
                 const getSeries = (m) => keys.map(k => {
                     const subset = entData.filter(d => d.model === m);
-                    return subset.length === 0 ? 0 : subset.reduce((a, c) => a + c[k], 0) / (m.includes('%') ? subset.length : 1);
+                    const val = subset.length === 0 ? 0 : subset.reduce((a, c) => a + c[k], 0) / (m.includes('%') ? subset.length : 1);
+                    // LOKASI PENGUNCIAN: Jika model adalah persentase, kunci maksimal di 1 (100%)
+                    return m.includes('%') ? Math.min(val, 1) : val;
                 });
                 chart.data.datasets[3].data = getSeries('TARGET');
                 chart.data.datasets[4].data = getSeries('Actual');
@@ -714,7 +892,17 @@
                     scales: {
                         x: { grid: { display: false }, ticks: { font: { weight: 'bold', size: 9 }, color: '#94a3b8' } },
                         y: { position: 'left', border: { display: false }, grid: { color: '#f8fafc' }, ticks: { font: { weight: 'bold', size: 9 }, color: '#94a3b8', callback: v => Math.round(v) } },
-                        y1: { position: 'right', grid: { display: false }, ticks: { font: { weight: 'bold', size: 9 }, color: '#ef4444', callback: v => (v*100).toFixed(0) + '%' } }
+                        y1: { 
+                            position: 'right', 
+                            grid: { display: false }, 
+                            min: 0, 
+                            max: 1, // LOKASI PENGUNCIAN SKALA 100%
+                            ticks: { 
+                                font: { weight: 'bold', size: 9 }, 
+                                color: '#ef4444', 
+                                callback: v => (v*100).toFixed(0) + '%' 
+                            } 
+                        }
                     }
                 }
             });
@@ -729,5 +917,4 @@
         };
     </script>
 </body>
-
 </html>
