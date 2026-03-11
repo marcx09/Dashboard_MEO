@@ -17,17 +17,88 @@
         /* ADAPTIVE SCROLL LOGIC */
         body { 
             min-height: 100vh;
-            overflow-y: auto; /* Aktif untuk tablet & mobile agar tidak terpotong */
+            overflow-y: auto;
             background-color: #f8fafc;
             letter-spacing: -0.02em;
         }
 
-        /* Lock screen HANYA untuk Desktop (Laptops/Monitors) agar tetap One Screen Page */
-        @media (min-width: 1024px) and (min-height: 900px) {
+        /* Lock screen untuk large desktop saja (1280px+ & 768px+ height) */
+        @media (min-width: 1280px) and (min-height: 768px) {
             body { 
                 height: 100vh;
                 overflow: hidden; 
             }
+        }
+
+        /* Pie chart container - KRITIS: harus punya height eksplisit agar canvas terrender */
+        .pie-chart-wrapper {
+            position: relative;
+            width: 100%;
+            height: 200px;
+        }
+
+        @media (min-width: 768px) {
+            .pie-chart-wrapper { height: 180px; }
+        }
+
+        @media (min-width: 1024px) {
+            .pie-chart-wrapper { height: 0; flex: 1; min-height: 140px; }
+        }
+
+        @media (min-width: 1280px) {
+            .pie-chart-wrapper { min-height: 160px; }
+        }
+
+        /* Bar chart containers */
+        .bar-chart-wrapper {
+            position: relative;
+            width: 100%;
+            height: 180px;
+        }
+
+        @media (min-width: 768px) {
+            .bar-chart-wrapper { height: 200px; }
+        }
+
+        @media (min-width: 1024px) {
+            .bar-chart-wrapper { height: 0; flex: 1; min-height: 120px; }
+        }
+
+        /* Sidebar responsive sizing */
+        /* Desktop: sidebar visible, mobile: drawer overlay */
+        @media (max-width: 767px) {
+            #sidebar {
+                position: fixed !important;
+                top: 0; left: 0; bottom: 0;
+                z-index: 100;
+                transform: translateX(-100%);
+                transition: transform 0.35s cubic-bezier(0.4,0,0.2,1), width 0.35s !important;
+                width: 240px !important;
+                box-shadow: 4px 0 24px rgba(0,0,0,0.10);
+                display: flex !important;
+            }
+            #sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            #sidebar-overlay {
+                display: none;
+                position: fixed; inset: 0; z-index: 99;
+                background: rgba(15,23,42,0.35);
+                backdrop-filter: blur(2px);
+            }
+            #sidebar-overlay.active { display: block; }
+            /* On mobile, reset collapsed state so labels show in drawer */
+            #sidebar.collapsed { width: 240px !important; }
+            #sidebar.collapsed .nav-label { opacity: 1; visibility: visible; width: auto; }
+            #sidebar.collapsed .nav-section-title { opacity: 1; visibility: visible; }
+        }
+
+        /* Scale font sizes and padding for smaller laptops (1024-1279px) */
+        @media (min-width: 1024px) and (max-width: 1279px) {
+            .kpi-value { font-size: 1.1rem !important; }
+            .kpi-title { font-size: 9px !important; }
+            .chart-title { font-size: 0.85rem !important; }
+            .pie-center-value { font-size: 0.95rem !important; }
         }
 
         ::-webkit-scrollbar { width: 4px; height: 4px; }
@@ -36,19 +107,21 @@
 
         .dropdown-content {
             display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            z-index: 50;
+            position: fixed;
+            z-index: 200;
             background: white;
             border: 1px solid #e2e8f0;
             border-radius: 1.25rem;
             margin-top: 0.5rem;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            max-height: 350px;
+            max-height: 220px;
             overflow-y: auto;
             animation: slideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Month dropdown diperkecil agar tidak terpotong */
+        #monthDropdown {
+            max-height: 160px;
         }
 
         .dropdown-content.show { display: block; }
@@ -67,7 +140,7 @@
 
         /* SIDEBAR STYLES - Synced with ATPM Style */
         #sidebar { transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); width: 260px; }
-        #sidebar.collapsed { width: 88px; }
+        #sidebar.collapsed { width: 72px; }
         .nav-label { transition: opacity 0.3s ease, visibility 0.3s ease; }
         .collapsed .nav-label { opacity: 0; visibility: hidden; width: 0; }
         .collapsed .nav-section-title { opacity: 0; visibility: hidden; }
@@ -78,13 +151,22 @@
 </head>
 <body class="bg-[#F8FAFC] text-slate-800 antialiased flex transition-colors duration-500">
 
+    <!-- Mobile sidebar overlay -->
+    <div id="sidebar-overlay" onclick="closeMobileSidebar()"></div>
+
     <!-- SIDEBAR NAVIGATION -->
     <aside id="sidebar" class="bg-white border-r border-slate-100 flex flex-col shrink-0 z-50">
-        <div class="h-20 flex items-center px-6 shrink-0 relative border-b border-slate-50">
+        <div class="h-16 md:h-20 flex items-center px-4 md:px-6 shrink-0 relative border-b border-slate-50">
+            <!-- Close button on mobile -->
+            <button class="md:hidden mr-3 w-8 h-8 flex flex-col justify-center items-center gap-1.5 shrink-0"
+                onclick="closeMobileSidebar()">
+                <span class="w-5 h-0.5 bg-slate-400 rounded"></span>
+                <span class="w-5 h-0.5 bg-slate-400 rounded"></span>
+            </button>
             <!-- Logo Icon Adjusted to Red -->
-            <div class="w-10 h-10 bg-red-600 rounded-xl flex items-center justify-center text-white font-black shadow-lg shadow-red-100 shrink-0 uppercase transition-colors">A</div>
-            <span class="nav-label ml-3 text-lg font-black tracking-tight text-slate-900 uppercase leading-none">Dashboard</span>
-            <button onclick="toggleSidebar()" class="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-white border border-slate-100 rounded-full flex items-center justify-center shadow-md hover:bg-slate-50 transition-all">
+            <div class="w-9 h-9 md:w-10 md:h-10 bg-red-600 rounded-xl flex items-center justify-center text-white font-black shadow-lg shadow-red-100 shrink-0 uppercase transition-colors text-sm">A</div>
+            <span class="nav-label ml-3 text-base md:text-lg font-black tracking-tight text-slate-900 uppercase leading-none">Dashboard</span>
+            <button onclick="toggleSidebar()" class="hidden md:flex absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-white border border-slate-100 rounded-full items-center justify-center shadow-md hover:bg-slate-50 transition-all">
                 <i id="toggle-icon" data-lucide="chevron-left" class="w-3 h-3 text-slate-400"></i>
             </button>
         </div>
@@ -123,17 +205,27 @@
         </div>
     </aside>
 
-    <div class="flex-1 flex flex-col min-w-0 lg:h-screen lg:overflow-hidden relative">
-        <div class="p-4 lg:p-6 h-full flex flex-col overflow-y-auto lg:overflow-hidden gap-4 lg:gap-6">
-            <header class="flex flex-col md:flex-row items-center justify-between shrink-0 gap-4">
-                <div>
-                    <p class="text-[10px] font-extrabold uppercase tracking-[0.3em] text-red-600 mb-0.5">Monitoring Hub</p>
-                    <h1 class="text-2xl lg:text-3xl font-black tracking-tight text-slate-900 leading-tight uppercase">Asset Analysis FY25</h1>
+    <div class="flex-1 flex flex-col min-w-0" style="min-width:0">
+        <div class="p-3 md:p-4 lg:p-5 xl:p-6 flex flex-col gap-4 lg:gap-5" style="overflow-y:auto; flex:1">
+            <header class="flex flex-col md:flex-row items-center justify-between shrink-0 gap-3 md:gap-4">
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <!-- Mobile hamburger -->
+                    <button 
+                        class="md:hidden w-9 h-9 bg-white rounded-xl border border-slate-100 shadow-sm flex flex-col justify-center items-center gap-1.5 shrink-0"
+                        onclick="openMobileSidebar()">
+                        <span class="w-4 h-0.5 bg-slate-600 rounded"></span>
+                        <span class="w-4 h-0.5 bg-slate-600 rounded"></span>
+                        <span class="w-4 h-0.5 bg-slate-600 rounded"></span>
+                    </button>
+                    <div>
+                        <p class="text-[9px] md:text-[10px] font-extrabold uppercase tracking-[0.3em] text-red-600 mb-0.5">Monitoring Hub</p>
+                        <h1 class="text-xl md:text-2xl lg:text-3xl font-black tracking-tight text-slate-900 leading-tight uppercase">Asset Analysis FY25</h1>
+                    </div>
                 </div>
 
-                <div class="flex items-center bg-white p-1 rounded-2xl border border-slate-200 shadow-sm w-full md:w-auto relative border-slate-100">
+                <div class="flex items-center bg-white p-1 rounded-2xl border border-slate-200 shadow-sm w-full md:w-auto relative border-slate-100 overflow-x-auto" style="-webkit-overflow-scrolling:touch">
                     <div class="relative group min-w-[150px] lg:min-w-[170px] border-r border-slate-100">
-                        <button onclick="toggleDropdown('regionDropdown')" class="flex items-center w-full px-4 lg:px-5 py-2 hover:bg-slate-50 rounded-l-xl transition-all text-left gap-2">
+                        <button data-dropdown-trigger onclick="toggleDropdown('regionDropdown')" class="flex items-center w-full px-4 lg:px-5 py-2 hover:bg-slate-50 rounded-l-xl transition-all text-left gap-2">
                             <!-- Icon Region Adjusted to Red -->
                             <i data-lucide="map-pin" class="w-3.5 h-3.5 text-red-500"></i>
                             <div class="flex flex-col flex-1">
@@ -148,7 +240,7 @@
                     </div>
 
                     <div class="relative group min-w-[180px] lg:min-w-[220px]">
-                        <button onclick="toggleDropdown('branchDropdown')" class="flex items-center w-full px-4 lg:px-5 py-2 hover:bg-slate-50 rounded-r-xl transition-all text-left gap-2">
+                        <button data-dropdown-trigger onclick="toggleDropdown('branchDropdown')" class="flex items-center w-full px-4 lg:px-5 py-2 hover:bg-slate-50 rounded-r-xl transition-all text-left gap-2">
                             <!-- Icon Branch Adjusted to Red -->
                             <i data-lucide="landmark" class="w-3.5 h-3.5 text-red-500"></i>
                             <div class="flex flex-col flex-1">
@@ -174,71 +266,71 @@
 
             <main class="flex-1 flex flex-col gap-4 lg:gap-6 min-h-0">
                 <!-- KPI Row -->
-                <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 lg:gap-5 shrink-0">
-                    <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm relative overflow-hidden group">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-opacity-70">Total Portfolio</p>
-                        <h2 id="kpi-total" class="text-xl lg:text-2xl font-black tracking-tighter text-slate-900">-</h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3 lg:gap-4 shrink-0">
+                    <div class="bg-white rounded-2xl p-3 lg:p-4 border border-slate-100 shadow-sm relative overflow-hidden group">
+                        <p class="kpi-title text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-opacity-70">Total Portfolio</p>
+                        <h2 id="kpi-total" class="kpi-value text-xl lg:text-2xl font-black tracking-tighter text-slate-900">-</h2>
                         <div id="growth-total" class="growth-label">--</div>
                     </div>
                     
-                    <div id="card-pc" class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm border-b-4 transition-all duration-500">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-opacity-70">PC Model</p>
-                        <h2 id="kpi-pc" class="text-lg lg:text-xl font-black text-slate-900">-</h2>
+                    <div id="card-pc" class="bg-white rounded-2xl p-3 lg:p-4 border border-slate-100 shadow-sm border-b-4 transition-all duration-500">
+                        <p class="kpi-title text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-opacity-70">PC Model</p>
+                        <h2 id="kpi-pc" class="kpi-value text-lg lg:text-xl font-black text-slate-900">-</h2>
                         <div id="growth-pc" class="growth-label">--</div>
                     </div>
-                    <div id="card-lcv" class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm border-b-4 transition-all duration-500">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-opacity-70">LCV Model</p>
-                        <h2 id="kpi-lcv" class="text-lg lg:text-xl font-black text-slate-900">-</h2>
+                    <div id="card-lcv" class="bg-white rounded-2xl p-3 lg:p-4 border border-slate-100 shadow-sm border-b-4 transition-all duration-500">
+                        <p class="kpi-title text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-opacity-70">LCV Model</p>
+                        <h2 id="kpi-lcv" class="kpi-value text-lg lg:text-xl font-black text-slate-900">-</h2>
                         <div id="growth-lcv" class="growth-label">--</div>
                     </div>
-                    <div id="card-cv" class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm border-b-4 transition-all duration-500">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-opacity-70">CV Model</p>
-                        <h2 id="kpi-cv" class="text-lg lg:text-xl font-black text-slate-900">-</h2>
+                    <div id="card-cv" class="bg-white rounded-2xl p-3 lg:p-4 border border-slate-100 shadow-sm border-b-4 transition-all duration-500">
+                        <p class="kpi-title text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-opacity-70">CV Model</p>
+                        <h2 id="kpi-cv" class="kpi-value text-lg lg:text-xl font-black text-slate-900">-</h2>
                         <div id="growth-cv" class="growth-label">--</div>
                     </div>
-                    <div id="card-ccb" class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm border-b-4 transition-all duration-500">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-opacity-70">CCB Model</p>
-                        <h2 id="kpi-ccb" class="text-lg lg:text-xl font-black text-slate-900">-</h2>
+                    <div id="card-ccb" class="bg-white rounded-2xl p-3 lg:p-4 border border-slate-100 shadow-sm border-b-4 transition-all duration-500">
+                        <p class="kpi-title text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-opacity-70">CCB Model</p>
+                        <h2 id="kpi-ccb" class="kpi-value text-lg lg:text-xl font-black text-slate-900">-</h2>
                         <div id="growth-ccb" class="growth-label">--</div>
                     </div>
                 </div>
 
-                <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 min-h-0 lg:overflow-hidden">
+                <div class="grid grid-cols-1 xl:grid-cols-12 gap-4 lg:gap-5" style="flex:1; min-height:0">
                     <!-- Left: Trend Analysis -->
-                    <div class="lg:col-span-8 bg-white rounded-3xl p-5 lg:p-7 border border-slate-100 shadow-sm flex flex-col min-h-[350px] lg:min-h-0 lg:overflow-hidden">
-                        <div class="flex items-center justify-between mb-6 shrink-0">
+                    <div class="xl:col-span-8 bg-white rounded-3xl p-4 lg:p-5 xl:p-7 border border-slate-100 shadow-sm flex flex-col" style="min-height:350px">
+                        <div class="flex items-center justify-between mb-4 shrink-0">
                             <div>
-                                <h3 class="text-base lg:text-lg font-black text-slate-900 uppercase tracking-tight leading-none">Trend Breakdown Analysis</h3>
+                                <h3 class="chart-title text-sm lg:text-base xl:text-lg font-black text-slate-900 uppercase tracking-tight leading-none">Trend Breakdown Analysis</h3>
                                 <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest text-red-600 mt-1 transition-colors">Historical Annual vs Monthly Pulse</p>
                             </div>
                             <div id="dynamicLegend" class="flex items-center gap-3"></div>
                         </div>
                         
-                        <div class="flex-1 flex flex-col md:flex-row gap-6 min-h-0">
-                            <div class="flex-1 flex flex-col min-w-0">
-                                <span class="px-2 py-0.5 bg-red-50 text-red-600 rounded text-[9px] font-black uppercase tracking-wider mb-4 w-fit transition-colors">Historical (T)</span>
-                                <div class="flex-1 min-h-0">
-                                    <canvas id="annualBarChart"></canvas>
+                            <div class="flex-1 flex flex-col md:flex-row gap-5 min-h-0">
+                                <div class="flex-1 flex flex-col min-w-0">
+                                    <span class="px-2 py-0.5 bg-red-50 text-red-600 rounded text-[9px] font-black uppercase tracking-wider mb-3 w-fit transition-colors">Historical (T)</span>
+                                    <div class="bar-chart-wrapper flex-1">
+                                        <canvas id="annualBarChart" style="position:absolute;top:0;left:0;width:100%;height:100%"></canvas>
+                                    </div>
+                                </div>
+                                <div class="hidden md:block w-px bg-slate-100 self-stretch"></div>
+                                <div class="flex-[1.5] flex flex-col min-w-0">
+                                    <span class="px-2 py-0.5 bg-slate-50 text-slate-600 rounded text-[9px] font-black uppercase tracking-wider mb-3 w-fit">Monthly (B)</span>
+                                    <div class="bar-chart-wrapper flex-[1.5]">
+                                        <canvas id="monthlyBarChart" style="position:absolute;top:0;left:0;width:100%;height:100%"></canvas>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="hidden md:block w-px bg-slate-100 self-stretch"></div>
-                            <div class="flex-[1.5] flex flex-col min-w-0">
-                                <span class="px-2 py-0.5 bg-slate-50 text-slate-600 rounded text-[9px] font-black uppercase tracking-wider mb-4 w-fit">Monthly (B)</span>
-                                <div class="flex-1 min-h-0">
-                                    <canvas id="monthlyBarChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- Right: Sidebar -->
-                    <div class="lg:col-span-4 flex flex-col gap-4 lg:gap-6 min-h-0">
+                    <div class="xl:col-span-4 flex flex-col gap-4 lg:gap-6" style="min-height:0">
                         <!-- Model Mix -->
-                        <div class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm flex flex-col flex-1 min-h-0 overflow-hidden text-center">
+                        <div class="bg-white rounded-3xl p-4 lg:p-5 border border-slate-100 shadow-sm flex flex-col overflow-hidden text-center" style="flex:1; min-height:0">
                             <div class="flex items-center justify-between mb-4 shrink-0 text-left">
                                 <h3 class="text-sm font-black text-slate-900 uppercase tracking-tight">DETAIL MODELS</h3>
                                 <div class="relative">
-                                    <button onclick="toggleDropdown('monthDropdown')" class="flex items-center gap-2 bg-slate-50 hover:bg-slate-100 px-2 py-1.5 rounded-xl transition-all border border-slate-100 shadow-sm">
+                                    <button data-dropdown-trigger onclick="toggleDropdown('monthDropdown')" class="flex items-center gap-2 bg-slate-50 hover:bg-slate-100 px-2 py-1.5 rounded-xl transition-all border border-slate-100 shadow-sm">
                                         <!-- Calendar Icon Adjusted to Red -->
                                         <i data-lucide="calendar" class="w-3 h-3 text-red-600"></i>
                                         <span id="monthValue" class="text-[9px] font-black text-red-600 uppercase">Dec '25</span>
@@ -249,10 +341,10 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="flex-1 min-h-0 flex items-center justify-center relative">
-                                <canvas id="modelContributionPie"></canvas>
+                            <div class="pie-chart-wrapper">
+                                <canvas id="modelContributionPie" style="position:absolute;top:0;left:0;width:100%;height:100%"></canvas>
                                 <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                                    <span id="pieCenterLabel" class="text-lg lg:text-xl font-black text-slate-900 tracking-tighter leading-none mb-1">-</span>
+                                    <span id="pieCenterLabel" class="pie-center-value text-base lg:text-lg xl:text-xl font-black text-slate-900 tracking-tighter leading-none mb-1">-</span>
                                     <span class="text-[7px] font-bold text-slate-400 uppercase tracking-widest leading-none">Total Value</span>
                                 </div>
                             </div>
@@ -444,11 +536,31 @@
             if (!el) return;
             const isShown = el.classList.contains('show');
             document.querySelectorAll('.dropdown-content').forEach(d => d.classList.remove('show'));
-            if (!isShown) el.classList.add('show');
+            if (!isShown) {
+                // Cari tombol trigger yang memiliki onclick berisi id ini
+                const trigger = document.querySelector(`[onclick="toggleDropdown('${id}')"]`);
+                if (trigger) {
+                    const rect = trigger.getBoundingClientRect();
+                    el.style.top = (rect.bottom + 6) + 'px';
+                    // Untuk month dropdown (right-aligned), align ke kanan tombol
+                    if (id === 'monthDropdown') {
+                        el.style.left = 'auto';
+                        el.style.right = (window.innerWidth - rect.right) + 'px';
+                        el.style.width = '130px';
+                        el.style.minWidth = '130px';
+                    } else {
+                        el.style.left = rect.left + 'px';
+                        el.style.right = 'auto';
+                        el.style.minWidth = rect.width + 'px';
+                    }
+                }
+                el.classList.add('show');
+            }
         }
 
         window.onclick = (e) => { 
-            if (!e.target.closest('.group') && !e.target.closest('.relative')) {
+            // Tutup dropdown jika klik di luar elemen yang punya data-dropdown atau dropdown itu sendiri
+            if (!e.target.closest('[data-dropdown-trigger]') && !e.target.closest('.dropdown-content')) {
                 document.querySelectorAll('.dropdown-content').forEach(el => el.classList.remove('show'));
             }
         };
@@ -622,10 +734,31 @@
             monthlyChart = new Chart(document.getElementById('monthlyBarChart').getContext('2d'), { type: 'bar', data: { labels: [], datasets: [] }, options: commonOptions });
             pieChart = new Chart(document.getElementById('modelContributionPie').getContext('2d'), {
                 type: 'doughnut', data: { labels: [], datasets: [{ backgroundColor: [], borderWidth: 6, borderColor: '#ffffff', cutout: '78%', data: [] }] },
-                options: { responsive: true, maintainAspectRatio: false, layout: { padding: 10 }, plugins: { legend: { display: false }, datalabels: { display: false } } }
+                options: { responsive: true, maintainAspectRatio: false, layout: { padding: 8 }, plugins: { legend: { display: false }, datalabels: { display: false } } }
             });
             updateDashboard();
+
+            // Fix: force chart resize on window resize to prevent pie disappearing
+            let resizeTimer;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => {
+                    if (annualChart) annualChart.resize();
+                    if (monthlyChart) monthlyChart.resize();
+                    if (pieChart) pieChart.resize();
+                }, 100);
+            });
         };
+
+        function openMobileSidebar() {
+            document.getElementById('sidebar').classList.add('mobile-open');
+            document.getElementById('sidebar-overlay').classList.add('active');
+        }
+
+        function closeMobileSidebar() {
+            document.getElementById('sidebar').classList.remove('mobile-open');
+            document.getElementById('sidebar-overlay').classList.remove('active');
+        }
     </script>
 </body>
 
