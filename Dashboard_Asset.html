@@ -146,6 +146,43 @@
         .collapsed .nav-section-title { opacity: 0; visibility: hidden; }
         .nav-item { transition: all 0.2s ease; border-radius: 1rem; margin: 0.15rem 0.6rem; }
         .collapsed .nav-item { margin: 0.15rem 0.6rem; padding: 0.75rem; justify-content: center; }
+
+        /* CHART TAB TOGGLE */
+        .tab-btn { cursor: pointer; }
+        .active-tab-asset {
+            background: #ef4444;
+            color: white;
+            box-shadow: 0 4px 10px -2px rgba(239, 68, 68, 0.45);
+        }
+        .active-tab-roa {
+            background: #10b981;
+            color: white;
+            box-shadow: 0 4px 10px -2px rgba(16, 185, 129, 0.45);
+        }
+
+        /* KPI CARD SWAP ANIMATION */
+        .kpi-cards-wrap {
+            transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.4,0,0.2,1);
+        }
+        .kpi-cards-wrap.fade-out {
+            opacity: 0;
+            transform: translateY(-6px);
+            pointer-events: none;
+        }
+        .kpi-cards-wrap.fade-in {
+            animation: kpiFadeIn 0.3s cubic-bezier(0.16,1,0.3,1) forwards;
+        }
+        @keyframes kpiFadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ROA card accent colors */
+        .roa-card-roa    { border-bottom: 3px solid #10b981; }
+        .roa-card-gp     { border-bottom: 3px solid #f59e0b; }
+        .roa-card-op     { border-bottom: 3px solid #06b6d4; }
+        .roa-card-nat    { border-bottom: 3px solid #10b981; }
+        .roa-dot { width:8px; height:8px; border-radius:50%; display:inline-block; flex-shrink:0; }
         .nav-item.active { background-color: #fef2f2; color: #ef4444; font-weight: 700; }
     </style>
 </head>
@@ -175,7 +212,7 @@
             <div>
                 <p class="nav-section-title px-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Executive Dashboard</p>
                 <div class="space-y-1">
-                    <a href="index.html" class="nav-item flex items-center px-5 py-3 text-slate-500 hover:bg-slate-50 hover:text-red-600 group transition-all">
+                    <a href="Dashboard_KPI_Fix.html" class="nav-item flex items-center px-5 py-3 text-slate-500 hover:bg-slate-50 hover:text-red-600 group transition-all">
                         <i data-lucide="layout-dashboard" class="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform"></i>
                         <span class="nav-label ml-4 text-sm whitespace-nowrap">KPI Performance</span>
                     </a>
@@ -265,14 +302,14 @@
             </header>
 
             <main class="flex-1 flex flex-col gap-4 lg:gap-6 min-h-0">
-                <!-- KPI Row -->
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3 lg:gap-4 shrink-0">
+                <!-- KPI Row wrapper — swaps between Asset and ROA modes -->
+                <div id="kpi-row" class="kpi-cards-wrap grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3 lg:gap-4 shrink-0">
+                    <!-- ASSET KPI CARDS (default) -->
                     <div class="bg-white rounded-2xl p-3 lg:p-4 border border-slate-100 shadow-sm relative overflow-hidden group">
                         <p class="kpi-title text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-opacity-70">Total Portfolio</p>
                         <h2 id="kpi-total" class="kpi-value text-xl lg:text-2xl font-black tracking-tighter text-slate-900">-</h2>
                         <div id="growth-total" class="growth-label">--</div>
                     </div>
-                    
                     <div id="card-pc" class="bg-white rounded-2xl p-3 lg:p-4 border border-slate-100 shadow-sm border-b-4 transition-all duration-500">
                         <p class="kpi-title text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-opacity-70">PC Model</p>
                         <h2 id="kpi-pc" class="kpi-value text-lg lg:text-xl font-black text-slate-900">-</h2>
@@ -296,42 +333,77 @@
                 </div>
 
                 <div class="grid grid-cols-1 xl:grid-cols-12 gap-4 lg:gap-5" style="flex:1; min-height:0">
-                    <!-- Left: Trend Analysis -->
-                    <div class="xl:col-span-8 bg-white rounded-3xl p-4 lg:p-5 xl:p-7 border border-slate-100 shadow-sm flex flex-col" style="min-height:350px">
-                        <div class="flex items-center justify-between mb-4 shrink-0">
-                            <div>
-                                <h3 class="chart-title text-sm lg:text-base xl:text-lg font-black text-slate-900 uppercase tracking-tight leading-none">Trend Breakdown Analysis</h3>
-                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest text-red-600 mt-1 transition-colors">Historical Annual vs Monthly Pulse</p>
+                    <!-- Left: Trend Analysis + ROA Tab -->
+                    <div class="xl:col-span-8 bg-white rounded-3xl p-4 lg:p-5 xl:p-6 border border-slate-100 shadow-sm flex flex-col" style="min-height:350px">
+                        <!-- Card Header: title left, tabs top-right -->
+                        <div class="flex items-start justify-between mb-3 shrink-0 gap-3">
+                            <!-- Left: title + subtitle + legend -->
+                            <div class="flex flex-col gap-1 min-w-0">
+                                <h3 id="chart-tab-title" class="chart-title text-sm lg:text-base font-black text-slate-900 uppercase tracking-tight leading-none">Trend Breakdown Analysis</h3>
+                                <p id="chart-tab-sub" class="text-[9px] font-bold text-red-500 uppercase tracking-widest transition-colors">Historical Annual vs Monthly Pulse</p>
+                                <!-- Legend row sits under subtitle -->
+                                <div id="dynamicLegend" class="flex items-center gap-3 flex-wrap mt-1"></div>
                             </div>
-                            <div id="dynamicLegend" class="flex items-center gap-3"></div>
+                            <!-- Right: tab toggle buttons — style like reference image -->
+                            <div class="flex items-center bg-slate-100 p-1 rounded-2xl shadow-inner gap-0.5 shrink-0">
+                                <button onclick="setChartTab('asset')" id="tab-asset"
+                                    class="tab-btn flex items-center gap-1.5 px-3 lg:px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-200 active-tab-asset">
+                                    <i data-lucide="bar-chart-2" class="w-3 h-3"></i>Asset
+                                </button>
+                                <button onclick="setChartTab('roa')" id="tab-roa"
+                                    class="tab-btn flex items-center gap-1.5 px-3 lg:px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-200 text-slate-400">
+                                    <i data-lucide="trending-up" class="w-3 h-3"></i>ROA
+                                </button>
+                            </div>
                         </div>
-                        
+
+                        <!-- ASSET CHART PANEL -->
+                        <div id="panel-asset" class="flex-1 flex flex-col md:flex-row gap-5 min-h-0">
+                            <div class="flex-1 flex flex-col min-w-0">
+                                <span class="px-2 py-0.5 bg-red-50 text-red-600 rounded text-[9px] font-black uppercase tracking-wider mb-3 w-fit">Historical (T)</span>
+                                <div class="bar-chart-wrapper flex-1">
+                                    <canvas id="annualBarChart" style="position:absolute;top:0;left:0;width:100%;height:100%"></canvas>
+                                </div>
+                            </div>
+                            <div class="hidden md:block w-px bg-slate-100 self-stretch"></div>
+                            <div class="flex-[1.5] flex flex-col min-w-0">
+                                <span class="px-2 py-0.5 bg-slate-50 text-slate-600 rounded text-[9px] font-black uppercase tracking-wider mb-3 w-fit">Monthly (B)</span>
+                                <div class="bar-chart-wrapper flex-[1.5]">
+                                    <canvas id="monthlyBarChart" style="position:absolute;top:0;left:0;width:100%;height:100%"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ROA CHART PANEL (hidden by default) -->
+                        <div id="panel-roa" class="flex-1 flex-col gap-3 min-h-0 hidden">
                             <div class="flex-1 flex flex-col md:flex-row gap-5 min-h-0">
+                                <!-- Annual ROA -->
                                 <div class="flex-1 flex flex-col min-w-0">
-                                    <span class="px-2 py-0.5 bg-red-50 text-red-600 rounded text-[9px] font-black uppercase tracking-wider mb-3 w-fit transition-colors">Historical (T)</span>
+                                    <span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded text-[9px] font-black uppercase tracking-wider mb-3 w-fit">Annual FY22–FY25</span>
                                     <div class="bar-chart-wrapper flex-1">
-                                        <canvas id="annualBarChart" style="position:absolute;top:0;left:0;width:100%;height:100%"></canvas>
+                                        <canvas id="roaAnnualChart" style="position:absolute;top:0;left:0;width:100%;height:100%"></canvas>
                                     </div>
                                 </div>
                                 <div class="hidden md:block w-px bg-slate-100 self-stretch"></div>
+                                <!-- Monthly ROA -->
                                 <div class="flex-[1.5] flex flex-col min-w-0">
-                                    <span class="px-2 py-0.5 bg-slate-50 text-slate-600 rounded text-[9px] font-black uppercase tracking-wider mb-3 w-fit">Monthly (B)</span>
+                                    <span class="px-2 py-0.5 bg-slate-50 text-slate-600 rounded text-[9px] font-black uppercase tracking-wider mb-3 w-fit">Monthly Feb'25–Jan'26</span>
                                     <div class="bar-chart-wrapper flex-[1.5]">
-                                        <canvas id="monthlyBarChart" style="position:absolute;top:0;left:0;width:100%;height:100%"></canvas>
+                                        <canvas id="roaMonthlyChart" style="position:absolute;top:0;left:0;width:100%;height:100%"></canvas>
                                     </div>
                                 </div>
                             </div>
+                        </div>
                     </div>
 
                     <!-- Right: Sidebar -->
                     <div class="xl:col-span-4 flex flex-col gap-4 lg:gap-6" style="min-height:0">
-                        <!-- Model Mix -->
-                        <div class="bg-white rounded-3xl p-4 lg:p-5 border border-slate-100 shadow-sm flex flex-col overflow-hidden text-center" style="flex:1; min-height:0">
+                        <!-- Model Mix / ROA Detail — swappable panel -->
+                        <div id="right-detail-card" class="bg-white rounded-3xl p-4 lg:p-5 border border-slate-100 shadow-sm flex flex-col overflow-hidden text-center kpi-cards-wrap" style="flex:1; min-height:0">
                             <div class="flex items-center justify-between mb-4 shrink-0 text-left">
                                 <h3 class="text-sm font-black text-slate-900 uppercase tracking-tight">DETAIL MODELS</h3>
                                 <div class="relative">
                                     <button data-dropdown-trigger onclick="toggleDropdown('monthDropdown')" class="flex items-center gap-2 bg-slate-50 hover:bg-slate-100 px-2 py-1.5 rounded-xl transition-all border border-slate-100 shadow-sm">
-                                        <!-- Calendar Icon Adjusted to Red -->
                                         <i data-lucide="calendar" class="w-3 h-3 text-red-600"></i>
                                         <span id="monthValue" class="text-[9px] font-black text-red-600 uppercase">Dec '25</span>
                                         <i data-lucide="chevron-down" class="w-3 h-3 text-red-300"></i>
@@ -366,7 +438,7 @@
 
     <script>
         const rawData = [
-           {	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'PC'	,	fy22:	182046541066	,	fy23:	150674257034	,	fy24:	149576160775	,	fy25:	159649876363	,	feb25:	146017399079	,	mar25:	149576160775	,	apr25:	144081817784	,	may25:	141795074187	,	jun25:	138481332388	,	jul25:	134772206591	,	aug25:	144546881697	,	sep25:	153113719667	,	oct25: 	155795616189	,	nov25:	153977546496	,	des25:	161943114905	,	jan26:	159649876363	},
+{	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'PC'	,	fy22:	182046541066	,	fy23:	150674257034	,	fy24:	149576160775	,	fy25:	159649876363	,	feb25:	146017399079	,	mar25:	149576160775	,	apr25:	144081817784	,	may25:	141795074187	,	jun25:	138481332388	,	jul25:	134772206591	,	aug25:	144546881697	,	sep25:	153113719667	,	oct25: 	155795616189	,	nov25:	153977546496	,	des25:	161943114905	,	jan26:	159649876363	},
 {	region:	'JKT'	,	branch:	'CENTRAL JAKARTA'	,	model:	'PC'	,	fy22:	499114964180	,	fy23:	385868350855	,	fy24:	350659505701	,	fy25:	325782943175	,	feb25:	344619473601	,	mar25:	350659505701	,	apr25:	326302579189	,	may25:	324340339687	,	jun25:	319089403004	,	jul25:	310714084511	,	aug25:	318734340780	,	sep25:	336684964805	,	oct25: 	341167828120	,	nov25:	337283591197	,	des25:	335244739177	,	jan26:	325782943175	},
 {	region:	'JKT'	,	branch:	'CILEGON'	,	model:	'PC'	,	fy22:	137395729088	,	fy23:	112271675472	,	fy24:	88974906873	,	fy25:	89680528709	,	feb25:	88877369906	,	mar25:	88974906873	,	apr25:	86101161679	,	may25:	83557143134	,	jun25:	81825788714	,	jul25:	81601157949	,	aug25:	82310856589	,	sep25:	87613924667	,	oct25: 	87251092952	,	nov25:	88045917338	,	des25:	90965152123	,	jan26:	89680528709	},
 {	region:	'JKT'	,	branch:	'NORTH JAKARTA'	,	model:	'PC'	,	fy22:	341870621087	,	fy23:	238062308784	,	fy24:	182547647018	,	fy25:	201105473550	,	feb25:	179532936073	,	mar25:	182547647018	,	apr25:	176012124741	,	may25:	173097589229	,	jun25:	167427595417	,	jul25:	164484686128	,	aug25:	173529519639	,	sep25:	184142075460	,	oct25: 	193350279130	,	nov25:	195278812517	,	des25:	204527702157	,	jan26:	201105473550	},
@@ -498,7 +570,207 @@
 {	region:	'WJ'	,	branch:	'CIREBON'	,	model:	'CCB'	,	fy22:	15553662244	,	fy23:	21178581812	,	fy24:	25196052619	,	fy25:	23266181388	,	feb25:	26260212893	,	mar25:	25196052619	,	apr25:	24388539651	,	may25:	22966100779	,	jun25:	23061959530	,	jul25:	25101901795	,	aug25:	24243074359	,	sep25:	24217756790	,	oct25: 	24608480157	,	nov25:	24492581503	,	des25:	24306421629	,	jan26:	23266181388	},
 {	region:	'WJ'	,	branch:	'KARAWANG'	,	model:	'CCB'	,	fy22:	5702574574	,	fy23:	13108437796	,	fy24:	17028648854	,	fy25:	21237529856	,	feb25:	17552373896	,	mar25:	17028648854	,	apr25:	16265200868	,	may25:	19609034262	,	jun25:	18819125754	,	jul25:	20408383526	,	aug25:	22234650363	,	sep25:	22154234129	,	oct25: 	22391925798	,	nov25:	22684011844	,	des25:	21923504284	,	jan26:	21237529856	},
 {	region:	'WJ'	,	branch:	'SUKABUMI'	,	model:	'CCB'	,	fy22:	10322689100	,	fy23:	24746004589	,	fy24:	29124704883	,	fy25:	28333889841	,	feb25:	28472600390	,	mar25:	29124704883	,	apr25:	28426862626	,	may25:	28620899533	,	jun25:	29154792239	,	jul25:	29790623987	,	aug25:	29322212492	,	sep25:	29311045639	,	oct25: 	30243176463	,	nov25:	29771394264	,	des25:	29076230483	,	jan26:	28333889841	}
+        ];
 
+        const rawROAData = [
+{	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'ROA'	,	fy22:	0.0135	,	fy23:	0.0342	,	fy24:	0.0274	,	fy25:  	0.0401	,	feb25:	0.0285	,	mar25:	0.0274	,	apr25:	0.0318	,	may25:	0.0421	,	jun25:	0.0340	,	jul25:	0.0389	,	aug25:	0.0342	,	sep25:	0.0269	,	oct25:	0.0313	,	nov25:	0.0416	,	dec25:	0.0377	,	jan26:	0.0401	},
+{	region:	'JKT'	,	branch:	'CENTRAL JAKARTA'	,	model:	'ROA'	,	fy22:	-0.0029	,	fy23:	0.0091	,	fy24:	0.0065	,	fy25:  	0.0041	,	feb25:	0.0087	,	mar25:	0.0065	,	apr25:	0.0070	,	may25:	0.0156	,	jun25:	-0.0075	,	jul25:	-0.0127	,	aug25:	-0.0079	,	sep25:	-0.0044	,	oct25:	-0.0053	,	nov25:	-0.0082	,	dec25:	0.0031	,	jan26:	0.0041	},
+{	region:	'JKT'	,	branch:	'CILEGON'	,	model:	'ROA'	,	fy22:	0.0079	,	fy23:	0.0046	,	fy24:	0.0438	,	fy25:  	0.0241	,	feb25:	0.0478	,	mar25:	0.0438	,	apr25:	-0.0809	,	may25:	-0.0028	,	jun25:	-0.0123	,	jul25:	0.0044	,	aug25:	0.0130	,	sep25:	0.0108	,	oct25:	0.0247	,	nov25:	0.0297	,	dec25:	0.0279	,	jan26:	0.0241	},
+{	region:	'JKT'	,	branch:	'NORTH JAKARTA'	,	model:	'ROA'	,	fy22:	-0.0115	,	fy23:	0.0186	,	fy24:	0.0148	,	fy25:  	0.0199	,	feb25:	0.0151	,	mar25:	0.0148	,	apr25:	-0.0359	,	may25:	-0.0455	,	jun25:	-0.0188	,	jul25:	0.0073	,	aug25:	0.0124	,	sep25:	0.0128	,	oct25:	0.0150	,	nov25:	0.0188	,	dec25:	0.0198	,	jan26:	0.0199	},
+{	region:	'JKT'	,	branch:	'SOUTH JAKARTA'	,	model:	'ROA'	,	fy22:	0.0069	,	fy23:	0.0169	,	fy24:	0.0195	,	fy25:  	0.0195	,	feb25:	0.0209	,	mar25:	0.0195	,	apr25:	-0.0019	,	may25:	0.0095	,	jun25:	0.0139	,	jul25:	0.0226	,	aug25:	0.0181	,	sep25:	0.0157	,	oct25:	0.0207	,	nov25:	0.0215	,	dec25:	0.0204	,	jan26:	0.0195	},
+{	region:	'JKT'	,	branch:	'TANGERANG'	,	model:	'ROA'	,	fy22:	0.0115	,	fy23:	0.0109	,	fy24:	0.0211	,	fy25:  	0.0250	,	feb25:	0.0253	,	mar25:	0.0211	,	apr25:	0.0131	,	may25:	0.0156	,	jun25:	0.0262	,	jul25:	0.0233	,	aug25:	0.0244	,	sep25:	0.0214	,	oct25:	0.0211	,	nov25:	0.0252	,	dec25:	0.0253	,	jan26:	0.0250	},
+{	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'OP ROA'	,	fy22:	0.0374	,	fy23:	0.0441	,	fy24:	0.0404	,	fy25:  	0.0489	,	feb25:	0.0401	,	mar25:	0.0404	,	apr25:	0.0449	,	may25:	0.0460	,	jun25:	0.0432	,	jul25:	0.0277	,	aug25:	0.0339	,	sep25:	0.0324	,	oct25:	0.0373	,	nov25:	0.0431	,	dec25:	0.0460	,	jan26:	0.0489	},
+{	region:	'JKT'	,	branch:	'CENTRAL JAKARTA'	,	model:	'OP ROA'	,	fy22:	0.0070	,	fy23:	0.0037	,	fy24:	0.0324	,	fy25:  	0.0065	,	feb25:	0.0342	,	mar25:	0.0324	,	apr25:	0.0388	,	may25:	0.0341	,	jun25:	0.0268	,	jul25:	0.0266	,	aug25:	0.0267	,	sep25:	0.0269	,	oct25:	0.0146	,	nov25:	-0.0168	,	dec25:	0.0027	,	jan26:	0.0065	},
+{	region:	'JKT'	,	branch:	'CILEGON'	,	model:	'OP ROA'	,	fy22:	0.0329	,	fy23:	0.0077	,	fy24:	0.0282	,	fy25:  	0.0178	,	feb25:	0.0329	,	mar25:	0.0282	,	apr25:	0.0152	,	may25:	0.0254	,	jun25:	0.0169	,	jul25:	0.0170	,	aug25:	0.0172	,	sep25:	0.0197	,	oct25:	0.0162	,	nov25:	0.0221	,	dec25:	0.0203	,	jan26:	0.0178	},
+{	region:	'JKT'	,	branch:	'NORTH JAKARTA'	,	model:	'OP ROA'	,	fy22:	0.0083	,	fy23:	-0.0004	,	fy24:	-0.0056	,	fy25:  	0.0219	,	feb25:	-0.0071	,	mar25:	-0.0056	,	apr25:	0.0177	,	may25:	-0.0147	,	jun25:	0.0011	,	jul25:	0.0066	,	aug25:	0.0101	,	sep25:	0.0113	,	oct25:	0.0140	,	nov25:	0.0191	,	dec25:	0.0196	,	jan26:	0.0219	},
+{	region:	'JKT'	,	branch:	'SOUTH JAKARTA'	,	model:	'OP ROA'	,	fy22:	0.0264	,	fy23:	0.0100	,	fy24:	0.0277	,	fy25:  	0.0346	,	feb25:	0.0285	,	mar25:	0.0277	,	apr25:	0.0295	,	may25:	0.0290	,	jun25:	0.0312	,	jul25:	0.0324	,	aug25:	0.0344	,	sep25:	0.0320	,	oct25:	0.0315	,	nov25:	0.0322	,	dec25:	0.0337	,	jan26:	0.0346	},
+{	region:	'JKT'	,	branch:	'TANGERANG'	,	model:	'OP ROA'	,	fy22:	0.0404	,	fy23:	0.0257	,	fy24:	0.0268	,	fy25:  	0.0430	,	feb25:	0.0299	,	mar25:	0.0268	,	apr25:	0.0424	,	may25:	0.0276	,	jun25:	0.0357	,	jul25:	0.0372	,	aug25:	0.0392	,	sep25:	0.0381	,	oct25:	0.0356	,	nov25:	0.0397	,	dec25:	0.0415	,	jan26:	0.0430	},
+{	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'GP ROA'	,	fy22:	0.1069	,	fy23:	0.1019	,	fy24:	0.1118	,	fy25:  	0.1197	,	feb25:	0.1102	,	mar25:	0.1118	,	apr25:	0.1142	,	may25:	0.1174	,	jun25:	0.1179	,	jul25:	0.1192	,	aug25:	0.1142	,	sep25:	0.1136	,	oct25:	0.1148	,	nov25:	0.1191	,	dec25:	0.1158	,	jan26:	0.1197	},
+{	region:	'JKT'	,	branch:	'CENTRAL JAKARTA'	,	model:	'GP ROA'	,	fy22:	0.0773	,	fy23:	0.0665	,	fy24:	0.0673	,	fy25:  	0.0698	,	feb25:	0.0682	,	mar25:	0.0673	,	apr25:	0.0745	,	may25:	0.0753	,	jun25:	0.0678	,	jul25:	0.0676	,	aug25:	0.0667	,	sep25:	0.0673	,	oct25:	0.0679	,	nov25:	0.0696	,	dec25:	0.0692	,	jan26:	0.0698	},
+{	region:	'JKT'	,	branch:	'CILEGON'	,	model:	'GP ROA'	,	fy22:	0.1188	,	fy23:	0.1072	,	fy24:	0.1214	,	fy25:  	0.1025	,	feb25:	0.1205	,	mar25:	0.1214	,	apr25:	0.0953	,	may25:	0.0970	,	jun25:	0.0988	,	jul25:	0.1001	,	aug25:	0.1002	,	sep25:	0.1016	,	oct25:	0.1037	,	nov25:	0.1036	,	dec25:	0.1002	,	jan26:	0.1025	},
+{	region:	'JKT'	,	branch:	'NORTH JAKARTA'	,	model:	'GP ROA'	,	fy22:	0.0900	,	fy23:	0.0809	,	fy24:	0.0843	,	fy25:  	0.0915	,	feb25:	0.0832	,	mar25:	0.0843	,	apr25:	0.0733	,	may25:	0.0774	,	jun25:	0.0797	,	jul25:	0.0792	,	aug25:	0.0800	,	sep25:	0.0825	,	oct25:	0.0834	,	nov25:	0.0869	,	dec25:	0.0860	,	jan26:	0.0915	},
+{	region:	'JKT'	,	branch:	'SOUTH JAKARTA'	,	model:	'GP ROA'	,	fy22:	0.0809	,	fy23:	0.0681	,	fy24:	0.0725	,	fy25:  	0.0796	,	feb25:	0.0735	,	mar25:	0.0725	,	apr25:	0.0683	,	may25:	0.0718	,	jun25:	0.0735	,	jul25:	0.0744	,	aug25:	0.0727	,	sep25:	0.0735	,	oct25:	0.0746	,	nov25:	0.0749	,	dec25:	0.0761	,	jan26:	0.0796	},
+{	region:	'JKT'	,	branch:	'TANGERANG'	,	model:	'GP ROA'	,	fy22:	0.1028	,	fy23:	0.0846	,	fy24:	0.0892	,	fy25:  	0.1016	,	feb25:	0.0905	,	mar25:	0.0892	,	apr25:	0.0981	,	may25:	0.1004	,	jun25:	0.1030	,	jul25:	0.1021	,	aug25:	0.0975	,	sep25:	0.0983	,	oct25:	0.0999	,	nov25:	0.1034	,	dec25:	0.0998	,	jan26:	0.1016	},
+{	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'JKT'	,	branch:	'CENTRAL JAKARTA'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'JKT'	,	branch:	'CILEGON'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'JKT'	,	branch:	'NORTH JAKARTA'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'JKT'	,	branch:	'SOUTH JAKARTA'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'JKT'	,	branch:	'TANGERANG'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'JKT'	,	branch:	'CENTRAL JAKARTA'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'JKT'	,	branch:	'CILEGON'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'JKT'	,	branch:	'NORTH JAKARTA'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'JKT'	,	branch:	'SOUTH JAKARTA'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'JKT'	,	branch:	'TANGERANG'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'JKT'	,	branch:	'BEKASI'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'JKT'	,	branch:	'CENTRAL JAKARTA'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'JKT'	,	branch:	'CILEGON'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'JKT'	,	branch:	'NORTH JAKARTA'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'JKT'	,	branch:	'SOUTH JAKARTA'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'JKT'	,	branch:	'TANGERANG'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'KLM'	,	branch:	'BALIKPAPAN'	,	model:	'ROA'	,	fy22:	0.0063	,	fy23:	0.0292	,	fy24:	0.0032	,	fy25:  	0.0123	,	feb25:	0.0072	,	mar25:	0.0032	,	apr25:	-0.0080	,	may25:	-0.0064	,	jun25:	0.0021	,	jul25:	0.0075	,	aug25:	0.0113	,	sep25:	-0.0010	,	oct25:	0.0053	,	nov25:	0.0113	,	dec25:	0.0124	,	jan26:	0.0123	},
+{	region:	'KLM'	,	branch:	'BANJARMASIN'	,	model:	'ROA'	,	fy22:	0.0441	,	fy23:	0.0441	,	fy24:	0.0354	,	fy25:  	0.0320	,	feb25:	0.0373	,	mar25:	0.0354	,	apr25:	-0.0191	,	may25:	0.0097	,	jun25:	0.0103	,	jul25:	0.0198	,	aug25:	0.0172	,	sep25:	0.0231	,	oct25:	0.0296	,	nov25:	0.0345	,	dec25:	0.0303	,	jan26:	0.0320	},
+{	region:	'KLM'	,	branch:	'MAKASSAR'	,	model:	'ROA'	,	fy22:	0.0081	,	fy23:	0.0038	,	fy24:	0.0143	,	fy25:  	0.0071	,	feb25:	0.0185	,	mar25:	0.0143	,	apr25:	-0.0509	,	may25:	-0.0232	,	jun25:	-0.0289	,	jul25:	0.0006	,	aug25:	0.0069	,	sep25:	-0.0009	,	oct25:	0.0071	,	nov25:	0.0124	,	dec25:	0.0060	,	jan26:	0.0071	},
+{	region:	'KLM'	,	branch:	'PONTIANAK'	,	model:	'ROA'	,	fy22:	-0.0658	,	fy23:	0.0223	,	fy24:	-0.0149	,	fy25:  	0.0099	,	feb25:	-0.0156	,	mar25:	-0.0149	,	apr25:	-0.0311	,	may25:	-0.0148	,	jun25:	-0.0094	,	jul25:	-0.0039	,	aug25:	0.0019	,	sep25:	0.0040	,	oct25:	0.0047	,	nov25:	0.0117	,	dec25:	0.0101	,	jan26:	0.0099	},
+{	region:	'KLM'	,	branch:	'BALIKPAPAN'	,	model:	'OP ROA'	,	fy22:	0.0506	,	fy23:	0.0199	,	fy24:	0.0035	,	fy25:  	0.0074	,	feb25:	0.0099	,	mar25:	0.0035	,	apr25:	0.0277	,	may25:	0.0097	,	jun25:	0.0156	,	jul25:	0.0108	,	aug25:	0.0118	,	sep25:	0.0115	,	oct25:	0.0080	,	nov25:	0.0098	,	dec25:	0.0066	,	jan26:	0.0074	},
+{	region:	'KLM'	,	branch:	'BANJARMASIN'	,	model:	'OP ROA'	,	fy22:	0.0581	,	fy23:	0.0552	,	fy24:	0.0369	,	fy25:  	0.0354	,	feb25:	0.0358	,	mar25:	0.0369	,	apr25:	0.0016	,	may25:	0.0205	,	jun25:	0.0174	,	jul25:	0.0187	,	aug25:	0.0157	,	sep25:	0.0212	,	oct25:	0.0266	,	nov25:	0.0316	,	dec25:	0.0317	,	jan26:	0.0354	},
+{	region:	'KLM'	,	branch:	'MAKASSAR'	,	model:	'OP ROA'	,	fy22:	0.0451	,	fy23:	-0.0063	,	fy24:	-0.0295	,	fy25:  	-0.0094	,	feb25:	-0.0308	,	mar25:	-0.0295	,	apr25:	0.0003	,	may25:	0.0089	,	jun25:	-0.0011	,	jul25:	-0.0047	,	aug25:	-0.0074	,	sep25:	-0.0218	,	oct25:	-0.0148	,	nov25:	-0.0076	,	dec25:	-0.0127	,	jan26:	-0.0094	},
+{	region:	'KLM'	,	branch:	'PONTIANAK'	,	model:	'OP ROA'	,	fy22:	-0.0603	,	fy23:	0.0280	,	fy24:	-0.0076	,	fy25:  	0.0061	,	feb25:	-0.0066	,	mar25:	-0.0076	,	apr25:	-0.0103	,	may25:	0.0021	,	jun25:	-0.0195	,	jul25:	-0.0085	,	aug25:	-0.0068	,	sep25:	-0.0069	,	oct25:	-0.0065	,	nov25:	-0.0007	,	dec25:	0.0037	,	jan26:	0.0061	},
+{	region:	'KLM'	,	branch:	'BALIKPAPAN'	,	model:	'GP ROA'	,	fy22:	0.1054	,	fy23:	0.0898	,	fy24:	0.0770	,	fy25:  	0.0828	,	feb25:	0.0771	,	mar25:	0.0770	,	apr25:	0.0706	,	may25:	0.0688	,	jun25:	0.0731	,	jul25:	0.0745	,	aug25:	0.0757	,	sep25:	0.0767	,	oct25:	0.0788	,	nov25:	0.0797	,	dec25:	0.0815	,	jan26:	0.0828	},
+{	region:	'KLM'	,	branch:	'BANJARMASIN'	,	model:	'GP ROA'	,	fy22:	0.1200	,	fy23:	0.1133	,	fy24:	0.1072	,	fy25:  	0.1073	,	feb25:	0.1072	,	mar25:	0.1072	,	apr25:	0.0850	,	may25:	0.0923	,	jun25:	0.0942	,	jul25:	0.0966	,	aug25:	0.0985	,	sep25:	0.1012	,	oct25:	0.1027	,	nov25:	0.1049	,	dec25:	0.1054	,	jan26:	0.1073	},
+{	region:	'KLM'	,	branch:	'MAKASSAR'	,	model:	'GP ROA'	,	fy22:	0.1056	,	fy23:	0.0977	,	fy24:	0.0896	,	fy25:  	0.0823	,	feb25:	0.0859	,	mar25:	0.0896	,	apr25:	0.0684	,	may25:	0.0734	,	jun25:	0.0727	,	jul25:	0.0756	,	aug25:	0.0771	,	sep25:	0.0791	,	oct25:	0.0818	,	nov25:	0.0813	,	dec25:	0.0802	,	jan26:	0.0823	},
+{	region:	'KLM'	,	branch:	'PONTIANAK'	,	model:	'GP ROA'	,	fy22:	0.1089	,	fy23:	0.0958	,	fy24:	0.0929	,	fy25:  	0.0901	,	feb25:	0.0944	,	mar25:	0.0929	,	apr25:	0.0843	,	may25:	0.0847	,	jun25:	0.0873	,	jul25:	0.0870	,	aug25:	0.0865	,	sep25:	0.0860	,	oct25:	0.0865	,	nov25:	0.0884	,	dec25:	0.0890	,	jan26:	0.0901	},
+{	region:	'KLM'	,	branch:	'BALIKPAPAN'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'KLM'	,	branch:	'BANJARMASIN'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'KLM'	,	branch:	'MAKASSAR'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'KLM'	,	branch:	'PONTIANAK'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'KLM'	,	branch:	'BALIKPAPAN'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'KLM'	,	branch:	'BANJARMASIN'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'KLM'	,	branch:	'MAKASSAR'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'KLM'	,	branch:	'PONTIANAK'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'KLM'	,	branch:	'BALIKPAPAN'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'KLM'	,	branch:	'BANJARMASIN'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'KLM'	,	branch:	'MAKASSAR'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'KLM'	,	branch:	'PONTIANAK'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'NS'	,	branch:	'BUKIT TINGGI'	,	model:	'ROA'	,	fy22:	-0.0051	,	fy23:	0.0039	,	fy24:	0.0357	,	fy25:  	0.0374	,	feb25:	0.0383	,	mar25:	0.0357	,	apr25:	0.0252	,	may25:	0.0371	,	jun25:	0.0392	,	jul25:	0.0435	,	aug25:	0.0413	,	sep25:	0.0330	,	oct25:	0.0314	,	nov25:	0.0352	,	dec25:	0.0435	,	jan26:	0.0374	},
+{	region:	'NS'	,	branch:	'DURI'	,	model:	'ROA'	,	fy22:	0.0066	,	fy23:	0.0022	,	fy24:	0.0302	,	fy25:  	0.0225	,	feb25:	0.0311	,	mar25:	0.0302	,	apr25:	0.0004	,	may25:	0.0147	,	jun25:	0.0163	,	jul25:	0.0177	,	aug25:	0.0197	,	sep25:	0.0118	,	oct25:	0.0191	,	nov25:	0.0245	,	dec25:	0.0234	,	jan26:	0.0225	},
+{	region:	'NS'	,	branch:	'MEDAN'	,	model:	'ROA'	,	fy22:	0.0108	,	fy23:	-0.0066	,	fy24:	0.0169	,	fy25:  	0.0105	,	feb25:	0.0228	,	mar25:	0.0169	,	apr25:	-0.0034	,	may25:	0.0040	,	jun25:	-0.0054	,	jul25:	-0.0040	,	aug25:	0.0017	,	sep25:	-0.0018	,	oct25:	-0.0001	,	nov25:	0.0127	,	dec25:	0.0167	,	jan26:	0.0105	},
+{	region:	'NS'	,	branch:	'MEDAN II'	,	model:	'ROA'	,	fy22:	-0.0074	,	fy23:	0.0033	,	fy24:	0.0093	,	fy25:  	0.0102	,	feb25:	0.0155	,	mar25:	0.0093	,	apr25:	0.0047	,	may25:	0.0011	,	jun25:	0.0074	,	jul25:	0.0081	,	aug25:	0.0070	,	sep25:	0.0041	,	oct25:	0.0083	,	nov25:	0.0115	,	dec25:	0.0098	,	jan26:	0.0102	},
+{	region:	'NS'	,	branch:	'PADANG'	,	model:	'ROA'	,	fy22:	0.0202	,	fy23:	0.0453	,	fy24:	0.0480	,	fy25:  	0.0468	,	feb25:	0.0556	,	mar25:	0.0480	,	apr25:	0.0289	,	may25:	0.0394	,	jun25:	0.0537	,	jul25:	0.0469	,	aug25:	0.0434	,	sep25:	0.0423	,	oct25:	0.0408	,	nov25:	0.0419	,	dec25:	0.0478	,	jan26:	0.0468	},
+{	region:	'NS'	,	branch:	'PADANG SIDEMPUAN'	,	model:	'ROA'	,	fy22:	0.0286	,	fy23:	0.0306	,	fy24:	0.0335	,	fy25:  	0.0276	,	feb25:	0.0314	,	mar25:	0.0335	,	apr25:	0.0099	,	may25:	0.0156	,	jun25:	0.0158	,	jul25:	0.0304	,	aug25:	0.0302	,	sep25:	0.0313	,	oct25:	0.0325	,	nov25:	0.0266	,	dec25:	0.0287	,	jan26:	0.0276	},
+{	region:	'NS'	,	branch:	'PEKANBARU'	,	model:	'ROA'	,	fy22:	0.0179	,	fy23:	0.0137	,	fy24:	0.0183	,	fy25:  	0.0308	,	feb25:	0.0248	,	mar25:	0.0183	,	apr25:	-0.0083	,	may25:	0.0206	,	jun25:	0.0259	,	jul25:	0.0233	,	aug25:	0.0268	,	sep25:	0.0366	,	oct25:	0.0305	,	nov25:	0.0303	,	dec25:	0.0270	,	jan26:	0.0308	},
+{	region:	'NS'	,	branch:	'RANTAU PRAPAT'	,	model:	'ROA'	,	fy22:	0.0297	,	fy23:	0.0184	,	fy24:	0.0126	,	fy25:  	0.0350	,	feb25:	0.0118	,	mar25:	0.0126	,	apr25:	-0.0101	,	may25:	0.0225	,	jun25:	0.0161	,	jul25:	0.0071	,	aug25:	0.0170	,	sep25:	0.0209	,	oct25:	0.0319	,	nov25:	0.0379	,	dec25:	0.0386	,	jan26:	0.0350	},
+{	region:	'NS'	,	branch:	'BUKIT TINGGI'	,	model:	'OP ROA'	,	fy22:	0.0107	,	fy23:	0.0056	,	fy24:	0.0144	,	fy25:  	0.0176	,	feb25:	0.0103	,	mar25:	0.0144	,	apr25:	0.0533	,	may25:	0.0493	,	jun25:	0.0293	,	jul25:	0.0240	,	aug25:	0.0215	,	sep25:	0.0094	,	oct25:	0.0151	,	nov25:	0.0158	,	dec25:	0.0179	,	jan26:	0.0176	},
+{	region:	'NS'	,	branch:	'DURI'	,	model:	'OP ROA'	,	fy22:	0.0556	,	fy23:	0.0273	,	fy24:	0.0152	,	fy25:  	0.0269	,	feb25:	0.0142	,	mar25:	0.0152	,	apr25:	0.0285	,	may25:	0.0209	,	jun25:	0.0218	,	jul25:	0.0236	,	aug25:	0.0212	,	sep25:	0.0118	,	oct25:	0.0181	,	nov25:	0.0244	,	dec25:	0.0255	,	jan26:	0.0269	},
+{	region:	'NS'	,	branch:	'MEDAN'	,	model:	'OP ROA'	,	fy22:	0.0356	,	fy23:	0.0034	,	fy24:	-0.0229	,	fy25:  	-0.0046	,	feb25:	-0.0192	,	mar25:	-0.0229	,	apr25:	-0.0023	,	may25:	0.0075	,	jun25:	0.0033	,	jul25:	-0.0041	,	aug25:	-0.0065	,	sep25:	-0.0196	,	oct25:	-0.0127	,	nov25:	-0.0068	,	dec25:	-0.0049	,	jan26:	-0.0046	},
+{	region:	'NS'	,	branch:	'MEDAN II'	,	model:	'OP ROA'	,	fy22:	0.0184	,	fy23:	-0.0034	,	fy24:	-0.0081	,	fy25:  	0.0064	,	feb25:	0.0013	,	mar25:	-0.0081	,	apr25:	0.0093	,	may25:	0.0056	,	jun25:	-0.0038	,	jul25:	-0.0007	,	aug25:	-0.0019	,	sep25:	-0.0014	,	oct25:	0.0023	,	nov25:	0.0066	,	dec25:	0.0071	,	jan26:	0.0064	},
+{	region:	'NS'	,	branch:	'PADANG'	,	model:	'OP ROA'	,	fy22:	0.0430	,	fy23:	0.0484	,	fy24:	0.0362	,	fy25:  	0.0305	,	feb25:	0.0372	,	mar25:	0.0362	,	apr25:	-0.0025	,	may25:	0.0138	,	jun25:	0.0129	,	jul25:	0.0111	,	aug25:	0.0125	,	sep25:	0.0129	,	oct25:	0.0169	,	nov25:	0.0204	,	dec25:	0.0312	,	jan26:	0.0305	},
+{	region:	'NS'	,	branch:	'PADANG SIDEMPUAN'	,	model:	'OP ROA'	,	fy22:	0.0761	,	fy23:	0.0400	,	fy24:	0.0261	,	fy25:  	0.0280	,	feb25:	0.0249	,	mar25:	0.0261	,	apr25:	0.0423	,	may25:	0.0368	,	jun25:	0.0276	,	jul25:	0.0281	,	aug25:	0.0263	,	sep25:	0.0186	,	oct25:	0.0231	,	nov25:	0.0273	,	dec25:	0.0302	,	jan26:	0.0280	},
+{	region:	'NS'	,	branch:	'PEKANBARU'	,	model:	'OP ROA'	,	fy22:	0.0566	,	fy23:	0.0371	,	fy24:	0.0097	,	fy25:  	0.0187	,	feb25:	0.0096	,	mar25:	0.0097	,	apr25:	0.0117	,	may25:	0.0085	,	jun25:	0.0141	,	jul25:	0.0164	,	aug25:	0.0163	,	sep25:	0.0158	,	oct25:	0.0170	,	nov25:	0.0212	,	dec25:	0.0180	,	jan26:	0.0187	},
+{	region:	'NS'	,	branch:	'RANTAU PRAPAT'	,	model:	'OP ROA'	,	fy22:	0.0761	,	fy23:	0.0460	,	fy24:	0.0134	,	fy25:  	0.0068	,	feb25:	0.0101	,	mar25:	0.0134	,	apr25:	0.0201	,	may25:	0.0078	,	jun25:	0.0097	,	jul25:	-0.0124	,	aug25:	-0.0027	,	sep25:	-0.0094	,	oct25:	-0.0029	,	nov25:	0.0033	,	dec25:	0.0054	,	jan26:	0.0068	},
+{	region:	'NS'	,	branch:	'BUKIT TINGGI'	,	model:	'GP ROA'	,	fy22:	0.1275	,	fy23:	0.1164	,	fy24:	0.1121	,	fy25:  	0.1119	,	feb25:	0.1115	,	mar25:	0.1121	,	apr25:	0.1044	,	may25:	0.1029	,	jun25:	0.1055	,	jul25:	0.1066	,	aug25:	0.1080	,	sep25:	0.1103	,	oct25:	0.1119	,	nov25:	0.1129	,	dec25:	0.1108	,	jan26:	0.1119	},
+{	region:	'NS'	,	branch:	'DURI'	,	model:	'GP ROA'	,	fy22:	0.1073	,	fy23:	0.0960	,	fy24:	0.0841	,	fy25:  	0.0885	,	feb25:	0.0834	,	mar25:	0.0841	,	apr25:	0.0796	,	may25:	0.0837	,	jun25:	0.0856	,	jul25:	0.0845	,	aug25:	0.0860	,	sep25:	0.0872	,	oct25:	0.0873	,	nov25:	0.0890	,	dec25:	0.0870	,	jan26:	0.0885	},
+{	region:	'NS'	,	branch:	'MEDAN'	,	model:	'GP ROA'	,	fy22:	0.1000	,	fy23:	0.0887	,	fy24:	0.0729	,	fy25:  	0.0702	,	feb25:	0.0711	,	mar25:	0.0729	,	apr25:	0.0613	,	may25:	0.0634	,	jun25:	0.0649	,	jul25:	0.0650	,	aug25:	0.0660	,	sep25:	0.0670	,	oct25:	0.0675	,	nov25:	0.0686	,	dec25:	0.0696	,	jan26:	0.0702	},
+{	region:	'NS'	,	branch:	'MEDAN II'	,	model:	'GP ROA'	,	fy22:	0.0845	,	fy23:	0.0827	,	fy24:	0.0890	,	fy25:  	0.0958	,	feb25:	0.0869	,	mar25:	0.0890	,	apr25:	0.0835	,	may25:	0.0854	,	jun25:	0.0884	,	jul25:	0.0890	,	aug25:	0.0892	,	sep25:	0.0895	,	oct25:	0.0908	,	nov25:	0.0942	,	dec25:	0.0938	,	jan26:	0.0958	},
+{	region:	'NS'	,	branch:	'PADANG'	,	model:	'GP ROA'	,	fy22:	0.1061	,	fy23:	0.0994	,	fy24:	0.0882	,	fy25:  	0.0890	,	feb25:	0.0874	,	mar25:	0.0882	,	apr25:	0.0791	,	may25:	0.0838	,	jun25:	0.0881	,	jul25:	0.0905	,	aug25:	0.0919	,	sep25:	0.0928	,	oct25:	0.0914	,	nov25:	0.0900	,	dec25:	0.0884	,	jan26:	0.0890	},
+{	region:	'NS'	,	branch:	'PADANG SIDEMPUAN'	,	model:	'GP ROA'	,	fy22:	0.1192	,	fy23:	0.1102	,	fy24:	0.0982	,	fy25:  	0.1033	,	feb25:	0.0974	,	mar25:	0.0982	,	apr25:	0.0901	,	may25:	0.0933	,	jun25:	0.0960	,	jul25:	0.0969	,	aug25:	0.0982	,	sep25:	0.1003	,	oct25:	0.1012	,	nov25:	0.1008	,	dec25:	0.1017	,	jan26:	0.1033	},
+{	region:	'NS'	,	branch:	'PEKANBARU'	,	model:	'GP ROA'	,	fy22:	0.0977	,	fy23:	0.0856	,	fy24:	0.0802	,	fy25:  	0.0838	,	feb25:	0.0800	,	mar25:	0.0802	,	apr25:	0.0698	,	may25:	0.0689	,	jun25:	0.0772	,	jul25:	0.0761	,	aug25:	0.0804	,	sep25:	0.0819	,	oct25:	0.0831	,	nov25:	0.0827	,	dec25:	0.0822	,	jan26:	0.0838	},
+{	region:	'NS'	,	branch:	'RANTAU PRAPAT'	,	model:	'GP ROA'	,	fy22:	0.1205	,	fy23:	0.1075	,	fy24:	0.0958	,	fy25:  	0.0912	,	feb25:	0.0919	,	mar25:	0.0958	,	apr25:	0.0791	,	may25:	0.0813	,	jun25:	0.0833	,	jul25:	0.0826	,	aug25:	0.0827	,	sep25:	0.0874	,	oct25:	0.0890	,	nov25:	0.0893	,	dec25:	0.0898	,	jan26:	0.0912	},
+{	region:	'NS'	,	branch:	'BUKIT TINGGI'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'NS'	,	branch:	'DURI'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'NS'	,	branch:	'MEDAN'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'NS'	,	branch:	'MEDAN II'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'NS'	,	branch:	'PADANG'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'NS'	,	branch:	'PADANG SIDEMPUAN'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'NS'	,	branch:	'PEKANBARU'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'NS'	,	branch:	'RANTAU PRAPAT'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'NS'	,	branch:	'BUKIT TINGGI'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'NS'	,	branch:	'DURI'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'NS'	,	branch:	'MEDAN'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'NS'	,	branch:	'MEDAN II'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'NS'	,	branch:	'PADANG'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'NS'	,	branch:	'PADANG SIDEMPUAN'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'NS'	,	branch:	'PEKANBARU'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'NS'	,	branch:	'RANTAU PRAPAT'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'NS'	,	branch:	'BUKIT TINGGI'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'NS'	,	branch:	'DURI'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'NS'	,	branch:	'MEDAN'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'NS'	,	branch:	'MEDAN II'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'NS'	,	branch:	'PADANG'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'NS'	,	branch:	'PADANG SIDEMPUAN'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'NS'	,	branch:	'PEKANBARU'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'NS'	,	branch:	'RANTAU PRAPAT'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'SBY'	,	branch:	'DENPASAR'	,	model:	'ROA'	,	fy22:	-0.0035	,	fy23:	0.0352	,	fy24:	0.0336	,	fy25:  	0.0346	,	feb25:	0.0408	,	mar25:	0.0336	,	apr25:	0.0129	,	may25:	0.0435	,	jun25:	0.0427	,	jul25:	0.0409	,	aug25:	0.0360	,	sep25:	0.0362	,	oct25:	0.0397	,	nov25:	0.0338	,	dec25:	0.0357	,	jan26:	0.0346	},
+{	region:	'SBY'	,	branch:	'JEMBER'	,	model:	'ROA'	,	fy22:	0.0033	,	fy23:	0.0336	,	fy24:	0.0275	,	fy25:  	0.0150	,	feb25:	0.0313	,	mar25:	0.0275	,	apr25:	-0.0826	,	may25:	-0.0190	,	jun25:	0.0002	,	jul25:	0.0144	,	aug25:	0.0098	,	sep25:	0.0064	,	oct25:	0.0116	,	nov25:	0.0159	,	dec25:	0.0161	,	jan26:	0.0150	},
+{	region:	'SBY'	,	branch:	'MALANG'	,	model:	'ROA'	,	fy22:	-0.0193	,	fy23:	0.0180	,	fy24:	0.0368	,	fy25:  	0.0319	,	feb25:	0.0398	,	mar25:	0.0368	,	apr25:	0.0263	,	may25:	0.0262	,	jun25:	0.0340	,	jul25:	0.0353	,	aug25:	0.0344	,	sep25:	0.0296	,	oct25:	0.0304	,	nov25:	0.0310	,	dec25:	0.0330	,	jan26:	0.0319	},
+{	region:	'SBY'	,	branch:	'PURWOKERTO'	,	model:	'ROA'	,	fy22:	-0.0173	,	fy23:	0.0338	,	fy24:	0.0178	,	fy25:  	-0.0005	,	feb25:	0.0221	,	mar25:	0.0178	,	apr25:	-0.0089	,	may25:	0.0001	,	jun25:	0.0009	,	jul25:	0.0046	,	aug25:	0.0037	,	sep25:	-0.0028	,	oct25:	0.0009	,	nov25:	0.0084	,	dec25:	0.0056	,	jan26:	-0.0005	},
+{	region:	'SBY'	,	branch:	'SEMARANG'	,	model:	'ROA'	,	fy22:	-0.0349	,	fy23:	0.0060	,	fy24:	0.0259	,	fy25:  	0.0053	,	feb25:	0.0268	,	mar25:	0.0259	,	apr25:	-0.0130	,	may25:	0.0002	,	jun25:	0.0057	,	jul25:	0.0084	,	aug25:	0.0083	,	sep25:	0.0016	,	oct25:	0.0013	,	nov25:	0.0035	,	dec25:	0.0044	,	jan26:	0.0053	},
+{	region:	'SBY'	,	branch:	'SOLO'	,	model:	'ROA'	,	fy22:	0.0000	,	fy23:	0.0189	,	fy24:	0.0278	,	fy25:  	0.0284	,	feb25:	0.0290	,	mar25:	0.0278	,	apr25:	0.0153	,	may25:	0.0396	,	jun25:	0.0280	,	jul25:	0.0286	,	aug25:	0.0237	,	sep25:	0.0206	,	oct25:	0.0248	,	nov25:	0.0269	,	dec25:	0.0263	,	jan26:	0.0284	},
+{	region:	'SBY'	,	branch:	'SURABAYA'	,	model:	'ROA'	,	fy22:	-0.0054	,	fy23:	0.0391	,	fy24:	0.0332	,	fy25:  	0.0292	,	feb25:	0.0414	,	mar25:	0.0332	,	apr25:	0.0562	,	may25:	0.0232	,	jun25:	0.0386	,	jul25:	0.0349	,	aug25:	0.0245	,	sep25:	0.0227	,	oct25:	0.0294	,	nov25:	0.0311	,	dec25:	0.0302	,	jan26:	0.0292	},
+{	region:	'SBY'	,	branch:	'DENPASAR'	,	model:	'OP ROA'	,	fy22:	0.0131	,	fy23:	0.0239	,	fy24:	0.0276	,	fy25:  	0.0338	,	feb25:	0.0372	,	mar25:	0.0276	,	apr25:	0.0401	,	may25:	0.0416	,	jun25:	0.0382	,	jul25:	0.0337	,	aug25:	0.0319	,	sep25:	0.0327	,	oct25:	0.0313	,	nov25:	0.0339	,	dec25:	0.0369	,	jan26:	0.0338	},
+{	region:	'SBY'	,	branch:	'JEMBER'	,	model:	'OP ROA'	,	fy22:	0.0122	,	fy23:	0.0158	,	fy24:	0.0290	,	fy25:  	0.0202	,	feb25:	0.0299	,	mar25:	0.0290	,	apr25:	0.0217	,	may25:	0.0259	,	jun25:	0.0301	,	jul25:	0.0334	,	aug25:	0.0238	,	sep25:	0.0198	,	oct25:	0.0215	,	nov25:	0.0247	,	dec25:	0.0246	,	jan26:	0.0202	},
+{	region:	'SBY'	,	branch:	'MALANG'	,	model:	'OP ROA'	,	fy22:	-0.0100	,	fy23:	-0.0150	,	fy24:	0.0249	,	fy25:  	0.0372	,	feb25:	0.0228	,	mar25:	0.0249	,	apr25:	0.0387	,	may25:	0.0169	,	jun25:	0.0308	,	jul25:	0.0305	,	aug25:	0.0292	,	sep25:	0.0282	,	oct25:	0.0276	,	nov25:	0.0313	,	dec25:	0.0357	,	jan26:	0.0372	},
+{	region:	'SBY'	,	branch:	'PURWOKERTO'	,	model:	'OP ROA'	,	fy22:	-0.0254	,	fy23:	0.0190	,	fy24:	0.0154	,	fy25:  	0.0065	,	feb25:	0.0202	,	mar25:	0.0154	,	apr25:	0.0181	,	may25:	-0.0025	,	jun25:	0.0029	,	jul25:	0.0008	,	aug25:	0.0017	,	sep25:	-0.0065	,	oct25:	-0.0010	,	nov25:	0.0034	,	dec25:	0.0087	,	jan26:	0.0065	},
+{	region:	'SBY'	,	branch:	'SEMARANG'	,	model:	'OP ROA'	,	fy22:	-0.0235	,	fy23:	-0.0136	,	fy24:	0.0046	,	fy25:  	0.0069	,	feb25:	0.0048	,	mar25:	0.0046	,	apr25:	0.0130	,	may25:	0.0128	,	jun25:	0.0046	,	jul25:	0.0063	,	aug25:	0.0031	,	sep25:	-0.0064	,	oct25:	-0.0021	,	nov25:	0.0030	,	dec25:	0.0071	,	jan26:	0.0069	},
+{	region:	'SBY'	,	branch:	'SOLO'	,	model:	'OP ROA'	,	fy22:	0.0267	,	fy23:	0.0272	,	fy24:	0.0235	,	fy25:  	0.0329	,	feb25:	0.0335	,	mar25:	0.0235	,	apr25:	0.0541	,	may25:	0.0543	,	jun25:	0.0422	,	jul25:	0.0344	,	aug25:	0.0294	,	sep25:	0.0302	,	oct25:	0.0268	,	nov25:	0.0307	,	dec25:	0.0303	,	jan26:	0.0329	},
+{	region:	'SBY'	,	branch:	'SURABAYA'	,	model:	'OP ROA'	,	fy22:	0.0158	,	fy23:	0.0148	,	fy24:	0.0220	,	fy25:  	0.0312	,	feb25:	0.0273	,	mar25:	0.0220	,	apr25:	0.0322	,	may25:	0.0396	,	jun25:	0.0338	,	jul25:	0.0342	,	aug25:	0.0342	,	sep25:	0.0325	,	oct25:	0.0326	,	nov25:	0.0344	,	dec25:	0.0323	,	jan26:	0.0312	},
+{	region:	'SBY'	,	branch:	'DENPASAR'	,	model:	'GP ROA'	,	fy22:	0.1187	,	fy23:	0.1032	,	fy24:	0.1059	,	fy25:  	0.1066	,	feb25:	0.1051	,	mar25:	0.1059	,	apr25:	0.1030	,	may25:	0.1059	,	jun25:	0.1080	,	jul25:	0.1074	,	aug25:	0.1032	,	sep25:	0.1040	,	oct25:	0.1051	,	nov25:	0.1060	,	dec25:	0.1060	,	jan26:	0.1066	},
+{	region:	'SBY'	,	branch:	'JEMBER'	,	model:	'GP ROA'	,	fy22:	0.1289	,	fy23:	0.1175	,	fy24:	0.1098	,	fy25:  	0.1047	,	feb25:	0.1113	,	mar25:	0.1098	,	apr25:	0.0986	,	may25:	0.1044	,	jun25:	0.1079	,	jul25:	0.1088	,	aug25:	0.1078	,	sep25:	0.1069	,	oct25:	0.1069	,	nov25:	0.1062	,	dec25:	0.1042	,	jan26:	0.1047	},
+{	region:	'SBY'	,	branch:	'MALANG'	,	model:	'GP ROA'	,	fy22:	0.1138	,	fy23:	0.1009	,	fy24:	0.1002	,	fy25:  	0.1085	,	feb25:	0.1064	,	mar25:	0.1002	,	apr25:	0.1054	,	may25:	0.1026	,	jun25:	0.1158	,	jul25:	0.1148	,	aug25:	0.1139	,	sep25:	0.1109	,	oct25:	0.1081	,	nov25:	0.1073	,	dec25:	0.1092	,	jan26:	0.1085	},
+{	region:	'SBY'	,	branch:	'PURWOKERTO'	,	model:	'GP ROA'	,	fy22:	0.1223	,	fy23:	0.1112	,	fy24:	0.1050	,	fy25:  	0.0983	,	feb25:	0.1046	,	mar25:	0.1050	,	apr25:	0.1004	,	may25:	0.1037	,	jun25:	0.1038	,	jul25:	0.1037	,	aug25:	0.1015	,	sep25:	0.1022	,	oct25:	0.1003	,	nov25:	0.0994	,	dec25:	0.0978	,	jan26:	0.0983	},
+{	region:	'SBY'	,	branch:	'SEMARANG'	,	model:	'GP ROA'	,	fy22:	0.1072	,	fy23:	0.0981	,	fy24:	0.0937	,	fy25:  	0.0921	,	feb25:	0.0939	,	mar25:	0.0937	,	apr25:	0.0866	,	may25:	0.0886	,	jun25:	0.0911	,	jul25:	0.0909	,	aug25:	0.0923	,	sep25:	0.0938	,	oct25:	0.0935	,	nov25:	0.0910	,	dec25:	0.0906	,	jan26:	0.0921	},
+{	region:	'SBY'	,	branch:	'SOLO'	,	model:	'GP ROA'	,	fy22:	0.1220	,	fy23:	0.1122	,	fy24:	0.1154	,	fy25:  	0.1118	,	feb25:	0.1144	,	mar25:	0.1154	,	apr25:	0.1060	,	may25:	0.1096	,	jun25:	0.1097	,	jul25:	0.1103	,	aug25:	0.1097	,	sep25:	0.1104	,	oct25:	0.1111	,	nov25:	0.1106	,	dec25:	0.1083	,	jan26:	0.1118	},
+{	region:	'SBY'	,	branch:	'SURABAYA'	,	model:	'GP ROA'	,	fy22:	0.1044	,	fy23:	0.0924	,	fy24:	0.0980	,	fy25:  	0.0954	,	feb25:	0.0974	,	mar25:	0.0980	,	apr25:	0.0925	,	may25:	0.1010	,	jun25:	0.0962	,	jul25:	0.0967	,	aug25:	0.0963	,	sep25:	0.0959	,	oct25:	0.0962	,	nov25:	0.0962	,	dec25:	0.0942	,	jan26:	0.0954	},
+{	region:	'SBY'	,	branch:	'DENPASAR'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'SBY'	,	branch:	'JEMBER'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'SBY'	,	branch:	'MALANG'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'SBY'	,	branch:	'PURWOKERTO'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'SBY'	,	branch:	'SEMARANG'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'SBY'	,	branch:	'SOLO'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'SBY'	,	branch:	'SURABAYA'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'SBY'	,	branch:	'DENPASAR'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'SBY'	,	branch:	'JEMBER'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'SBY'	,	branch:	'MALANG'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'SBY'	,	branch:	'PURWOKERTO'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'SBY'	,	branch:	'SEMARANG'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'SBY'	,	branch:	'SOLO'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'SBY'	,	branch:	'SURABAYA'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'SBY'	,	branch:	'DENPASAR'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'SBY'	,	branch:	'JEMBER'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'SBY'	,	branch:	'MALANG'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'SBY'	,	branch:	'PURWOKERTO'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'SBY'	,	branch:	'SEMARANG'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'SBY'	,	branch:	'SOLO'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'SBY'	,	branch:	'SURABAYA'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'SS'	,	branch:	'JAMBI'	,	model:	'ROA'	,	fy22:	0.0376	,	fy23:	-0.0033	,	fy24:	0.0324	,	fy25:  	0.0407	,	feb25:	0.0344	,	mar25:	0.0324	,	apr25:	-0.0142	,	may25:	0.0235	,	jun25:	0.0347	,	jul25:	0.0386	,	aug25:	0.0449	,	sep25:	0.0392	,	oct25:	0.0411	,	nov25:	0.0442	,	dec25:	0.0425	,	jan26:	0.0407	},
+{	region:	'SS'	,	branch:	'LAMPUNG'	,	model:	'ROA'	,	fy22:	-0.1127	,	fy23:	0.0034	,	fy24:	0.0311	,	fy25:  	0.0272	,	feb25:	0.0338	,	mar25:	0.0311	,	apr25:	0.0032	,	may25:	0.0241	,	jun25:	0.0236	,	jul25:	0.0255	,	aug25:	0.0194	,	sep25:	0.0207	,	oct25:	0.0261	,	nov25:	0.0246	,	dec25:	0.0282	,	jan26:	0.0272	},
+{	region:	'SS'	,	branch:	'MUARA BUNGO'	,	model:	'ROA'	,	fy22:	0.0197	,	fy23:	-0.0611	,	fy24:	0.0597	,	fy25:  	0.0353	,	feb25:	0.0575	,	mar25:	0.0597	,	apr25:	0.0265	,	may25:	0.0393	,	jun25:	0.0368	,	jul25:	0.0337	,	aug25:	0.0304	,	sep25:	0.0334	,	oct25:	0.0353	,	nov25:	0.0400	,	dec25:	0.0363	,	jan26:	0.0353	},
+{	region:	'SS'	,	branch:	'PALEMBANG'	,	model:	'ROA'	,	fy22:	0.0062	,	fy23:	0.0357	,	fy24:	0.0075	,	fy25:  	0.0104	,	feb25:	0.0097	,	mar25:	0.0075	,	apr25:	0.0411	,	may25:	0.0350	,	jun25:	0.0247	,	jul25:	0.0225	,	aug25:	0.0209	,	sep25:	0.0155	,	oct25:	0.0171	,	nov25:	0.0209	,	dec25:	0.0193	,	jan26:	0.0104	},
+{	region:	'SS'	,	branch:	'JAMBI'	,	model:	'OP ROA'	,	fy22:	0.0820	,	fy23:	0.0155	,	fy24:	0.0000	,	fy25:  	0.0167	,	feb25:	0.0013	,	mar25:	0.0000	,	apr25:	0.0174	,	may25:	0.0172	,	jun25:	0.0244	,	jul25:	0.0234	,	aug25:	0.0179	,	sep25:	0.0052	,	oct25:	0.0112	,	nov25:	0.0162	,	dec25:	0.0202	,	jan26:	0.0167	},
+{	region:	'SS'	,	branch:	'LAMPUNG'	,	model:	'OP ROA'	,	fy22:	-0.1986	,	fy23:	-0.0372	,	fy24:	0.0176	,	fy25:  	0.0193	,	feb25:	0.0151	,	mar25:	0.0176	,	apr25:	0.0188	,	may25:	0.0206	,	jun25:	0.0185	,	jul25:	0.0203	,	aug25:	0.0140	,	sep25:	0.0053	,	oct25:	0.0121	,	nov25:	0.0183	,	dec25:	0.0202	,	jan26:	0.0193	},
+{	region:	'SS'	,	branch:	'MUARA BUNGO'	,	model:	'OP ROA'	,	fy22:	0.0577	,	fy23:	-0.0512	,	fy24:	0.0014	,	fy25:  	0.0329	,	feb25:	-0.0015	,	mar25:	0.0014	,	apr25:	0.0377	,	may25:	0.0379	,	jun25:	0.0364	,	jul25:	0.0345	,	aug25:	0.0231	,	sep25:	0.0216	,	oct25:	0.0277	,	nov25:	0.0331	,	dec25:	0.0276	,	jan26:	0.0329	},
+{	region:	'SS'	,	branch:	'PALEMBANG'	,	model:	'OP ROA'	,	fy22:	0.0287	,	fy23:	0.0165	,	fy24:	-0.0136	,	fy25:  	-0.0113	,	feb25:	-0.0120	,	mar25:	-0.0136	,	apr25:	0.0227	,	may25:	0.0237	,	jun25:	0.0184	,	jul25:	0.0099	,	aug25:	0.0084	,	sep25:	-0.0024	,	oct25:	0.0039	,	nov25:	0.0092	,	dec25:	0.0131	,	jan26:	-0.0113	},
+{	region:	'SS'	,	branch:	'JAMBI'	,	model:	'GP ROA'	,	fy22:	0.1241	,	fy23:	0.1106	,	fy24:	0.0942	,	fy25:  	0.0935	,	feb25:	0.0914	,	mar25:	0.0942	,	apr25:	0.0789	,	may25:	0.0818	,	jun25:	0.0850	,	jul25:	0.0860	,	aug25:	0.0872	,	sep25:	0.0903	,	oct25:	0.0908	,	nov25:	0.0907	,	dec25:	0.0907	,	jan26:	0.0935	},
+{	region:	'SS'	,	branch:	'LAMPUNG'	,	model:	'GP ROA'	,	fy22:	0.0774	,	fy23:	0.0949	,	fy24:	0.0961	,	fy25:  	0.0938	,	feb25:	0.0945	,	mar25:	0.0961	,	apr25:	0.0826	,	may25:	0.0843	,	jun25:	0.0856	,	jul25:	0.0868	,	aug25:	0.0859	,	sep25:	0.0889	,	oct25:	0.0897	,	nov25:	0.0906	,	dec25:	0.0918	,	jan26:	0.0938	},
+{	region:	'SS'	,	branch:	'MUARA BUNGO'	,	model:	'GP ROA'	,	fy22:	0.1290	,	fy23:	0.1158	,	fy24:	0.1183	,	fy25:  	0.1220	,	feb25:	0.1051	,	mar25:	0.1183	,	apr25:	0.1151	,	may25:	0.1171	,	jun25:	0.1236	,	jul25:	0.1244	,	aug25:	0.1247	,	sep25:	0.1240	,	oct25:	0.1227	,	nov25:	0.1224	,	dec25:	0.1215	,	jan26:	0.1220	},
+{	region:	'SS'	,	branch:	'PALEMBANG'	,	model:	'GP ROA'	,	fy22:	0.1103	,	fy23:	0.1013	,	fy24:	0.0972	,	fy25:  	0.0881	,	feb25:	0.0942	,	mar25:	0.0972	,	apr25:	0.0798	,	may25:	0.0833	,	jun25:	0.0819	,	jul25:	0.0824	,	aug25:	0.0827	,	sep25:	0.0846	,	oct25:	0.0857	,	nov25:	0.0866	,	dec25:	0.0863	,	jan26:	0.0881	},
+{	region:	'SS'	,	branch:	'JAMBI'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'SS'	,	branch:	'LAMPUNG'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'SS'	,	branch:	'MUARA BUNGO'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'SS'	,	branch:	'PALEMBANG'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'SS'	,	branch:	'JAMBI'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'SS'	,	branch:	'LAMPUNG'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'SS'	,	branch:	'MUARA BUNGO'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'SS'	,	branch:	'PALEMBANG'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'SS'	,	branch:	'JAMBI'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'SS'	,	branch:	'LAMPUNG'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'SS'	,	branch:	'MUARA BUNGO'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'SS'	,	branch:	'PALEMBANG'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'WJ'	,	branch:	'BANDUNG'	,	model:	'ROA'	,	fy22:	0.0138	,	fy23:	0.0161	,	fy24:	0.0361	,	fy25:  	0.0194	,	feb25:	0.0396	,	mar25:	0.0361	,	apr25:	-0.0101	,	may25:	0.0149	,	jun25:	0.0162	,	jul25:	0.0178	,	aug25:	0.0168	,	sep25:	0.0132	,	oct25:	0.0157	,	nov25:	0.0204	,	dec25:	0.0198	,	jan26:	0.0194	},
+{	region:	'WJ'	,	branch:	'CIREBON'	,	model:	'ROA'	,	fy22:	0.0006	,	fy23:	-0.0102	,	fy24:	-0.0234	,	fy25:  	0.0188	,	feb25:	-0.0227	,	mar25:	-0.0234	,	apr25:	-0.0220	,	may25:	-0.0210	,	jun25:	-0.0044	,	jul25:	-0.0200	,	aug25:	-0.0186	,	sep25:	-0.0045	,	oct25:	0.0054	,	nov25:	0.0171	,	dec25:	0.0197	,	jan26:	0.0188	},
+{	region:	'WJ'	,	branch:	'KARAWANG'	,	model:	'ROA'	,	fy22:	0.0091	,	fy23:	0.0238	,	fy24:	0.0380	,	fy25:  	0.0349	,	feb25:	0.0409	,	mar25:	0.0380	,	apr25:	-0.0057	,	may25:	0.0202	,	jun25:	0.0255	,	jul25:	0.0303	,	aug25:	0.0271	,	sep25:	0.0306	,	oct25:	0.0336	,	nov25:	0.0342	,	dec25:	0.0342	,	jan26:	0.0349	},
+{	region:	'WJ'	,	branch:	'SUKABUMI'	,	model:	'ROA'	,	fy22:	-0.0069	,	fy23:	-0.0023	,	fy24:	0.0497	,	fy25:  	0.0376	,	feb25:	0.0564	,	mar25:	0.0497	,	apr25:	0.0031	,	may25:	0.0313	,	jun25:	0.0387	,	jul25:	0.0371	,	aug25:	0.0383	,	sep25:	0.0314	,	oct25:	0.0340	,	nov25:	0.0383	,	dec25:	0.0393	,	jan26:	0.0376	},
+{	region:	'WJ'	,	branch:	'BANDUNG'	,	model:	'OP ROA'	,	fy22:	0.0455	,	fy23:	0.0225	,	fy24:	0.0283	,	fy25:  	0.0108	,	feb25:	0.0293	,	mar25:	0.0283	,	apr25:	-0.0146	,	may25:	-0.0031	,	jun25:	-0.0013	,	jul25:	0.0029	,	aug25:	-0.0005	,	sep25:	-0.0083	,	oct25:	-0.0002	,	nov25:	0.0079	,	dec25:	0.0104	,	jan26:	0.0108	},
+{	region:	'WJ'	,	branch:	'CIREBON'	,	model:	'OP ROA'	,	fy22:	0.0378	,	fy23:	0.0011	,	fy24:	-0.0236	,	fy25:  	-0.0464	,	feb25:	-0.0178	,	mar25:	-0.0236	,	apr25:	-0.0716	,	may25:	-0.1390	,	jun25:	-0.0997	,	jul25:	-0.1375	,	aug25:	-0.1215	,	sep25:	-0.0969	,	oct25:	-0.0830	,	nov25:	-0.0599	,	dec25:	-0.0493	,	jan26:	-0.0464	},
+{	region:	'WJ'	,	branch:	'KARAWANG'	,	model:	'OP ROA'	,	fy22:	0.0274	,	fy23:	0.0203	,	fy24:	0.0484	,	fy25:  	0.0333	,	feb25:	0.0486	,	mar25:	0.0484	,	apr25:	0.0364	,	may25:	0.0345	,	jun25:	0.0268	,	jul25:	0.0271	,	aug25:	0.0217	,	sep25:	0.0240	,	oct25:	0.0287	,	nov25:	0.0324	,	dec25:	0.0335	,	jan26:	0.0333	},
+{	region:	'WJ'	,	branch:	'SUKABUMI'	,	model:	'OP ROA'	,	fy22:	0.0120	,	fy23:	-0.0083	,	fy24:	-0.0015	,	fy25:  	0.0301	,	feb25:	0.0050	,	mar25:	-0.0015	,	apr25:	0.0325	,	may25:	0.0254	,	jun25:	0.0215	,	jul25:	0.0243	,	aug25:	0.0209	,	sep25:	0.0112	,	oct25:	0.0202	,	nov25:	0.0260	,	dec25:	0.0316	,	jan26:	0.0301	},
+{	region:	'WJ'	,	branch:	'BANDUNG'	,	model:	'GP ROA'	,	fy22:	0.1137	,	fy23:	0.1105	,	fy24:	0.1059	,	fy25:  	0.1019	,	feb25:	0.1058	,	mar25:	0.1059	,	apr25:	0.0971	,	may25:	0.0998	,	jun25:	0.1014	,	jul25:	0.1012	,	aug25:	0.1008	,	sep25:	0.1026	,	oct25:	0.1023	,	nov25:	0.1026	,	dec25:	0.0998	,	jan26:	0.1019	},
+{	region:	'WJ'	,	branch:	'CIREBON'	,	model:	'GP ROA'	,	fy22:	0.1058	,	fy23:	0.0903	,	fy24:	0.0760	,	fy25:  	0.0842	,	feb25:	0.0723	,	mar25:	0.0760	,	apr25:	0.0716	,	may25:	0.0729	,	jun25:	0.0713	,	jul25:	0.0724	,	aug25:	0.0722	,	sep25:	0.0732	,	oct25:	0.0788	,	nov25:	0.0824	,	dec25:	0.0824	,	jan26:	0.0842	},
+{	region:	'WJ'	,	branch:	'KARAWANG'	,	model:	'GP ROA'	,	fy22:	0.1007	,	fy23:	0.0888	,	fy24:	0.0904	,	fy25:  	0.0898	,	feb25:	0.0921	,	mar25:	0.0904	,	apr25:	0.0876	,	may25:	0.0903	,	jun25:	0.0921	,	jul25:	0.0916	,	aug25:	0.0910	,	sep25:	0.0883	,	oct25:	0.0886	,	nov25:	0.0894	,	dec25:	0.0883	,	jan26:	0.0898	},
+{	region:	'WJ'	,	branch:	'SUKABUMI'	,	model:	'GP ROA'	,	fy22:	0.1146	,	fy23:	0.1035	,	fy24:	0.1371	,	fy25:  	0.1116	,	feb25:	0.1343	,	mar25:	0.1371	,	apr25:	0.0944	,	may25:	0.0977	,	jun25:	0.1000	,	jul25:	0.1013	,	aug25:	0.1000	,	sep25:	0.1014	,	oct25:	0.1029	,	nov25:	0.1063	,	dec25:	0.1084	,	jan26:	0.1116	},
+{	region:	'WJ'	,	branch:	'BANDUNG'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'WJ'	,	branch:	'CIREBON'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'WJ'	,	branch:	'KARAWANG'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'WJ'	,	branch:	'SUKABUMI'	,	model:	'NATIONAL ROA'	,	fy22:	0.0000	,	fy23:	0.0154	,	fy24:	0.0198	,	fy25:  	0.0207	,	feb25:	0.0233	,	mar25:	0.0198	,	apr25:	-0.0029	,	may25:	0.0099	,	jun25:	0.0118	,	jul25:	0.0148	,	aug25:	0.0157	,	sep25:	0.0146	,	oct25:	0.0172	,	nov25:	0.0205	,	dec25:	0.0215	,	jan26:	0.0207	},
+{	region:	'WJ'	,	branch:	'BANDUNG'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'WJ'	,	branch:	'CIREBON'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'WJ'	,	branch:	'KARAWANG'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'WJ'	,	branch:	'SUKABUMI'	,	model:	'NATIONAL OP ROA'	,	fy22:	0.0220	,	fy23:	0.0155	,	fy24:	0.0118	,	fy25:  	0.0166	,	feb25:	0.0133	,	mar25:	0.0118	,	apr25:	0.0183	,	may25:	0.0165	,	jun25:	0.0156	,	jul25:	0.0143	,	aug25:	0.0135	,	sep25:	0.0104	,	oct25:	0.0122	,	nov25:	0.0142	,	dec25:	0.0168	,	jan26:	0.0166	},
+{	region:	'WJ'	,	branch:	'BANDUNG'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'WJ'	,	branch:	'CIREBON'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'WJ'	,	branch:	'KARAWANG'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	},
+{	region:	'WJ'	,	branch:	'SUKABUMI'	,	model:	'NATIONAL GP ROA'	,	fy22:	0.1034	,	fy23:	0.0936	,	fy24:	0.0891	,	fy25:  	0.0904	,	feb25:	0.0886	,	mar25:	0.0891	,	apr25:	0.0818	,	may25:	0.0841	,	jun25:	0.0857	,	jul25:	0.0861	,	aug25:	0.0865	,	sep25:	0.0875	,	oct25:	0.0883	,	nov25:	0.0891	,	dec25:	0.0887	,	jan26:	0.0904	}
         ];
 
         let state = { region: 'All', branch: 'All', selectedMonth: 'des25', sidebarExpanded: true };
@@ -582,7 +854,7 @@
         ];
 
         function updateBranchDropdown() {
-            const branches = ['All', ...new Set(rawData.filter(d => state.region === 'All' || d.region === state.region).map(d => d.branch))];
+            const branches = ['All', ...new Set(rawData.filter(d => !['ROA','GP ROA','OP ROA'].includes(d.model) && (state.region === 'All' || d.region === state.region)).map(d => d.branch))];
             document.getElementById('branchList').innerHTML = branches.map(b => `
                 <button onclick="setBranch('${b}')" class="dropdown-item w-full text-left px-4 py-2 rounded-lg text-sm font-semibold transition-all ${state.branch === b ? 'active' : ''}">${b}</button>
             `).join('');
@@ -615,7 +887,17 @@
         }
 
         const updateDashboard = () => {
-            const filtered = rawData.filter(d => (state.region === 'All' || d.region === state.region) && (state.branch === 'All' || d.branch === state.branch));
+            // When ROA tab is active, skip asset-only updates (pie, KPI cards, legend)
+            if (activeChartTab === 'roa') {
+                updateROACharts();
+                updateROARightPanel();
+                updateRankingDisplay();
+                const row = document.getElementById('kpi-row');
+                if (row) { row.innerHTML = buildROAKPIHTML(); if (window.lucide) lucide.createIcons(); }
+                return;
+            }
+
+            const filtered = rawData.filter(d => !['ROA','GP ROA','OP ROA'].includes(d.model) && (state.region === 'All' || d.region === state.region) && (state.branch === 'All' || d.branch === state.branch));
 
             const modelMetrics = {};
             let totalFY24 = 0, totalFY25 = 0;
@@ -701,23 +983,78 @@
                 return `<div class="flex items-center justify-between text-[11px] lg:text-[12px] font-black"><div class="flex items-center gap-3"><div class="w-3 h-3 rounded shadow-sm" style="background: ${colorMapping[cat]}"></div><span class="text-slate-600 uppercase tracking-tighter">${cat}</span></div><div class="flex items-center gap-4"><span class="text-red-600 font-bold">${perc}%</span><span class="text-slate-900 w-16 text-right tabular-nums">${formatCompact(val)}</span></div></div>`;
             }).join('');
 
-            const regionScope = rawData.filter(d => (state.region === 'All' || d.region === state.region));
-            const allBranchTotals = {};
-            regionScope.forEach(d => allBranchTotals[d.branch] = (allBranchTotals[d.branch] || 0) + d.fy25);
-            const sortedRank = Object.entries(allBranchTotals).sort((a,b) => b[1] - a[1]);
-            const totalBranches = sortedRank.length;
-            const rankDisplay = document.getElementById('rankingDisplay');
-
-            if (state.branch === 'All') {
-                const topBranch = sortedRank[0] || ["-", 0];
-                rankDisplay.innerHTML = `<div class="flex items-center justify-between w-full"><div class="flex flex-col min-w-0"><span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">Top Performer</span><span class="text-xl font-black text-slate-900 uppercase tracking-tighter leading-tight truncate">${topBranch[0]}</span><span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1 leading-none">Rank 1 of ${totalBranches} Branches</span></div><div class="text-white w-12 h-12 rounded-2xl shadow-lg flex flex-col items-center justify-center shrink-0 border-4 border-slate-50 ml-4 transition-all" style="background-color: ${RANK_COLOR}"><span class="text-2xl font-black leading-none">1</span></div></div>`;
-            } else {
-                const myIdx = sortedRank.findIndex(([name]) => name === state.branch);
-                const myRank = (myIdx !== -1) ? myIdx + 1 : "-";
-                rankDisplay.innerHTML = `<div class="flex items-center justify-between w-full"><div class="flex flex-col min-w-0"><span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">Performance Rank</span><span class="text-xl font-black text-slate-900 uppercase tracking-tighter leading-tight truncate">${state.branch}</span><span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1 leading-none">Rank ${myRank} of ${totalBranches} Branches</span></div><div class="text-white w-12 h-12 rounded-2xl shadow-lg flex flex-col items-center justify-center shrink-0 border-4 border-slate-100 ml-4 transition-all" style="background-color: ${RANK_COLOR}"><span class="text-2xl font-black leading-none">${myRank}</span></div></div>`;
-            }
+            updateRankingDisplay();
             if (window.lucide) lucide.createIcons();
         };
+
+        // ─── Ranking: asset (fy25) or ROA mode ───
+        function updateRankingDisplay() {
+            const regionScope = rawData.filter(d => !['ROA','GP ROA','OP ROA'].includes(d.model) && (state.region === 'All' || d.region === state.region));
+            let sortedRank, totalBranches, rankDisplay = document.getElementById('rankingDisplay');
+            const rankCard = document.getElementById('rank-card-container');
+
+            if (activeChartTab === 'roa') {
+                // Rank by ROA FY25 value using rawData
+                const roaBranchMap = {};
+                rawROAData
+                    .filter(d => d.model === 'ROA' && (state.region === 'All' || d.region === state.region))
+                    .forEach(d => { roaBranchMap[d.branch] = d.fy25; });
+                sortedRank = Object.entries(roaBranchMap).sort((a, b) => b[1] - a[1]);
+                totalBranches = sortedRank.length;
+                if (rankCard) rankCard.style.borderLeftColor = '#10b981';
+
+                const fmtRoa = v => (v >= 0 ? '+' : '') + (v * 100).toFixed(2) + '%';
+
+                if (state.branch === 'All') {
+                    const top = sortedRank[0] || ['-', 0];
+                    rankDisplay.innerHTML = `
+                        <div class="flex items-center justify-between w-full">
+                            <div class="flex flex-col min-w-0">
+                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">Top ROA Performer</span>
+                                <span class="text-xl font-black text-slate-900 uppercase tracking-tighter leading-tight truncate">${top[0]}</span>
+                                <span class="text-[10px] font-black text-emerald-600 mt-1">${fmtRoa(top[1])}</span>
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 leading-none">Rank 1 of ${totalBranches} Branches</span>
+                            </div>
+                            <div class="text-white w-12 h-12 rounded-2xl shadow-lg flex flex-col items-center justify-center shrink-0 border-4 border-emerald-50 ml-4" style="background:#10b981">
+                                <span class="text-2xl font-black leading-none">1</span>
+                            </div>
+                        </div>`;
+                } else {
+                    const myIdx = sortedRank.findIndex(([name]) => name === state.branch);
+                    const myRank = myIdx !== -1 ? myIdx + 1 : '-';
+                    const myVal  = myIdx !== -1 ? sortedRank[myIdx][1] : 0;
+                    const rankColor = myRank === 1 ? '#10b981' : myRank <= 5 ? '#f59e0b' : '#ef4444';
+                    rankDisplay.innerHTML = `
+                        <div class="flex items-center justify-between w-full">
+                            <div class="flex flex-col min-w-0">
+                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">ROA Rank</span>
+                                <span class="text-xl font-black text-slate-900 uppercase tracking-tighter leading-tight truncate">${state.branch}</span>
+                                <span class="text-[10px] font-black text-emerald-600 mt-1">${fmtRoa(myVal)}</span>
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 leading-none">Rank ${myRank} of ${totalBranches} Branches</span>
+                            </div>
+                            <div class="text-white w-12 h-12 rounded-2xl shadow-lg flex flex-col items-center justify-center shrink-0 border-4 border-slate-100 ml-4" style="background:${rankColor}">
+                                <span class="text-2xl font-black leading-none">${myRank}</span>
+                            </div>
+                        </div>`;
+                }
+            } else {
+                // Asset mode: rank by fy25 total
+                const allBranchTotals = {};
+                regionScope.forEach(d => allBranchTotals[d.branch] = (allBranchTotals[d.branch] || 0) + d.fy25);
+                sortedRank = Object.entries(allBranchTotals).sort((a, b) => b[1] - a[1]);
+                totalBranches = sortedRank.length;
+                if (rankCard) rankCard.style.borderLeftColor = '#ef4444';
+
+                if (state.branch === 'All') {
+                    const topBranch = sortedRank[0] || ['-', 0];
+                    rankDisplay.innerHTML = `<div class="flex items-center justify-between w-full"><div class="flex flex-col min-w-0"><span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">Top Performer</span><span class="text-xl font-black text-slate-900 uppercase tracking-tighter leading-tight truncate">${topBranch[0]}</span><span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1 leading-none">Rank 1 of ${totalBranches} Branches</span></div><div class="text-white w-12 h-12 rounded-2xl shadow-lg flex flex-col items-center justify-center shrink-0 border-4 border-slate-50 ml-4 transition-all" style="background-color:${RANK_COLOR}"><span class="text-2xl font-black leading-none">1</span></div></div>`;
+                } else {
+                    const myIdx = sortedRank.findIndex(([name]) => name === state.branch);
+                    const myRank = myIdx !== -1 ? myIdx + 1 : '-';
+                    rankDisplay.innerHTML = `<div class="flex items-center justify-between w-full"><div class="flex flex-col min-w-0"><span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">Performance Rank</span><span class="text-xl font-black text-slate-900 uppercase tracking-tighter leading-tight truncate">${state.branch}</span><span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1 leading-none">Rank ${myRank} of ${totalBranches} Branches</span></div><div class="text-white w-12 h-12 rounded-2xl shadow-lg flex flex-col items-center justify-center shrink-0 border-4 border-slate-100 ml-4 transition-all" style="background-color:${RANK_COLOR}"><span class="text-2xl font-black leading-none">${myRank}</span></div></div>`;
+                }
+            }
+        }
 
         window.onload = () => {
             if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -730,22 +1067,27 @@
                     y: { stacked: true, border: { display: false }, grid: { color: '#f1f5f9' }, ticks: { font: { weight: 'bold', size: 9 }, color: '#94a3b8', callback: (v) => formatCompact(v) } }
                 }
             };
-            annualChart = new Chart(document.getElementById('annualBarChart').getContext('2d'), { type: 'bar', data: { labels: ['FY22', 'FY23', 'FY24', 'FY25'], datasets: [] }, options: commonOptions });
+            annualChart  = new Chart(document.getElementById('annualBarChart').getContext('2d'),  { type: 'bar', data: { labels: ['FY22', 'FY23', 'FY24', 'FY25'], datasets: [] }, options: commonOptions });
             monthlyChart = new Chart(document.getElementById('monthlyBarChart').getContext('2d'), { type: 'bar', data: { labels: [], datasets: [] }, options: commonOptions });
             pieChart = new Chart(document.getElementById('modelContributionPie').getContext('2d'), {
                 type: 'doughnut', data: { labels: [], datasets: [{ backgroundColor: [], borderWidth: 6, borderColor: '#ffffff', cutout: '78%', data: [] }] },
                 options: { responsive: true, maintainAspectRatio: false, layout: { padding: 8 }, plugins: { legend: { display: false }, datalabels: { display: false } } }
             });
+
+            // Init ROA charts (hidden panel — init early so resize works)
+            initROACharts();
             updateDashboard();
 
-            // Fix: force chart resize on window resize to prevent pie disappearing
+            // Force chart resize on window resize
             let resizeTimer;
             window.addEventListener('resize', () => {
                 clearTimeout(resizeTimer);
                 resizeTimer = setTimeout(() => {
-                    if (annualChart) annualChart.resize();
-                    if (monthlyChart) monthlyChart.resize();
-                    if (pieChart) pieChart.resize();
+                    if (annualChart)    annualChart.resize();
+                    if (monthlyChart)   monthlyChart.resize();
+                    if (pieChart)       pieChart.resize();
+                    if (roaAnnualChart)  roaAnnualChart.resize();
+                    if (roaMonthlyChart) roaMonthlyChart.resize();
                 }, 100);
             });
         };
@@ -759,8 +1101,538 @@
             document.getElementById('sidebar').classList.remove('mobile-open');
             document.getElementById('sidebar-overlay').classList.remove('active');
         }
+
+        // ═══════════════════════════════════════════════
+        // ROA DATA
+        // ═══════════════════════════════════════════════
+        const ROA_MONTHLY_LABELS = ["Feb'25","Mar'25","Apr'25","May'25","Jun'25","Jul'25","Aug'25","Sep'25","Oct'25","Nov'25","Dec'25","Jan'26"];
+        const ROA_FY_LABELS = ['FY22','FY23','FY24','FY25'];
+
+        // National lines (fixed, not affected by region/branch filter)
+        const ROA_NATIONAL = {
+            "NATIONAL GP ROA": {"fy":[0.103442,0.093573,0.089079,0.090408],"mo":[0.088639,0.089079,0.081815,0.084107,0.085705,0.086075,0.086453,0.087474,0.088315,0.089071,0.088672,0.090408]},
+            "NATIONAL OP ROA": {"fy":[0.021992,0.015493,0.011830,0.016600],"mo":[0.013308,0.011830,0.018260,0.016500,0.015600,0.014300,0.013500,0.010400,0.012200,0.014200,0.016800,0.016600]},
+            "NATIONAL ROA":    {"fy":[0.000046,0.015368,0.019804,0.020700],"mo":[0.023295,0.019804,-0.002899,0.009900,0.011800,0.014800,0.015687,0.014600,0.017200,0.020500,0.021500,0.020700]}
+        };
+
+        // ROA data — same structure as rawData, filtered by region/branch/model
+        // model values: 'ROA' | 'OP ROA' | 'GP ROA' | 'NATIONAL ROA' | 'NATIONAL OP ROA' | 'NATIONAL GP ROA'
+        // Monthly keys: feb25,mar25,apr25,may25,jun25,jul25,aug25,sep25,oct25,nov25,dec25,jan26
+
+        let roaAnnualChart, roaMonthlyChart;
+        let activeChartTab = 'asset';
+
+        // ─── Get ROA dataset by filtering rawData ───
+        function getROAData() {
+            const MO_KEYS = ['feb25','mar25','apr25','may25','jun25','jul25','aug25','sep25','oct25','nov25','dec25','jan26'];
+            const FY_KEYS = ['fy22','fy23','fy24','fy25'];
+
+            const filtered = rawROAData.filter(d =>
+                (state.region === 'All' || d.region === state.region) &&
+                (state.branch === 'All' || d.branch === state.branch)
+            );
+
+            function avg(model) {
+                const rows = filtered.filter(d => d.model === model);
+                if (!rows.length) return { fy: [0,0,0,0], mo: Array(12).fill(0) };
+                return {
+                    fy: FY_KEYS.map(k => rows.reduce((s,r) => s + (r[k]||0), 0) / rows.length),
+                    mo: MO_KEYS.map(k => rows.reduce((s,r) => s + (r[k]||0), 0) / rows.length),
+                };
+            }
+
+            return {
+                gp:  avg('GP ROA'),
+                op:  avg('OP ROA'),
+                roa: avg('ROA'),
+            };
+        }
+
+        // ─── Build Chart.js dataset config for ROA ───
+        function buildROADatasets(mode) {
+            // mode = 'fy' | 'mo'
+            const d = getROAData();
+            const label = state.branch !== 'All' ? state.branch
+                        : state.region !== 'All' ? state.region
+                        : 'All Branches';
+
+            return [
+                // NATIONAL lines (dashed)
+                {
+                    label: 'National GP ROA',
+                    type: 'line',
+                    data: ROA_NATIONAL['NATIONAL GP ROA'][mode].map(v => +(v*100).toFixed(2)),
+                    borderColor: '#f59e0b',
+                    borderDash: [5,4],
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0,
+                    yAxisID: 'y',
+                    order: 0,
+                    datalabels: { display: false }
+                },
+                {
+                    label: 'National OP ROA',
+                    type: 'line',
+                    data: ROA_NATIONAL['NATIONAL OP ROA'][mode].map(v => +(v*100).toFixed(2)),
+                    borderColor: '#06b6d4',
+                    borderDash: [5,4],
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0,
+                    yAxisID: 'y',
+                    order: 0,
+                    datalabels: { display: false }
+                },
+                {
+                    label: 'National ROA',
+                    type: 'line',
+                    data: ROA_NATIONAL['NATIONAL ROA'][mode].map(v => +(v*100).toFixed(2)),
+                    borderColor: '#10b981',
+                    borderDash: [5,4],
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0,
+                    yAxisID: 'y',
+                    order: 0,
+                    datalabels: { display: false }
+                },
+                // BRANCH/REGION solid lines
+                {
+                    label: 'GP ROA',
+                    type: 'line',
+                    data: d.gp[mode].map(v => +(v*100).toFixed(2)),
+                    borderColor: '#f59e0b',
+                    backgroundColor: 'rgba(245,158,11,0.08)',
+                    borderWidth: 3,
+                    pointRadius: 3,
+                    pointHoverRadius: 5,
+                    tension: 0,
+                    fill: false,
+                    yAxisID: 'y',
+                    order: 1,
+                    datalabels: {
+                        display: true,
+                        align: 'top', anchor: 'end', offset: 3,
+                        color: '#fff',
+                        backgroundColor: '#f59e0b',
+                        borderRadius: 4,
+                        padding: { left:4, right:4, top:2, bottom:2 },
+                        font: { size: 8, weight: 'bold' },
+                        formatter: v => v.toFixed(1) + '%'
+                    }
+                },
+                {
+                    label: 'OP ROA',
+                    type: 'line',
+                    data: d.op[mode].map(v => +(v*100).toFixed(2)),
+                    borderColor: '#06b6d4',
+                    backgroundColor: 'rgba(6,182,212,0.08)',
+                    borderWidth: 3,
+                    pointRadius: 3,
+                    pointHoverRadius: 5,
+                    tension: 0,
+                    fill: false,
+                    yAxisID: 'y',
+                    order: 2,
+                    datalabels: {
+                        display: true,
+                        align: 'top', anchor: 'end', offset: 3,
+                        color: '#fff',
+                        backgroundColor: '#06b6d4',
+                        borderRadius: 4,
+                        padding: { left:4, right:4, top:2, bottom:2 },
+                        font: { size: 8, weight: 'bold' },
+                        formatter: v => v.toFixed(1) + '%'
+                    }
+                },
+                {
+                    label: 'ROA',
+                    type: 'line',
+                    data: d.roa[mode].map(v => +(v*100).toFixed(2)),
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16,185,129,0.08)',
+                    borderWidth: 3,
+                    pointRadius: 3,
+                    pointHoverRadius: 5,
+                    tension: 0,
+                    fill: false,
+                    yAxisID: 'y',
+                    order: 3,
+                    datalabels: {
+                        display: true,
+                        align: 'bottom', anchor: 'end', offset: 3,
+                        color: '#fff',
+                        backgroundColor: '#10b981',
+                        borderRadius: 4,
+                        padding: { left:4, right:4, top:2, bottom:2 },
+                        font: { size: 8, weight: 'bold' },
+                        formatter: v => v.toFixed(1) + '%'
+                    }
+                },
+            ];
+        }
+
+        // ─── ROA Chart init options ───
+        function roaChartOptions() {
+            return {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { display: false },
+                    datalabels: { display: true },
+                    tooltip: {
+                        mode: 'index', intersect: false,
+                        cornerRadius: 12, padding: 12,
+                        backgroundColor: '#1e293b',
+                        callbacks: {
+                            label: ctx => ' ' + ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(2) + '%'
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { weight: 'bold', size: 9 }, color: '#94a3b8' }
+                    },
+                    y: {
+                        border: { display: false },
+                        grid: { color: ctx => ctx.tick.value === 0 ? '#ef444440' : '#f1f5f9', lineWidth: ctx => ctx.tick.value === 0 ? 2 : 1 },
+                        ticks: {
+                            font: { weight: 'bold', size: 9 },
+                            color: '#94a3b8',
+                            callback: v => v.toFixed(1) + '%'
+                        }
+                    }
+                }
+            };
+        }
+
+        function initROACharts() {
+            const ctxA = document.getElementById('roaAnnualChart').getContext('2d');
+            roaAnnualChart = new Chart(ctxA, {
+                type: 'line',
+                plugins: [ChartDataLabels],
+                data: { labels: ROA_FY_LABELS, datasets: buildROADatasets('fy') },
+                options: roaChartOptions()
+            });
+
+            const ctxM = document.getElementById('roaMonthlyChart').getContext('2d');
+            roaMonthlyChart = new Chart(ctxM, {
+                type: 'line',
+                plugins: [ChartDataLabels],
+                data: { labels: ROA_MONTHLY_LABELS, datasets: buildROADatasets('mo') },
+                options: roaChartOptions()
+            });
+        }
+
+        function updateROACharts() {
+            if (!roaAnnualChart || !roaMonthlyChart) return;
+            roaAnnualChart.data.datasets  = buildROADatasets('fy');
+            roaMonthlyChart.data.datasets = buildROADatasets('mo');
+            roaAnnualChart.update('active');
+            roaMonthlyChart.update('active');
+            updateROALegend();
+        }
+
+        // ─── Right panel: swap Detail Models → ROA breakdown ───
+        // updateROARightPanel: with fade when switching tabs, instant when filter changes
+        function updateROARightPanel(animated) {
+            const card = document.getElementById('right-detail-card');
+            if (!card) return;
+            if (animated) {
+                card.style.transition = 'opacity 0.2s ease';
+                card.style.opacity = '0';
+                setTimeout(() => { _renderROARightPanel(card); card.style.opacity = '1'; }, 200);
+            } else {
+                _renderROARightPanel(card);
+            }
+        }
+
+        function _renderROARightPanel(card) {
+            const d = getROAData();
+            const nat = ROA_NATIONAL;
+            const fmt = v => (v >= 0 ? '+' : '') + (v * 100).toFixed(2) + '%';
+            const colorCls = v => v >= 0 ? 'text-emerald-600' : 'text-red-500';
+            const bgCls    = v => v >= 0 ? 'bg-emerald-50' : 'bg-red-50';
+            const ctxName = state.branch !== 'All' ? state.branch
+                          : state.region !== 'All' ? state.region + ' Region'
+                          : 'All Branches';
+
+            const rows = [
+                { label:'ROA',        color:'#10b981', val:d.roa.fy[3], mo:d.roa.mo,  nat:nat['NATIONAL ROA'].fy[3],    natLabel:'Nat ROA'    },
+                { label:'GP ROA',     color:'#f59e0b', val:d.gp.fy[3],  mo:d.gp.mo,   nat:nat['NATIONAL GP ROA'].fy[3], natLabel:'Nat GP ROA' },
+                { label:'OP ROA',     color:'#06b6d4', val:d.op.fy[3],  mo:d.op.mo,   nat:nat['NATIONAL OP ROA'] ? nat['NATIONAL OP ROA'].fy[3] : null, natLabel:'Nat OP ROA' },
+            ];
+
+            // Latest month value (Jan'26 = index 11)
+            const moIdx = 11;
+
+            card.innerHTML = `
+                <div class="flex items-center justify-between mb-3 shrink-0 text-left">
+                    <div>
+                        <h3 class="text-sm font-black text-slate-900 uppercase tracking-tight">PROFITABILITY</h3>
+                        <p class="text-[9px] font-bold text-emerald-500 uppercase tracking-widest mt-0.5">${ctxName} — FY25</p>
+                    </div>
+                    <div class="flex items-center gap-1.5 bg-slate-100 rounded-xl px-2.5 py-1.5">
+                        <i data-lucide="filter" class="w-3 h-3 text-slate-400"></i>
+                        <span class="text-[9px] font-black text-slate-500 uppercase tracking-wide">${ctxName}</span>
+                    </div>
+                </div>
+
+                <!-- 3 metric rows -->
+                <div class="flex-1 flex flex-col gap-3 justify-center text-left overflow-y-auto">
+                    ${rows.map(r => {
+                        const vs = r.nat !== null ? r.val - r.nat : null;
+                        const moVal = r.mo[moIdx];
+                        return `
+                        <div class="rounded-2xl border border-slate-100 p-3.5" style="border-left:4px solid ${r.color}">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2.5 h-2.5 rounded-full" style="background:${r.color}"></div>
+                                    <span class="text-[10px] font-black text-slate-600 uppercase tracking-widest">${r.label}</span>
+                                </div>
+                                <span class="text-base font-black ${colorCls(r.val)}">${fmt(r.val)}</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="bg-slate-50 rounded-xl p-2 text-center">
+                                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-wide mb-0.5">Jan '26</p>
+                                    <p class="text-xs font-black ${colorCls(moVal)}">${fmt(moVal)}</p>
+                                </div>
+                                <div class="${r.nat !== null ? bgCls(vs) : 'bg-slate-50'} rounded-xl p-2 text-center">
+                                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-wide mb-0.5">${r.natLabel}</p>
+                                    <p class="text-xs font-black text-slate-600">${r.nat !== null ? fmt(r.nat) : '—'}</p>
+                                </div>
+                            </div>
+                            ${r.nat !== null ? `<div class="mt-2 flex items-center gap-1.5">
+                                <span class="text-[8px] font-bold text-slate-400 uppercase tracking-wide">vs National:</span>
+                                <span class="text-[9px] font-black ${colorCls(vs)}">${fmt(vs)} ${vs >= 0 ? '▲' : '▼'}</span>
+                            </div>` : ''}
+                        </div>`;
+                    }).join('')}
+                </div>`;
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function restoreAssetRightPanel(onDone) {
+            const card = document.getElementById('right-detail-card');
+            if (!card) return;
+            card.style.transition = 'opacity 0.2s ease';
+            card.style.opacity = '0';
+            setTimeout(() => {
+                card.innerHTML = `
+                    <div class="flex items-center justify-between mb-4 shrink-0 text-left">
+                        <h3 class="text-sm font-black text-slate-900 uppercase tracking-tight">DETAIL MODELS</h3>
+                        <div class="relative">
+                            <button data-dropdown-trigger onclick="toggleDropdown('monthDropdown')" class="flex items-center gap-2 bg-slate-50 hover:bg-slate-100 px-2 py-1.5 rounded-xl transition-all border border-slate-100 shadow-sm">
+                                <i data-lucide="calendar" class="w-3 h-3 text-red-600"></i>
+                                <span id="monthValue" class="text-[9px] font-black text-red-600 uppercase">Dec '25</span>
+                                <i data-lucide="chevron-down" class="w-3 h-3 text-red-300"></i>
+                            </button>
+                            <div id="monthDropdown" class="dropdown-content min-w-[120px] right-0 left-auto shadow-xl">
+                                <div id="monthList" class="p-2 space-y-1 text-left"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pie-chart-wrapper">
+                        <canvas id="modelContributionPie" style="position:absolute;top:0;left:0;width:100%;height:100%"></canvas>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                            <span id="pieCenterLabel" class="pie-center-value text-base lg:text-lg xl:text-xl font-black text-slate-900 tracking-tighter leading-none mb-1">-</span>
+                            <span class="text-[7px] font-bold text-slate-400 uppercase tracking-widest leading-none">Total Value</span>
+                        </div>
+                    </div>
+                    <div id="contributionLegend" class="mt-4 space-y-3 shrink-0 px-1 overflow-y-auto text-left"></div>`;
+                if (window.lucide) lucide.createIcons();
+                // Re-init pie
+                const ctx = document.getElementById('modelContributionPie');
+                if (ctx) {
+                    pieChart = new Chart(ctx.getContext('2d'), {
+                        type: 'doughnut',
+                        data: { labels: [], datasets: [{ backgroundColor: [], borderWidth: 6, borderColor: '#ffffff', cutout: '78%', data: [] }] },
+                        options: { responsive: true, maintainAspectRatio: false, layout: { padding: 8 }, plugins: { legend: { display: false }, datalabels: { display: false } } }
+                    });
+                }
+                // Restore month label
+                const mv = monthsData.find(m => m.id === state.selectedMonth);
+                const mvEl = document.getElementById('monthValue');
+                if (mvEl && mv) mvEl.innerText = mv.label;
+                setupFilters();
+                card.style.opacity = '1';
+                if (onDone) onDone();
+            }, 200);
+        }
+
+        function updateROAKPIStrip() {
+            const d = getROAData();
+            const fmt = v => (v >= 0 ? '+' : '') + (v * 100).toFixed(2) + '%';
+            const color = v => v >= 0 ? 'text-emerald-700' : 'text-red-600';
+
+            const gpEl  = document.getElementById('kpi-roa-gp');
+            const opEl  = document.getElementById('kpi-roa-op');
+            const roaEl = document.getElementById('kpi-roa-roa');
+            if (gpEl)  { gpEl.textContent  = fmt(d.gp.fy[3]);  gpEl.className  = 'text-xs font-black ml-1 ' + color(d.gp.fy[3]); }
+            if (opEl)  { opEl.textContent  = fmt(d.op.fy[3]);  opEl.className  = 'text-xs font-black ml-1 ' + color(d.op.fy[3]); }
+            if (roaEl) { roaEl.textContent = fmt(d.roa.fy[3]); roaEl.className = 'text-xs font-black ml-1 ' + color(d.roa.fy[3]); }
+
+            const ctxLabel = document.getElementById('roa-context-label');
+            if (ctxLabel) {
+                ctxLabel.textContent = state.branch !== 'All' ? state.branch
+                    : state.region !== 'All' ? (state.region + ' Region')
+                    : 'All Branches';
+            }
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function updateROALegend() {
+            const items = [
+                { label: 'Nat GP ROA', color: '#f59e0b', dashed: true },
+                { label: 'Nat OP ROA', color: '#06b6d4', dashed: true },
+                { label: 'Nat ROA',    color: '#10b981', dashed: true },
+                { label: 'GP ROA',     color: '#f59e0b', dashed: false },
+                { label: 'OP ROA',     color: '#06b6d4', dashed: false },
+                { label: 'ROA',        color: '#10b981', dashed: false },
+            ];
+            document.getElementById('dynamicLegend').innerHTML = items.map(item => `
+                <div class="flex items-center gap-1.5 text-[9px] font-black text-slate-500">
+                    <svg width="18" height="8" viewBox="0 0 18 8">
+                        <line x1="0" y1="4" x2="18" y2="4"
+                            stroke="${item.color}" stroke-width="2.5"
+                            stroke-dasharray="${item.dashed ? '4,3' : 'none'}"/>
+                        ${!item.dashed ? `<circle cx="9" cy="4" r="2.5" fill="${item.color}"/>` : ''}
+                    </svg>
+                    ${item.label}
+                </div>`).join('');
+        }
+
+        // ─── Tab switching ───
+        function setChartTab(tab) {
+            activeChartTab = tab;
+            const panelAsset = document.getElementById('panel-asset');
+            const panelROA   = document.getElementById('panel-roa');
+            const tabAsset   = document.getElementById('tab-asset');
+            const tabROA     = document.getElementById('tab-roa');
+            const titleEl    = document.getElementById('chart-tab-title');
+            const subEl      = document.getElementById('chart-tab-sub');
+
+            if (tab === 'asset') {
+                panelAsset.classList.remove('hidden'); panelAsset.classList.add('flex');
+                panelROA.classList.add('hidden');      panelROA.classList.remove('flex');
+                tabAsset.className = 'tab-btn flex items-center gap-1.5 px-3 lg:px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-200 active-tab-asset';
+                tabROA.className   = 'tab-btn flex items-center gap-1.5 px-3 lg:px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-200 text-slate-400';
+                titleEl.textContent = 'Trend Breakdown Analysis';
+                subEl.textContent   = 'Historical Annual vs Monthly Pulse';
+                subEl.className     = 'text-[9px] font-bold text-red-500 uppercase tracking-widest transition-colors';
+                // All fade simultaneously; single updateDashboard via callback after right panel done
+                swapKPICards('asset');
+                restoreAssetRightPanel(() => { updateDashboard(); updateRankingDisplay(); });
+            } else {
+                panelAsset.classList.add('hidden');    panelAsset.classList.remove('flex');
+                panelROA.classList.remove('hidden');   panelROA.classList.add('flex');
+                tabAsset.className = 'tab-btn flex items-center gap-1.5 px-3 lg:px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-200 text-slate-400';
+                tabROA.className   = 'tab-btn flex items-center gap-1.5 px-3 lg:px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-200 active-tab-roa';
+                titleEl.textContent = 'Profitability Analysis';
+                subEl.textContent   = 'GP ROA · OP ROA · ROA vs National Benchmark';
+                subEl.className     = 'text-[9px] font-bold text-emerald-500 uppercase tracking-widest transition-colors';
+                swapKPICards('roa');
+                updateROARightPanel(true);
+                updateROACharts();
+                updateRankingDisplay();
+                setTimeout(() => {
+                    if (roaAnnualChart)  roaAnnualChart.resize();
+                    if (roaMonthlyChart) roaMonthlyChart.resize();
+                }, 50);
+            }
+            if (window.lucide) lucide.createIcons();
+        }
+
+        // ═══════════════════════════════════════════════
+        // KPI CARD SWAP — Asset ↔ ROA
+        // ═══════════════════════════════════════════════
+        const ASSET_KPI_HTML = `
+            <div class="bg-white rounded-2xl p-3 lg:p-4 border border-slate-100 shadow-sm relative overflow-hidden group">
+                <p class="kpi-title text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Portfolio</p>
+                <h2 id="kpi-total" class="kpi-value text-xl lg:text-2xl font-black tracking-tighter text-slate-900">-</h2>
+                <div id="growth-total" class="growth-label">--</div>
+            </div>
+            <div id="card-pc" class="bg-white rounded-2xl p-3 lg:p-4 border border-slate-100 shadow-sm border-b-4 transition-all duration-500">
+                <p class="kpi-title text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">PC Model</p>
+                <h2 id="kpi-pc" class="kpi-value text-lg lg:text-xl font-black text-slate-900">-</h2>
+                <div id="growth-pc" class="growth-label">--</div>
+            </div>
+            <div id="card-lcv" class="bg-white rounded-2xl p-3 lg:p-4 border border-slate-100 shadow-sm border-b-4 transition-all duration-500">
+                <p class="kpi-title text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">LCV Model</p>
+                <h2 id="kpi-lcv" class="kpi-value text-lg lg:text-xl font-black text-slate-900">-</h2>
+                <div id="growth-lcv" class="growth-label">--</div>
+            </div>
+            <div id="card-cv" class="bg-white rounded-2xl p-3 lg:p-4 border border-slate-100 shadow-sm border-b-4 transition-all duration-500">
+                <p class="kpi-title text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">CV Model</p>
+                <h2 id="kpi-cv" class="kpi-value text-lg lg:text-xl font-black text-slate-900">-</h2>
+                <div id="growth-cv" class="growth-label">--</div>
+            </div>
+            <div id="card-ccb" class="bg-white rounded-2xl p-3 lg:p-4 border border-slate-100 shadow-sm border-b-4 transition-all duration-500">
+                <p class="kpi-title text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">CCB Model</p>
+                <h2 id="kpi-ccb" class="kpi-value text-lg lg:text-xl font-black text-slate-900">-</h2>
+                <div id="growth-ccb" class="growth-label">--</div>
+            </div>`;
+
+        function buildROAKPIHTML() {
+            const d = getROAData();
+            const nat = ROA_NATIONAL;
+            const fmtRoa  = v => (v >= 0 ? '+' : '') + (v * 100).toFixed(2) + '%';
+            const colorClass = v => v >= 0 ? 'text-emerald-600' : 'text-red-500';
+
+            const cards = [
+                { label:'ROA',        dot:'#10b981', accent:'#10b981', val:d.roa.fy[3],                  prev:d.roa.fy[2] },
+                { label:'GP ROA',     dot:'#f59e0b', accent:'#f59e0b', val:d.gp.fy[3],                   prev:d.gp.fy[2]  },
+                { label:'OP ROA',     dot:'#06b6d4', accent:'#06b6d4', val:d.op.fy[3],                   prev:d.op.fy[2]  },
+                { label:'Nat ROA',    dot:'#10b981', accent:'#10b981', val:nat['NATIONAL ROA'].fy[3],    prev:nat['NATIONAL ROA'].fy[2],    dashed:true },
+                { label:'Nat GP ROA', dot:'#f59e0b', accent:'#f59e0b', val:nat['NATIONAL GP ROA'].fy[3], prev:nat['NATIONAL GP ROA'].fy[2], dashed:true },
+            ];
+
+            return cards.map(c => {
+                const yoy = c.prev !== 0 ? ((c.val - c.prev) / Math.abs(c.prev)) * 100 : 0;
+                const yoyPos = yoy >= 0;
+                const dotStyle = c.dashed
+                    ? `display:inline-block;width:8px;height:8px;border-radius:50%;border:2px dashed ${c.dot};flex-shrink:0`
+                    : `display:inline-block;width:8px;height:8px;border-radius:50%;background:${c.dot};flex-shrink:0`;
+                return `
+                <div class="bg-white rounded-2xl p-3 lg:p-4 border border-slate-100 shadow-sm transition-all duration-300"
+                     style="border-bottom:3px solid ${c.accent}">
+                    <div class="flex items-center gap-1.5 mb-1.5">
+                        <span style="${dotStyle}"></span>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">${c.label}</p>
+                    </div>
+                    <h2 class="text-lg lg:text-xl font-black tracking-tighter ${colorClass(c.val)}">${fmtRoa(c.val)}</h2>
+                    <div class="growth-label mt-1 ${yoyPos ? 'growth-up' : 'growth-down'}">
+                        <span>${yoyPos ? '▲' : '▼'}</span>
+                        <span>${Math.abs(yoy).toFixed(1)}% YoY</span>
+                    </div>
+                    <p class="text-[8px] text-slate-300 font-semibold mt-0.5 uppercase tracking-wide">vs FY24</p>
+                </div>`;
+            }).join('');
+        }
+
+        function swapKPICards(mode, callback) {
+            const row = document.getElementById('kpi-row');
+            if (!row) return;
+            row.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+            row.style.opacity    = '0';
+            row.style.transform  = 'translateY(-6px)';
+            setTimeout(() => {
+                row.innerHTML = mode === 'roa' ? buildROAKPIHTML() : ASSET_KPI_HTML;
+                if (window.lucide) lucide.createIcons();
+                row.style.transition = 'none';
+                row.style.transform  = 'translateY(6px)';
+                row.offsetHeight; // force reflow
+                row.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+                row.style.opacity    = '1';
+                row.style.transform  = 'translateY(0)';
+                if (callback) callback();
+            }, 200);
+        }
+
     </script>
 </body>
 
 </html>
-
