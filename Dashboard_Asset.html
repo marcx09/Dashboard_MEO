@@ -108,15 +108,16 @@
         .dropdown-content {
             display: none;
             position: fixed;
-            z-index: 200;
+            z-index: 9999;
             background: white;
             border: 1px solid #e2e8f0;
             border-radius: 1.25rem;
-            margin-top: 0.5rem;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            max-height: 220px;
+            margin-top: 0;
+            box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.18), 0 8px 16px -4px rgba(0,0,0,0.10);
+            max-height: 260px;
             overflow-y: auto;
-            animation: slideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            -webkit-overflow-scrolling: touch;
+            animation: slideDown 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         /* Month dropdown diperkecil agar tidak terpotong */
@@ -809,21 +810,43 @@
             const isShown = el.classList.contains('show');
             document.querySelectorAll('.dropdown-content').forEach(d => d.classList.remove('show'));
             if (!isShown) {
-                // Cari tombol trigger yang memiliki onclick berisi id ini
                 const trigger = document.querySelector(`[onclick="toggleDropdown('${id}')"]`);
                 if (trigger) {
                     const rect = trigger.getBoundingClientRect();
-                    el.style.top = (rect.bottom + 6) + 'px';
-                    // Untuk month dropdown (right-aligned), align ke kanan tombol
+                    const vw = window.innerWidth;
+                    const vh = window.innerHeight;
+                    const dropH = Math.min(260, vh * 0.45); // max dropdown height
+                    const GAP = 6;
+
+                    // Horizontal positioning
                     if (id === 'monthDropdown') {
+                        const w = 130;
+                        el.style.width = w + 'px';
+                        el.style.minWidth = w + 'px';
+                        // Right-align to trigger, clamp to viewport
+                        let right = vw - rect.right;
+                        right = Math.max(8, right);
+                        el.style.right = right + 'px';
                         el.style.left = 'auto';
-                        el.style.right = (window.innerWidth - rect.right) + 'px';
-                        el.style.width = '130px';
-                        el.style.minWidth = '130px';
                     } else {
-                        el.style.left = rect.left + 'px';
+                        el.style.left = Math.max(8, Math.min(rect.left, vw - 200)) + 'px';
                         el.style.right = 'auto';
-                        el.style.minWidth = rect.width + 'px';
+                        el.style.minWidth = Math.max(rect.width, 180) + 'px';
+                    }
+
+                    // Vertical: flip up if not enough room below
+                    const spaceBelow = vh - rect.bottom - GAP;
+                    const spaceAbove = rect.top - GAP;
+                    if (spaceBelow >= dropH || spaceBelow >= spaceAbove) {
+                        // Open downward
+                        el.style.top = (rect.bottom + GAP) + 'px';
+                        el.style.bottom = 'auto';
+                        el.style.maxHeight = Math.max(120, spaceBelow - 8) + 'px';
+                    } else {
+                        // Flip upward
+                        el.style.bottom = (vh - rect.top + GAP) + 'px';
+                        el.style.top = 'auto';
+                        el.style.maxHeight = Math.max(120, spaceAbove - 8) + 'px';
                     }
                 }
                 el.classList.add('show');
@@ -1636,4 +1659,3 @@
 </body>
 
 </html>
-
